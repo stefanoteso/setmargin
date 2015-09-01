@@ -1,4 +1,5 @@
 import subprocess
+import fractions
 
 def _cls(obj):
     return type(obj).__name__
@@ -6,9 +7,12 @@ def _cls(obj):
 def float2libsmt(x):
     z = fractions.Fraction(x)
     p, q = z.numerator, z.denominator
-    ret = "(/ {} {})".format(abs(p), q)
+    if q == 1:
+        ret = str(abs(p))
+    else:
+        ret = "(/ {} {})".format(abs(p), q)
     if p < 0:
-        ret = "(- {})".format(ret)
+        ret = "(- 0 {})".format(ret)
     return ret
 
 class Binary(object):
@@ -44,7 +48,8 @@ class OptiMathSAT5(object):
             return parts[0], float(parts[-1])
         elif len(parts) == 3 and parts[1] == '-':
             return parts[0], -float(parts[-1])
-        # TODO add support for division
+        elif len(parts) == 4 and parts[1] == '/':
+            return parts[0], float(parts[2]) / float(parts[3])
         raise NotImplementedError("unhandled assignment string '{}'".format(line))
 
     def _read_assignments(self, lines):
