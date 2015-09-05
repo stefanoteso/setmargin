@@ -1,0 +1,3 @@
+Usage:
+
+$ clear; clear; ./solver-smt.py synthetic -u normal -s 0
