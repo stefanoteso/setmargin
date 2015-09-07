@@ -36,12 +36,12 @@ def define_objective(items, queries, set_size, alphas):
         obj_slacks = ""
 
     weights = ["w_{i}_{z}".format(i=i, z=z) for i in range(set_size) for z in range(num_features)]
-    sum_weights = "(+ {})".format("\n\n\t".join(weights))
+    sum_weights = "(+ {})".format("\n\t\t".join(weights))
     obj_weights = "(- 0 (* {beta} {sum_weights}))".format(beta=float2libsmt(alphas[1]),
                                                           sum_weights=sum_weights)
 
     scores = ["a_{i}_{i}_{z}".format(i=i, z=z) for i in range(set_size) for z in range(num_features)]
-    sum_scores = "(+ {})".format("\n\n\t".join(scores))
+    sum_scores = "(+ {})".format("\n\t\t".join(scores))
     obj_scores = "(* {gamma} {sum_scores})".format(gamma=float2libsmt(alphas[2]),
                                                    sum_scores=sum_scores)
 
@@ -82,7 +82,7 @@ def define_constraints(domain_sizes, items, queries,
             else:
                 constraint = "(>= {dot} (- margin slack_{k}))".format(dot=dot, k=k)
 
-            constraints.append(";; -- example {}".format(k))
+            constraints.append(";; -- plane {i}, example {k}".format(i=i, k=k))
             constraints.append(constraint)
 
     constraints.append("\n;; Eq. 10")
