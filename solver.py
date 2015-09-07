@@ -119,11 +119,16 @@ def define_constraints(items, queries, x_constraints, w_constraints, set_size):
 
     return constraints
 
-def solve(items, queries, w_constraints, x_constraints, set_size, alphas):
+def solve(items, queries, w_constraints, x_constraints,
+          set_size, alphas):
     PROBLEM_PATH = "problem.smt2"
 
-    assert set_size > 0
-    assert len(alphas) == 3 and all(alpha >= 0 for alpha in alphas)
+    if not set_size > 0:
+        raise ValueError("set_size must be positive")
+    if len(alphas) != 3:
+        raise ValueError("len(alphas) must be 3")
+    if any(alpha < 0 for alpha in alphas):
+        raise ValueError("all alphas must be non-negative")
 
     num_features = items.shape[1]
 
