@@ -1,3 +1,7 @@
 Usage:
 
-$ clear; clear; ./solver-smt.py synthetic -u normal -s 0
+$ ./run.py synthetic -u normal -s 0
+
+For more information, call:
+
+$ ./run.py --help
