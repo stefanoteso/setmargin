@@ -42,7 +42,7 @@ def get_pc_dataset():
 def get_housing_dataset():
     raise NotImplementedError
 
-def sample_utility(domain_sizes, mode="uniform", rng=None):
+def sample_utility(domain_sizes, rng, mode="uniform"):
     """Samples a utility weight vector.
 
     .. note::
@@ -64,7 +64,7 @@ def sample_utility(domain_sizes, mode="uniform", rng=None):
     else:
         return rng.normal(50.0, 50.0 / 3, size=(sum(domain_sizes), 1)).reshape(1,-1)
 
-def query_utility(w, xi, xj, deterministic=False, rng=None):
+def query_utility(w, xi, xj, rng, deterministic=False):
     """Use the indifference-augmented Bradley-Terry model to compute the
     preferences of a user between two items.
 
@@ -94,7 +94,7 @@ def query_utility(w, xi, xj, deterministic=False, rng=None):
         return (xi, xj, ans)
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
-        deterministic_answers=False, rng=None):
+        rng, deterministic_answers=False):
 
     if not num_iterations > 0:
         raise ValueError("invalid num_iterations '{}'".format(num_iterations))
@@ -111,7 +111,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
     print items
 
     # Sample the hidden utility function
-    hidden_w = sample_utility(domain_sizes, mode=utility_sampling_mode, rng=rng)
+    hidden_w = sample_utility(domain_sizes, rng, mode=utility_sampling_mode)
 
     print "hidden_w ="
     print hidden_w
@@ -141,7 +141,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         print "best_is, best_items =\n", zip(best_is, best_items)
 
         # Ask the user about the retrieved items
-        queries.extend(query_utility(hidden_w, item1, item2, deterministic=deterministic_answers, rng=rng)
+        queries.extend(query_utility(hidden_w, item1, item2, rng, deterministic=deterministic_answers)
                        for item2 in best_items
                        for item1 in best_items)
 
@@ -184,7 +184,7 @@ def main():
 
     run(DATASETS[args.dataset], args.num_iterations, args.set_size,
         (args.alpha, args.beta, args.gamma), args.utility_sampling_mode,
-        deterministic_answers=args.deterministic, rng=rng)
+        rng, deterministic_answers=args.deterministic)
 
 if __name__ == "__main__":
     main()
