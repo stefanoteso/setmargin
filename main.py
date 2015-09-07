@@ -11,6 +11,12 @@ import solver
 # TODO: continuous case
 # TODO: hybrid case
 
+def onehot(domain_size, value):
+    assert 0 <= value < domain_size
+    value_onehot = np.zeros(domain_size, dtype=np.int8)
+    value_onehot[value] = 1
+    return value_onehot
+
 def get_synthetic_dataset():
     """Builds the synthetic dataset of Guo & Sanner 2010.
 
@@ -19,9 +25,16 @@ def get_synthetic_dataset():
     items.
     """
     domain_sizes = [2, 2, 5]
-    items = np.vstack(map(np.array, it.product(*map(range, domain_sizes))))
-    assert len(items) == 20
-    return domain_sizes, items, np.array([]), np.array([])
+    items_onehot = None
+    for item in it.product(*map(range, domain_sizes)):
+        item_onehot = np.hstack((onehot(domain_sizes[i], attribute_value)
+                                 for i, attribute_value in enumerate(item)))
+        if items_onehot is None:
+            items_onehot = item_onehot
+        else:
+            items_onehot = np.vstack((items_onehot, item_onehot))
+    assert items_onehot.shape == (20, 2+2+5)
+    return domain_sizes, items_onehot, np.array([]), np.array([])
 
 def get_pc_dataset():
     raise NotImplementedError
@@ -107,7 +120,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
         # Solve the utility/item learning problem for the current iteration
         ws, xs, scores, margin = \
-            solver.solve(items, queries, w_constraints, x_constraints, set_size, alphas)
+            solver.solve(items, queries, w_constraints, x_constraints,
+                         set_size, alphas)
 
         print "ws =\n", ws
         print "xs =\n", xs
@@ -122,8 +136,6 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
         # Ask the user about the retrieved items
         comparison = query_utility(hidden_w, x1, x2)
-
-
 
 def main():
     import argparse as ap
