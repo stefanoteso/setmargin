@@ -5,7 +5,7 @@ C = 10000
 MAX_W_Z = 1
 
 def declare_variables(items, queries, set_size):
-    num_examples = 0 if queries is None else queries.shape[0]
+    num_examples = len(queries)
     num_features = items.shape[1]
 
     decls = []
@@ -24,7 +24,7 @@ def declare_variables(items, queries, set_size):
     return decls
 
 def define_objective(items, queries, set_size, alphas):
-    num_examples = queries.shape[0] if not queries is None else 0
+    num_examples = len(queries)
     num_features = items.shape[1]
 
     slacks = ["slack_{k}".format(k=k) for k in range(num_examples)]
@@ -61,18 +61,29 @@ def define_objective(items, queries, set_size, alphas):
 
 def define_constraints(domain_sizes, items, queries,
                        x_constraints, w_constraints, set_size):
-    num_examples = queries.shape[0] if not queries is None else 0
+    num_examples = len(queries)
     num_features = items.shape[1]
 
     constraints = []
 
     constraints.append("\n;; Eq. 9")
-    if not queries is None:
-        for i in range(set_size):
-            for k in range(num_examples):
-                dot = "(+ {})".format(" ".join("(* w_{i}_{z} {diff})".format(i=i, z=z, diff=float2libsmt(queries[k,z,0] - queries[k,z,1]))
-                                               for z in range(num_features)))
-                constraints.append("(>= {dot} (- margin slack_{k}))".format(dot=dot, k=k))
+    for i in range(set_size):
+        for k in range(num_examples):
+            x1, x2, ans = queries[k]
+            assert ans in (-1, 0, 1)
+
+            diff = x1 - x2 if ans >= 0 else x2 - x1
+            summands = ["(* w_{i}_{z} {diff})".format(i=i, z=z, diff=float2libsmt(diff[z]))
+                        for z in range(num_features)]
+            dot = "(+ {})".format(" ".join(summands))
+
+            if ans == 0:
+                constraint = "(<= (ite (>= {dot} 0) {dot} (- 0 {dot})) slack_{k})".format(dot=dot, k=k)
+            else:
+                constraint = "(>= {dot} (- margin slack_{k}))".format(dot=dot, k=k)
+
+            constraints.append(";; -- example {}".format(k))
+            constraints.append(constraint)
 
     constraints.append("\n;; Eq. 10")
     for i in range(set_size):

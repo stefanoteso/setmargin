@@ -42,31 +42,6 @@ def get_pc_dataset():
 def get_housing_dataset():
     raise NotImplementedError
 
-def query_utility(w, xi, xj, rng=None):
-    """Use the indifference-augmented Bradley-Terry model to compute the
-    preferences of a user between two items.
-
-    :param w: the utility vector.
-    :param xi: attribute vector of object i.
-    :param xj: attribute vector of object j.
-    :returns: 0 (indifferent), 1 (i wins over j) or -1 (j wins over i).
-    """
-    rng = check_random_state(rng)
-
-    diff = np.dot(w, xi.T) - np.dot(w, xj.T)
-
-    eq = np.exp(-np.abs(diff))
-    gt = np.exp(diff) / (1 + exp(diff))
-    lt = np.exp(-diff) / (1 + exp(-diff))
-
-    z = rng.uniform(eq + gt + lt)
-    if z < eq:
-        return 0
-    elif z < (eq + gt):
-        return 1
-    else:
-        return -1
-
 def sample_utility(domain_sizes, mode="uniform", rng=None):
     """Samples a utility weight vector.
 
@@ -85,9 +60,36 @@ def sample_utility(domain_sizes, mode="uniform", rng=None):
     assert mode in ("uniform", "normal")
     rng = check_random_state(rng)
     if mode == "uniform":
-        return rng.uniform(1, 100, size=(len(domain_sizes), 1))
+        return rng.uniform(1, 100, size=(sum(domain_sizes), 1)).reshape(1,-1)
     else:
-        return rng.normal(50.0, 50.0 / 3, size=(len(domain_sizes), 1))
+        return rng.normal(50.0, 50.0 / 3, size=(sum(domain_sizes), 1)).reshape(1,-1)
+
+def query_utility(w, xi, xj, rng=None):
+    """Use the indifference-augmented Bradley-Terry model to compute the
+    preferences of a user between two items.
+
+    :param w: the utility vector.
+    :param xi: attribute vector of object i.
+    :param xj: attribute vector of object j.
+    :returns: 0 (indifferent), 1 (i wins over j) or -1 (j wins over i).
+    """
+    rng = check_random_state(rng)
+
+    diff = np.dot(w, xi.T) - np.dot(w, xj.T)
+
+    eq = np.exp(-np.abs(diff))
+    gt = np.exp(diff) / (1 + np.exp(diff))
+    lt = np.exp(-diff) / (1 + np.exp(-diff))
+
+    z = rng.uniform(eq + gt + lt)
+    if z < eq:
+        ans = 0
+    elif z < (eq + gt):
+        ans = 1
+    else:
+        ans = -1
+
+    return (xi, xj, ans)
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         rng=None):
@@ -113,7 +115,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
     print hidden_w
 
     # Iterate
-    queries = None
+    queries = []
     for it in range(num_iterations):
 
         print "==== ITERATION {} ====".format(it)
@@ -128,14 +130,20 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         print "scores =\n", scores
         print "margin =\n", margin
 
-        # Find the dataset items that are closest to one of the generated items
+        # Find the dataset items with highest score wrt each hyperplanes
         # XXX double check if this is the intended approach
-        print items
+        best_is = np.argmax(np.dot(ws, items.T), axis=1)
+        assert best_is.shape == (set_size,)
+        best_items = items[best_is]
 
-        print xs
+        print "best_is, best_items =\n", zip(best_is, best_items)
 
         # Ask the user about the retrieved items
-        comparison = query_utility(hidden_w, x1, x2)
+        queries.extend(query_utility(hidden_w, item1, item2)
+                       for item2 in best_items
+                       for item1 in best_items)
+
+        print "queries =\n", "\n".join(map(str, queries))
 
 def main():
     import argparse as ap
