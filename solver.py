@@ -59,7 +59,8 @@ def define_objective(items, queries, set_size, alphas):
 
     return objective
 
-def define_constraints(items, queries, x_constraints, w_constraints, set_size):
+def define_constraints(domain_sizes, items, queries,
+                       x_constraints, w_constraints, set_size):
     num_examples = queries.shape[0] if not queries is None else 0
     num_features = items.shape[1]
 
@@ -117,9 +118,19 @@ def define_constraints(items, queries, x_constraints, w_constraints, set_size):
     constraints.append("\n;; Eq. 20")
     constraints.append("(>= margin 0)")
 
+    constraints.append("\n;; one-hot constraints")
+    for i in range(set_size):
+        last_z = 0
+        for domain_size in domain_sizes:
+            zs_in_domain = range(last_z, last_z + domain_size)
+            for z1 in zs_in_domain:
+                for z2 in zs_in_domain if z2 != z1:
+                    constraints.append("(=> x_{i}_{z1} (not x_{i}_{z2}))".format(i=i, z1=z1, z2=z2))
+            last_z += domain_size
+
     return constraints
 
-def solve(items, queries, w_constraints, x_constraints,
+def solve(domain_sizes, items, queries, w_constraints, x_constraints,
           set_size, alphas):
     PROBLEM_PATH = "problem.smt2"
 
@@ -140,8 +151,8 @@ def solve(items, queries, w_constraints, x_constraints,
     problem.extend(declare_variables(items, queries, set_size))
     problem.append("(assert (and")
     problem.append(define_objective(items, queries, set_size, alphas))
-    problem.extend(define_constraints(items, queries, x_constraints,
-                                      w_constraints, set_size))
+    problem.extend(define_constraints(domain_sizes, items, queries,
+                                      x_constraints, w_constraints, set_size))
     problem.append("))")
     problem.append("(maximize objective)")
     problem.append("(check-sat)")

@@ -120,7 +120,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
         # Solve the utility/item learning problem for the current iteration
         ws, xs, scores, margin = \
-            solver.solve(items, queries, w_constraints, x_constraints,
+            solver.solve(domain_sizes, items, queries, w_constraints, x_constraints,
                          set_size, alphas)
 
         print "ws =\n", ws
