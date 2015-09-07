@@ -5,3 +5,7 @@ $ ./run.py synthetic -u normal -s 0
 For more information, call:
 
 $ ./run.py --help
+
+The OptiMathSat5 solver can be found at:
+
+http://optimathsat.disi.unitn.it/
