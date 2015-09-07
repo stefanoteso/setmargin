@@ -143,7 +143,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         # Ask the user about the retrieved items
         queries.extend(query_utility(hidden_w, item1, item2, rng, deterministic=deterministic_answers)
                        for item2 in best_items
-                       for item1 in best_items)
+                       for item1 in best_items
+                       if not (item1 == item2).all())
 
         print "queries =\n", "\n".join(map(str, queries))
 
