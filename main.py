@@ -64,7 +64,7 @@ def sample_utility(domain_sizes, mode="uniform", rng=None):
     else:
         return rng.normal(50.0, 50.0 / 3, size=(sum(domain_sizes), 1)).reshape(1,-1)
 
-def query_utility(w, xi, xj, rng=None):
+def query_utility(w, xi, xj, deterministic=False, rng=None):
     """Use the indifference-augmented Bradley-Terry model to compute the
     preferences of a user between two items.
 
@@ -75,24 +75,26 @@ def query_utility(w, xi, xj, rng=None):
     """
     rng = check_random_state(rng)
 
-    diff = np.dot(w, xi.T) - np.dot(w, xj.T)
+    diff = np.dot(w, xi.T - xj.T)
 
-    eq = np.exp(-np.abs(diff))
-    gt = np.exp(diff) / (1 + np.exp(diff))
-    lt = np.exp(-diff) / (1 + np.exp(-diff))
-
-    z = rng.uniform(eq + gt + lt)
-    if z < eq:
-        ans = 0
-    elif z < (eq + gt):
-        ans = 1
+    if deterministic:
+        return (xi, xj, int(np.sign(diff)))
     else:
-        ans = -1
+        eq = np.exp(-np.abs(diff))
+        gt = np.exp(diff) / (1 + np.exp(diff))
+        lt = np.exp(-diff) / (1 + np.exp(-diff))
 
-    return (xi, xj, ans)
+        z = rng.uniform(eq + gt + lt)
+        if z < eq:
+            ans = 0
+        elif z < (eq + gt):
+            ans = 1
+        else:
+            ans = -1
+        return (xi, xj, ans)
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
-        rng=None):
+        deterministic_answers=False, rng=None):
 
     if not num_iterations > 0:
         raise ValueError("invalid num_iterations '{}'".format(num_iterations))
@@ -139,7 +141,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         print "best_is, best_items =\n", zip(best_is, best_items)
 
         # Ask the user about the retrieved items
-        queries.extend(query_utility(hidden_w, item1, item2)
+        queries.extend(query_utility(hidden_w, item1, item2, deterministic=deterministic_answers, rng=rng)
                        for item2 in best_items
                        for item1 in best_items)
 
@@ -169,6 +171,8 @@ def main():
                         help="hyperparameter controlling the score of the output items [default: 0.1]")
     parser.add_argument("-u", "--utility_sampling_mode", type=str, default="uniform",
                         help="utility sampling mode, any of ('uniform', 'normal') [default: 'uniform']")
+    parser.add_argument("-d", "--deterministic", action="store_true",
+                        help="whether the user answers should be deterministic rather than stochastic [default: False]")
     parser.add_argument("-s", "--seed", type=int, default=None,
                         help="RNG seed")
     args = parser.parse_args()
@@ -180,7 +184,7 @@ def main():
 
     run(DATASETS[args.dataset], args.num_iterations, args.set_size,
         (args.alpha, args.beta, args.gamma), args.utility_sampling_mode,
-        rng=rng)
+        deterministic_answers=args.deterministic, rng=rng)
 
 if __name__ == "__main__":
     main()
