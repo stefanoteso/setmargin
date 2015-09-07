@@ -184,7 +184,6 @@ def solve(domain_sizes, items, queries, w_constraints, x_constraints,
     xs = np.zeros((set_size, num_features))
     scores = np.zeros((set_size, set_size))
     for variable, assignment in sorted(model.iteritems()):
-        print variable, "=", assignment
         if variable.startswith("w_"):
             _, i, j = variable.split("_")
             ws[i,j] = assignment
