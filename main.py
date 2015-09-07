@@ -120,7 +120,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
     queries = []
     for it in range(num_iterations):
 
-        print "==== ITERATION {} ====".format(it)
+        print "\n\n\n==== ITERATION {} ====\n".format(it)
 
         # Solve the utility/item learning problem for the current iteration
         ws, xs, scores, margin = \
