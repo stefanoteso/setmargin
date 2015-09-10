@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+# -*- coding: utf-8 -*-
 
 import os, time
 import numpy as np
@@ -271,8 +272,8 @@ def main():
     avg_losses, times = np.array(avg_losses), np.array(times)
 
     print "results for {} trials:".format(args.num_trials)
-    print "maximum likelihood mean/std loss per iteration =", np.mean(avg_losses), np.std(avg_losses)
-    print "maximum likelihood mean/std of time per iteration =", np.mean(times), np.std(times)
+    print "maximum likelihood mean/std loss per iteration =", np.mean(avg_losses), "±", np.std(avg_losses)
+    print "maximum likelihood mean/std of time per iteration =", np.mean(times), "±", np.std(times)
 
 if __name__ == "__main__":
     main()
