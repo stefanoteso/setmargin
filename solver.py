@@ -143,7 +143,7 @@ def define_constraints(domain_sizes, items, queries,
     return constraints
 
 def solve(domain_sizes, items, queries, w_constraints, x_constraints,
-          set_size, alphas):
+          set_size, alphas, debug=False):
     PROBLEM_PATH = "problem.smt2"
 
     if not set_size > 0:
@@ -155,7 +155,8 @@ def solve(domain_sizes, items, queries, w_constraints, x_constraints,
 
     num_features = items.shape[1]
 
-    print "building problem..."
+    if debug:
+        print "building problem..."
 
     problem = []
     problem.append("(set-logic QF_LRA)")
@@ -175,9 +176,10 @@ def solve(domain_sizes, items, queries, w_constraints, x_constraints,
     with open(PROBLEM_PATH, "wb") as fp:
         fp.write("\n".join(problem))
 
-    print "solving..."
+    if debug:
+        print "solving..."
 
-    solver = OptiMathSAT5(debug=True)
+    solver = OptiMathSAT5(debug=debug)
     model = solver.optimize(PROBLEM_PATH)
 
     ws = np.zeros((set_size, num_features))
