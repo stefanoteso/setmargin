@@ -4,6 +4,7 @@
 import os, time
 import numpy as np
 from sklearn.utils import check_random_state
+import matplotlib.pyplot as plt
 import itertools as it
 import solver
 
@@ -272,8 +273,18 @@ def main():
     avg_losses, times = np.array(avg_losses), np.array(times)
 
     print "results for {} trials:".format(args.num_trials)
-    print "maximum likelihood mean/std loss per iteration =", np.mean(avg_losses), "±", np.std(avg_losses)
-    print "maximum likelihood mean/std of time per iteration =", np.mean(times), "±", np.std(times)
+    print "maximum likelihood mean/std loss per iteration =", np.mean(avg_losses), "±", np.std(avg_losses, ddof=1)
+    print "maximum likelihood mean/std of time per iteration =", np.mean(times), "±", np.std(times, ddof=1)
+
+    data = avg_losses.reshape(args.num_trials, -1)
+    means, stddevs = np.mean(data, axis=0), np.std(data, ddof=1, axis=0)
+
+    fig, ax = plt.subplots(1, 1)
+    ax.errorbar(np.arange(1, args.num_trials + 2), means)
+    ax.set_title("Avg. loss over {} trials".format(args.num_trials))
+    ax.set_xlabel("Iterations")
+    ax.set_ylabel("Average loss")
+    fig.savefig("avgloss.svg", bbox_inches="tight")
 
 if __name__ == "__main__":
     main()
