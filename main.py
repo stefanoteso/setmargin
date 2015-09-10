@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-import os
+import os, time
 import numpy as np
 from sklearn.utils import check_random_state
 import itertools as it
@@ -162,10 +162,12 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
     print hidden_w
 
     # Iterate
-    queries = []
+    queries, times = [], []
     for it in range(num_iterations):
 
         print "\n\n\n==== ITERATION {} ====\n".format(it)
+
+        old_time = time.time()
 
         # Solve the utility/item learning problem for the current iteration
         ws, xs, scores, margin = \
@@ -185,6 +187,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
         print "best_is, best_items =\n", zip(best_is, best_items)
 
+        times.append(time.time() - old_time)
+
         # Ask the user about the retrieved items
         queries.extend(query_utility(hidden_w, item1, item2, rng, deterministic=deterministic_answers)
                        for item2 in best_items
@@ -192,6 +196,9 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
                        if not (item1 == item2).all())
 
         print "queries =\n", "\n".join(map(str, queries))
+
+    times = np.array(times)
+    print "\nmaximum likelihood mean/std of time per query (s) =", np.mean(times), np.std(times)
 
 def main():
     import argparse as ap
