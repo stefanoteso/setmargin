@@ -170,10 +170,13 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
     # Iterate
     queries, avg_losses, times = [], [], []
-    for it in range(num_iterations):
+    for t in range(num_iterations):
 
         if debug:
-            print "\n\n\n==== ITERATION {} ====\n".format(it)
+            print "\n\n\n==== ITERATION {} ====\n".format(t)
+            print "queries =\n"
+            for query in queries:
+                print query
 
         old_time = time.time()
 
@@ -205,13 +208,11 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         avg_losses.append(best_latent_score - np.mean(best_scores))
 
         # Ask the user about the retrieved items
-        queries.extend(query_utility(hidden_w, item1, item2, rng, deterministic=deterministic_answers)
-                       for item2 in best_items
-                       for item1 in best_items
-                       if not (item1 == item2).all())
-
-        if debug:
-            print "queries =\n", "\n".join(map(str, queries))
+        for item1, item2 in it.product(best_items, best_items):
+            if (item1 == item2).all():
+                continue
+            queries.append(query_utility(hidden_w, item1, item2, rng,
+                           deterministic=deterministic_answers))
 
     return avg_losses, times
 
@@ -272,6 +273,8 @@ def main():
 
     avg_losses, times = np.array(avg_losses), np.array(times)
 
+    print avg_losses
+
     print "results for {} trials:".format(args.num_trials)
     print "maximum likelihood mean/std loss per iteration =", np.mean(avg_losses), "±", np.std(avg_losses, ddof=1)
     print "maximum likelihood mean/std of time per iteration =", np.mean(times), "±", np.std(times, ddof=1)
@@ -280,7 +283,7 @@ def main():
     means, stddevs = np.mean(data, axis=0), np.std(data, ddof=1, axis=0)
 
     fig, ax = plt.subplots(1, 1)
-    ax.errorbar(np.arange(1, args.num_trials + 2), means)
+    ax.errorbar(np.arange(1, args.num_iterations + 1), means)
     ax.set_title("Avg. loss over {} trials".format(args.num_trials))
     ax.set_xlabel("Iterations")
     ax.set_ylabel("Average loss")
