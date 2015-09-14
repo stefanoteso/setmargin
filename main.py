@@ -18,14 +18,13 @@ def onehot(domain_size, value):
     value_onehot[value] = 1
     return value_onehot
 
-def get_synthetic_dataset():
+def get_synthetic_dataset(domain_sizes=[2, 2, 5]):
     """Builds the synthetic dataset of Guo & Sanner 2010.
 
     The dataset involves three attributes, with fixed domains sizes; items
     cover all value combinations in the given attributes, for a total of 20
     items.
     """
-    domain_sizes = [2, 2, 5]
     items_onehot = None
     for item in it.product(*map(range, domain_sizes)):
         item_onehot = np.hstack((onehot(domain_sizes[i], attribute_value)
@@ -34,7 +33,9 @@ def get_synthetic_dataset():
             items_onehot = item_onehot
         else:
             items_onehot = np.vstack((items_onehot, item_onehot))
-    assert items_onehot.shape == (20, 2+2+5)
+    def prod(l):
+        return l[0] if len(l) == 1 else l[0]*prod(l[1:])
+    assert items_onehot.shape == (prod(domain_sizes), sum(domain_sizes))
     return domain_sizes, items_onehot, np.array([]), np.array([])
 
 def get_pc_dataset():
