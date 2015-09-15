@@ -39,7 +39,77 @@ def get_synthetic_dataset(domain_sizes=[2, 2, 5]):
     return domain_sizes, items_onehot, np.array([]), np.array([])
 
 def get_pc_dataset():
-    raise NotImplementedError
+
+    ATTRIBUTES = ["Manufacturer", "CPUType", "CPUSpeed", "Monitor", "Type",
+                  "Memory", "HDSize", "Price"]
+
+    categories = {}
+    categories[0] = ["Apple", "Compaq", "Dell", "Fujitsu", "Gateway", "HP", "Sony", "Toshiba"]
+    categories[1] = ["PowerPC G3", "PowerPC G4", "Intel Pentium", "ADM Athlon", "Intel Celeron", "Crusoe", "AMD Duron"]
+    categories[4] = ["Laptop", "Desktop", "Tower"]
+
+    FIXED_ATTRIBUTES = categories.keys()
+
+    PRICE_INTERVALS = np.hstack((np.arange(600, 2800+1e-6, 150), [3649]))
+
+    items = []
+    with open("pc_dataset.xml", "rb") as fp:
+        for words in map(str.split, map(str.strip, fp)):
+            if words[0] == "<item":
+                items.append({})
+            elif words[0] == "<attribute":
+                assert words[1].startswith("name=")
+                assert len(words) in (4, 5)
+                k = words[1].split("=")[1].strip('"')
+                v = words[2].split("=")[1].strip('"')
+                if len(words) == 5:
+                    v += " " + words[3].strip('"')
+                assert k in ATTRIBUTES
+                assert (not k in FIXED_ATTRIBUTES) or v in categories[ATTRIBUTES.index(k)]
+                items[-1][k] = v
+    assert len(items) == 120
+    assert all(len(item) == 8 for item in items)
+
+    for z, attribute in enumerate(ATTRIBUTES):
+        if z in FIXED_ATTRIBUTES or z == 8:
+            continue
+        categories[z] = sorted(set(item[attribute] for item in items))
+    categories[7] = range(PRICE_INTERVALS.shape[0])
+
+    discretized_items = []
+    for item in items:
+        discretized_items.append([])
+        for z, attribute in enumerate(ATTRIBUTES):
+            if z != 7:
+                discretized_items[-1].append(categories[z].index(item[attribute]))
+            else:
+                if int(item[attribute]) == PRICE_INTERVALS[-1]:
+                    ans = PRICE_INTERVALS.shape[0] - 1
+                else:
+                    temp = float(item[attribute]) - PRICE_INTERVALS
+                    ans = np.where(temp <= 0)[0][0]
+                discretized_items[-1].append(ans)
+    discretized_items = np.array(discretized_items)
+
+    domain_sizes = []
+    for z, category in sorted(categories.iteritems()):
+        domain_sizes.append(len(category))
+
+    for row in discretized_items:
+        for z in range(len(ATTRIBUTES)):
+            assert 0 <= row[z] < domain_sizes[z], "invalid value {}/{} in attribute {}".format(row[z], domain_sizes[z], z)
+
+    items_onehot = None
+    for item in discretized_items:
+        item_onehot = np.hstack((onehot(domain_sizes[z], attribute_value)
+                                 for z, attribute_value in enumerate(item)))
+        if items_onehot is None:
+            items_onehot = item_onehot
+        else:
+            items_onehot = np.vstack((items_onehot, item_onehot))
+    assert items_onehot.shape == (120, sum(domain_sizes))
+
+    return domain_sizes, items_onehot, np.array([]), np.array([])
 
 def get_housing_dataset():
     from scipy.io import loadmat
