@@ -148,8 +148,8 @@ def solve(domain_sizes, items, queries, w_constraints, x_constraints,
           set_size, alphas, debug=False):
     PROBLEM_PATH = "problem.smt2"
 
-    if not set_size > 0:
-        raise ValueError("set_size must be positive")
+    if not set_size > 1:
+        raise ValueError("set_size must be at least 2")
     if len(alphas) != 3:
         raise ValueError("len(alphas) must be 3")
     if any(alpha < 0 for alpha in alphas):
