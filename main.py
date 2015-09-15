@@ -232,23 +232,23 @@ def main():
     parser.add_argument("dataset", type=str,
                         help="dataset, any of {}".format(DATASETS.keys()))
     parser.add_argument("-N", "--num_trials", type=int, default=20,
-                        help="number of trials")
+                        help="number of trials (default: 20)")
     parser.add_argument("-n", "--num_iterations", type=int, default=10,
-                        help="number of iterations")
+                        help="number of iterations (default: 10)")
     parser.add_argument("-m", "--set-size", type=int, default=3,
-                        help="number of hyperplanes/items to solve for [default: 3]")
+                        help="number of hyperplanes/items to solve for (default: 3)")
     parser.add_argument("-a", "--alpha", type=float, default=0.1,
-                        help="hyperparameter controlling the importance of slacks [default: 0.1]")
+                        help="hyperparameter controlling the importance of slacks (default: 0.1)")
     parser.add_argument("-b", "--beta", type=float, default=0.1,
-                        help="hyperparameter controlling the importance of regularization [default: 0.1]")
+                        help="hyperparameter controlling the importance of regularization (default: 0.1)")
     parser.add_argument("-c", "--gamma", type=float, default=0.1,
-                        help="hyperparameter controlling the score of the output items [default: 0.1]")
+                        help="hyperparameter controlling the score of the output items (default: 0.1)")
     parser.add_argument("-u", "--utility_sampling_mode", type=str, default="uniform",
-                        help="utility sampling mode, any of ('uniform', 'normal') [default: 'uniform']")
+                        help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
     parser.add_argument("-d", "--deterministic", action="store_true",
-                        help="whether the user answers should be deterministic rather than stochastic [default: False]")
+                        help="whether the user answers should be deterministic rather than stochastic (default: False)")
     parser.add_argument("-s", "--seed", type=int, default=None,
-                        help="RNG seed")
+                        help="RNG seed (default: None)")
     parser.add_argument("--debug", action="store_true",
                         help="Enable debug spew")
     args = parser.parse_args()
