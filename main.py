@@ -18,7 +18,7 @@ def onehot(domain_size, value):
     value_onehot[value] = 1
     return value_onehot
 
-def get_synthetic_dataset(domain_sizes=[2, 2]):
+def get_synthetic_dataset(domain_sizes=[2, 2, 5]):
     """Builds the synthetic dataset of Guo & Sanner 2010.
 
     The dataset involves three attributes, with fixed domains sizes; items
