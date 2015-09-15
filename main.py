@@ -282,7 +282,9 @@ def main():
 
     avg_losses, times = np.array(avg_losses), np.array(times)
 
-    print avg_losses
+    if args.debug:
+        print "average losses:"
+        print avg_losses
 
     print "results for {} trials:".format(args.num_trials)
     print "maximum likelihood mean/std loss per iteration =", np.mean(avg_losses), "±", np.std(avg_losses, ddof=1)
