@@ -132,7 +132,8 @@ def query_utility(w, xi, xj, rng, deterministic=False):
         gt = np.exp(diff) / (1 + np.exp(diff))
         lt = np.exp(-diff) / (1 + np.exp(-diff))
 
-        z = rng.uniform(eq + gt + lt)
+        z = rng.uniform(0, eq + gt + lt)
+
         if z < eq:
             ans = 0
         elif z < (eq + gt):
