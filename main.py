@@ -180,7 +180,7 @@ def sample_utility(domain_sizes, rng, mode="uniform"):
     if mode == "uniform":
         return rng.uniform(1, 100, size=(sum(domain_sizes), 1)).reshape(1,-1)
     else:
-        return rng.normal(50.0, 50.0 / 3, size=(sum(domain_sizes), 1)).reshape(1,-1)
+        return rng.normal(25.0, 25.0 / 3, size=(sum(domain_sizes), 1)).reshape(1,-1)
 
 def query_utility(w, xi, xj, rng, deterministic=False):
     """Use the indifference-augmented Bradley-Terry model to compute the
