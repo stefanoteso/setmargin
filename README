@@ -1,10 +1,10 @@
 Usage:
 
-$ ./run.py synthetic -u normal -s 0
+$ ./main.py synthetic -u normal -s 0
 
 For more information, call:
 
-$ ./run.py --help
+$ ./main.py --help
 
 The OptiMathSat5 solver can be found at:
 
