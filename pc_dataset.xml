@@ -1,0 +1,1208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+	<dbConnection>
+		<dbType>xml</dbType>
+	</dbConnection>
+	<data>
+		<item id="001-Apple-iBook"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G3" />       
+			<attribute name="CPUSpeed" value="300" />      
+			<attribute name="Monitor" value="12" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="160" />      
+			<attribute name="HDSize" value="3.2" />      
+			<attribute name="Price" value="799" />   
+		</item>
+		<item id="002-Apple-Powerbook G3"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G3" />       
+			<attribute name="CPUSpeed" value="300" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="192" />      
+			<attribute name="HDSize" value="8" />      
+			<attribute name="Price" value="999" />   
+		</item>
+		<item id="003-Apple-Powerbook G3-266"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G3" />       
+			<attribute name="CPUSpeed" value="266" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="192" />      
+			<attribute name="HDSize" value="8" />      
+			<attribute name="Price" value="899" />   
+		</item>
+		<item id="004-Apple-Powerbook G4-400"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G3" />       
+			<attribute name="CPUSpeed" value="400" />      
+			<attribute name="Monitor" value="10" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="192" />      
+			<attribute name="HDSize" value="10" />      
+			<attribute name="Price" value="1834" />   
+		</item>
+		<item id="005-Apple-iBook G3-500"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G3" />       
+			<attribute name="CPUSpeed" value="500" />      
+			<attribute name="Monitor" value="12" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="10" />      
+			<attribute name="Price" value="1038" />   
+		</item>
+		<item id="006-Apple-Powerbook G4-550"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G3" />       
+			<attribute name="CPUSpeed" value="550" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1799" />   
+		</item>
+		<item id="007-Apple-Powerbook G4-700"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G3" />       
+			<attribute name="CPUSpeed" value="700" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="3649" />   
+		</item>
+		<item id="008-Apple-Imac DV Plus G3"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G3" />       
+			<attribute name="CPUSpeed" value="450" />      
+			<attribute name="Monitor" value="13.8" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="64" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="945" />   
+		</item>
+		<item id="009-Apple-Imac DV SE G3"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G3" />       
+			<attribute name="CPUSpeed" value="500" />      
+			<attribute name="Monitor" value="13.8" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="1069" />   
+		</item>
+		<item id="010-Apple-Powermac G4"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G4" />       
+			<attribute name="CPUSpeed" value="733" />      
+			<attribute name="Monitor" value="13.8" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1294" />   
+		</item>
+		<item id="011-Apple-Imac G3"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G3" />       
+			<attribute name="CPUSpeed" value="600" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="986" />   
+		</item>
+		<item id="012-Apple-Imac G4"> 
+			<attribute name="Manufacturer" value="Apple" />  
+			<attribute name="CPUType" value="PowerPC G4" />       
+			<attribute name="CPUSpeed" value="700" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1292" />   
+		</item>
+		<item id="013-Compaq-Presario 8000"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1330" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="950" />   
+		</item>
+		<item id="014-Compaq-Presario 8000"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="ADM Athlon" />       
+			<attribute name="CPUSpeed" value="1330" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="820" />   
+		</item>
+		<item id="015-Compaq-Presario 5000"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1330" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="750" />   
+		</item>
+		<item id="016-Compaq-Presario 5000"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="800" />   
+		</item>
+		<item id="017-Compaq-Presario 700"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="AMD Duron" />       
+			<attribute name="CPUSpeed" value="700" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1000" />   
+		</item>
+		<item id="018-Compaq-Presario 1700"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="800" />      
+			<attribute name="Monitor" value="12" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1200" />   
+		</item>
+		<item id="019-Compaq-Presario 1800"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="1300" />   
+		</item>
+		<item id="020-Compaq-Presario 2700"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1300" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1550" />   
+		</item>
+		<item id="021-Compaq-Presario 700US"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="AMD Duron" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="384" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="989" />   
+		</item>
+		<item id="022-Compaq-Presario 1720US"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="384" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1295" />   
+		</item>
+		<item id="023-Compaq-Deskpro EN CMT P3"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="999" />   
+		</item>
+		<item id="024-Compaq-Deskpro EX MT P4"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1400" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1070" />   
+		</item>
+		<item id="025-Compaq-EVO D500 SFF"> 
+			<attribute name="Manufacturer" value="Compaq" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1058" />   
+		</item>
+		<item id="026-Dell-2500RLU"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="800" />      
+			<attribute name="Monitor" value="12" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="10" />      
+			<attribute name="Price" value="1305" />   
+		</item>
+		<item id="027-Dell-81WXP"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="1429" />   
+		</item>
+		<item id="028-Dell-2500CXP"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1218" />   
+		</item>
+		<item id="029-Dell-2500TV"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1119" />   
+		</item>
+		<item id="030-Dell-41WX"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1130" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="1024" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1407" />   
+		</item>
+		<item id="031-Dell-890409MC"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="12" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="10" />      
+			<attribute name="Price" value="1134" />   
+		</item>
+		<item id="032-Dell-890909XP"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="12" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="10" />      
+			<attribute name="Price" value="949" />   
+		</item>
+		<item id="033-Dell-890915XP"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="10" />      
+			<attribute name="Price" value="1345" />   
+		</item>
+		<item id="034-Dell-2514TV"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="10" />      
+			<attribute name="Price" value="1169" />   
+		</item>
+		<item id="035-Dell-591206"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1600" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="719" />   
+		</item>
+		<item id="036-Dell-DIM2XPW"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1100" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="658" />   
+		</item>
+		<item id="037-Dell-GX50SSBE"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="967" />   
+		</item>
+		<item id="038-Dell-D44RL"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="799" />   
+		</item>
+		<item id="039-Dell-D82RM1"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1337" />   
+		</item>
+		<item id="040-Dell-GX150T"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1055" />   
+		</item>
+		<item id="041-Dell-44PSW"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1138" />   
+		</item>
+		<item id="042-Dell-D82RH"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1966" />   
+		</item>
+		<item id="043-Dell-D82RHU"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="2166" />   
+		</item>
+		<item id="044-Dell-D82RMU1"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="2000" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1607" />   
+		</item>
+		<item id="045-Dell-GX400T"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1600" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1417" />   
+		</item>
+		<item id="046-Dell-DIM82O"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1900" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="2000" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1507" />   
+		</item>
+		<item id="047-Dell-D44RHU"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1857" />   
+		</item>
+		<item id="048-Dell-D82RM1"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1337" />   
+		</item>
+		<item id="049-Dell-GX150T"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1055" />   
+		</item>
+		<item id="050-Dell-44PSW"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1138" />   
+		</item>
+		<item id="051-Dell-D82RH"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1966" />   
+		</item>
+		<item id="052-Dell-D82RHU"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="2166" />   
+		</item>
+		<item id="053-Dell-D82RMU1"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="2000" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1607" />   
+		</item>
+		<item id="054-Dell-GX400T"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1600" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1417" />   
+		</item>
+		<item id="055-Dell-DIM82O"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1900" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="2000" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1507" />   
+		</item>
+		<item id="056-Dell-D44RHU"> 
+			<attribute name="Manufacturer" value="Dell" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1857" />   
+		</item>
+		<item id="057-Fujitsu-Lifebook E-6520"> 
+			<attribute name="Manufacturer" value="Fujitsu" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="450" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="6" />      
+			<attribute name="Price" value="1350" />   
+		</item>
+		<item id="058-Fujitsu-Lifebook E-6570"> 
+			<attribute name="Manufacturer" value="Fujitsu" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="650" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1679" />   
+		</item>
+		<item id="059-Fujitsu-Lifebook C-6547"> 
+			<attribute name="Manufacturer" value="Fujitsu" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="600" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="192" />      
+			<attribute name="HDSize" value="12" />      
+			<attribute name="Price" value="1279" />   
+		</item>
+		<item id="060-Fujitsu-Lifebook C-6556"> 
+			<attribute name="Manufacturer" value="Fujitsu" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="650" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="192" />      
+			<attribute name="HDSize" value="15" />      
+			<attribute name="Price" value="989" />   
+		</item>
+		<item id="061-Fujitsu-Lifebook C-6537"> 
+			<attribute name="Manufacturer" value="Fujitsu" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="500" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="192" />      
+			<attribute name="HDSize" value="9" />      
+			<attribute name="Price" value="899" />   
+		</item>
+		<item id="062-Fujitsu-Lifebook B-2175"> 
+			<attribute name="Manufacturer" value="Fujitsu" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="500" />      
+			<attribute name="Monitor" value="10.4" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="15" />      
+			<attribute name="Price" value="2399" />   
+		</item>
+		<item id="063-Fujitsu-Lifebook S-5582"> 
+			<attribute name="Manufacturer" value="Fujitsu" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="800" />      
+			<attribute name="Monitor" value="13.3" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="2499" />   
+		</item>
+		<item id="064-Fujitsu-Lifebook P-2040 2K"> 
+			<attribute name="Manufacturer" value="Fujitsu" />  
+			<attribute name="CPUType" value="Crusoe" />       
+			<attribute name="CPUSpeed" value="800" />      
+			<attribute name="Monitor" value="10.6" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1699" />   
+		</item>
+		<item id="065-Fujitsu-Lifebook B-2175 XP"> 
+			<attribute name="Manufacturer" value="Fujitsu" />  
+			<attribute name="CPUType" value="Crusoe" />       
+			<attribute name="CPUSpeed" value="800" />      
+			<attribute name="Monitor" value="10.6" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1499" />   
+		</item>
+		<item id="066-Gateway-300C"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1200" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1000" />   
+		</item>
+		<item id="067-Gateway-300SE"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1100" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1100" />   
+		</item>
+		<item id="068-Gateway-300S"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1300" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1300" />   
+		</item>
+		<item id="069-Gateway-500S"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1600" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1300" />   
+		</item>
+		<item id="070-Gateway-300X"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1300" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1500" />   
+		</item>
+		<item id="071-Gateway-700C"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1800" />   
+		</item>
+		<item id="072-Gateway-500X"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1600" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1550" />   
+		</item>
+		<item id="073-Gateway-700X"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="80" />      
+			<attribute name="Price" value="1650" />   
+		</item>
+		<item id="074-Gateway-700S"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="80" />      
+			<attribute name="Price" value="1950" />   
+		</item>
+		<item id="075-Gateway-700XL"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="2200" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="1024" />      
+			<attribute name="HDSize" value="120" />      
+			<attribute name="Price" value="2700" />   
+		</item>
+		<item id="076-Gateway-700X"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="1024" />      
+			<attribute name="HDSize" value="120" />      
+			<attribute name="Price" value="2550" />   
+		</item>
+		<item id="077-Gateway-300C"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1200" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1000" />   
+		</item>
+		<item id="078-Gateway-300SE"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1100" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1100" />   
+		</item>
+		<item id="079-Gateway-300S"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1300" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1300" />   
+		</item>
+		<item id="080-Gateway-500S"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1600" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1300" />   
+		</item>
+		<item id="081-Gateway-300X"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1300" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1500" />   
+		</item>
+		<item id="082-Gateway-700C"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1800" />   
+		</item>
+		<item id="083-Gateway-500X"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1600" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1550" />   
+		</item>
+		<item id="084-Gateway-700X"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="80" />      
+			<attribute name="Price" value="1650" />   
+		</item>
+		<item id="085-Gateway-700S"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="80" />      
+			<attribute name="Price" value="1950" />   
+		</item>
+		<item id="086-Gateway-700XL"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="2200" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="1024" />      
+			<attribute name="HDSize" value="120" />      
+			<attribute name="Price" value="2700" />   
+		</item>
+		<item id="087-Gateway-700X"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="1024" />      
+			<attribute name="HDSize" value="120" />      
+			<attribute name="Price" value="2550" />   
+		</item>
+		<item id="088-Gateway-1400se"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="10" />      
+			<attribute name="Price" value="1000" />   
+		</item>
+		<item id="089-Gateway-1400re"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="10" />      
+			<attribute name="Price" value="1150" />   
+		</item>
+		<item id="090-Gateway-5350ls"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1060" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="10" />      
+			<attribute name="Price" value="1250" />   
+		</item>
+		<item id="091-Gateway-5350cl"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1060" />      
+			<attribute name="Monitor" value="14" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1350" />   
+		</item>
+		<item id="092-Gateway-9550se"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1060" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1450" />   
+		</item>
+		<item id="093-Gateway-3450"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1060" />      
+			<attribute name="Monitor" value="12" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="320" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1600" />   
+		</item>
+		<item id="094-Gateway-9550xl"> 
+			<attribute name="Manufacturer" value="Gateway" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1130" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="2100" />   
+		</item>
+		<item id="095-HP-P4152T"> 
+			<attribute name="Manufacturer" value="HP" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1020" />   
+		</item>
+		<item id="096-HP-P2976A"> 
+			<attribute name="Manufacturer" value="HP" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="850" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="999" />   
+		</item>
+		<item id="097-HP-P4258T"> 
+			<attribute name="Manufacturer" value="HP" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="933" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1145" />   
+		</item>
+		<item id="098-Sony-VAIO SR33"> 
+			<attribute name="Manufacturer" value="Sony" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="600" />      
+			<attribute name="Monitor" value="10.4" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="10" />      
+			<attribute name="Price" value="825" />   
+		</item>
+		<item id="099-Sony-VAIO R505TL"> 
+			<attribute name="Manufacturer" value="Sony" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="650" />      
+			<attribute name="Monitor" value="12" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="384" />      
+			<attribute name="HDSize" value="15" />      
+			<attribute name="Price" value="959" />   
+		</item>
+		<item id="100-Sony-VAIO FXA36"> 
+			<attribute name="Manufacturer" value="Sony" />  
+			<attribute name="CPUType" value="ADM Athlon" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="1409" />   
+		</item>
+		<item id="101-Sony-VAIO FXA 32"> 
+			<attribute name="Manufacturer" value="Sony" />  
+			<attribute name="CPUType" value="AMD Duron" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="15" />      
+			<attribute name="Price" value="999" />   
+		</item>
+		<item id="102-Sony-VAIO"> 
+			<attribute name="Manufacturer" value="Sony" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1500" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="80" />      
+			<attribute name="Price" value="1295" />   
+		</item>
+		<item id="103-Sony-PCV-RX260DS"> 
+			<attribute name="Manufacturer" value="Sony" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1500" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="60" />      
+			<attribute name="Price" value="996" />   
+		</item>
+		<item id="104-Sony-VAIO  RX560"> 
+			<attribute name="Manufacturer" value="Sony" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="80" />      
+			<attribute name="Price" value="949" />   
+		</item>
+		<item id="105-Sony-VAIO LX920"> 
+			<attribute name="Manufacturer" value="Sony" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="21" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="60" />      
+			<attribute name="Price" value="2350" />   
+		</item>
+		<item id="106-Sony-VAIO MSX10"> 
+			<attribute name="Manufacturer" value="Sony" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1700" />      
+			<attribute name="Monitor" value="21" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="80" />      
+			<attribute name="Price" value="2699" />   
+		</item>
+		<item id="107-Toshiba -Satellite 1805-S204"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="13.3" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="989" />   
+		</item>
+		<item id="108-Toshiba -Satellite 5005-S504"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1100" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Laptop" />       
+			<attribute name="Memory" value="512" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="1799" />   
+		</item>
+		<item id="109-Toshiba - MAGNIA 500D P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="21" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1506" />   
+		</item>
+		<item id="110-Toshiba - MAGNIA M500D P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1500" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1329" />   
+		</item>
+		<item id="111-Toshiba -V3300 P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="850" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="789" />   
+		</item>
+		<item id="112-Toshiba - BTO V3300M P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="955" />   
+		</item>
+		<item id="113-Toshiba - BTO V3300M P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="780" />   
+		</item>
+		<item id="114-Toshiba -BTO EQUIM 8000M P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Desktop" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1150" />   
+		</item>
+		<item id="115-Toshiba - MAGNIA 500D P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1800" />      
+			<attribute name="Monitor" value="21" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1506" />   
+		</item>
+		<item id="116-Toshiba - MAGNIA M500D P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1500" />      
+			<attribute name="Monitor" value="17" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1329" />   
+		</item>
+		<item id="117-Toshiba -V3300 P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="850" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="789" />   
+		</item>
+		<item id="118-Toshiba - BTO V3300M P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="30" />      
+			<attribute name="Price" value="955" />   
+		</item>
+		<item id="119-Toshiba - BTO V3300M P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Celeron" />       
+			<attribute name="CPUSpeed" value="900" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="128" />      
+			<attribute name="HDSize" value="20" />      
+			<attribute name="Price" value="780" />   
+		</item>
+		<item id="120-Toshiba -BTO EQUIM 8000M P3"> 
+			<attribute name="Manufacturer" value="Toshiba" />  
+			<attribute name="CPUType" value="Intel Pentium" />       
+			<attribute name="CPUSpeed" value="1000" />      
+			<attribute name="Monitor" value="15" />      
+			<attribute name="Type" value="Tower" />       
+			<attribute name="Memory" value="256" />      
+			<attribute name="HDSize" value="40" />      
+			<attribute name="Price" value="1150" />   
+		</item>
+	</data>
+</database>
