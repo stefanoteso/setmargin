@@ -146,7 +146,6 @@ def define_constraints(domain_sizes, items, queries,
 
 def solve(domain_sizes, items, queries, w_constraints, x_constraints,
           set_size, alphas, debug=False):
-    PROBLEM_PATH = "problem.smt2"
 
     if not set_size > 1:
         raise ValueError("set_size must be at least 2")
@@ -175,14 +174,11 @@ def solve(domain_sizes, items, queries, w_constraints, x_constraints,
     problem.append("(get-model)")
     problem.append("(exit)")
 
-    with open(PROBLEM_PATH, "wb") as fp:
-        fp.write("\n".join(problem))
-
     if debug:
         print "solving..."
 
     solver = OptiMathSAT5(debug=debug)
-    model = solver.optimize(PROBLEM_PATH)
+    model = solver.optimize("\n".join(problem))
 
     ws = np.zeros((set_size, num_features))
     xs = np.zeros((set_size, num_features))

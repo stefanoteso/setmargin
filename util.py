@@ -1,4 +1,6 @@
+import os
 import subprocess
+import tempfile
 import fractions
 
 def _cls(obj):
@@ -62,10 +64,18 @@ class OptiMathSAT5(object):
                 assignments[k] = v
         return assignments
 
-    def optimize(self, problem_path):
-        args = ["< {}".format(problem_path)]
-        self._d("running '{}'".format(" ".join(args)))
-        ret, out, err = self._omt5.run(args)
-        assert ret == 0, "ERROR: OptiMathSat5: {}@{}:\n{}".format(cost_var, problem_path, err)
-        self._d("done")
-        return self._read_assignments(out.split("\n"))
+    def optimize(self, problem):
+        fp = tempfile.NamedTemporaryFile(delete=False)
+        try:
+            fp.write(problem)
+            fp.close()
+            args = ["< {}".format(fp.name)]
+            self._d("running '{}'".format(" ".join(args)))
+            ret, out, err = self._omt5.run(args)
+            assert ret == 0, "ERROR: OptiMathSat5: {}@{}:\n{}".format(cost_var, problem_path, err)
+            self._d("done")
+            assignments = self._read_assignments(out.split("\n"))
+        finally:
+            if not self._debug:
+                os.remove(fp.name)
+        return assignments
