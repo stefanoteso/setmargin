@@ -330,6 +330,11 @@ def main():
                         help="Enable debug spew")
     args = parser.parse_args()
 
+    argsdict = vars(args)
+    argsdict["dataset"] = args.dataset
+
+    basename = "{dataset}_{num_trials}_{num_iterations}_{set_size}_{alpha}_{beta}_{gamma}_{utility_sampling_mode}_{deterministic}_{seed}".format(**argsdict)
+
     if not args.dataset in DATASETS:
         raise ValueError("invalid dataset '{}'".format(args.dataset))
 
@@ -369,7 +374,7 @@ def main():
     ax.set_title("Avg. loss over {} trials".format(args.num_trials))
     ax.set_xlabel("Iterations")
     ax.set_ylabel("Average loss")
-    fig.savefig("avgloss.svg", bbox_inches="tight")
+    fig.savefig("avgloss_{}.svg".format(basename), bbox_inches="tight")
 
 if __name__ == "__main__":
     main()
