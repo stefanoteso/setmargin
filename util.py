@@ -52,6 +52,8 @@ class OptiMathSAT5(object):
             return parts[0], -float(parts[-1])
         elif len(parts) == 4 and parts[1] == '/':
             return parts[0], float(parts[2]) / float(parts[3])
+        elif len(parts) == 5 and parts[1] == '-' and parts[2] == '/':
+            return parts[0], -float(parts[3]) / float(parts[4])
         raise NotImplementedError("unhandled assignment string '{}'".format(line))
 
     def _read_assignments(self, lines):
