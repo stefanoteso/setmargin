@@ -9,7 +9,6 @@ import itertools as it
 import solver
 
 # TODO: compute loss on one-hyperplane solution
-# TODO: make queries asymmetric for non-deterministic answers
 # TODO: make slack per example-hyperplane pair
 # TODO: run synthetic experiment with more features
 # TODO: implement the one-hyperplane baseline with best-at-t-vs-best-in-set queries
@@ -292,8 +291,11 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         avg_losses.append(best_hidden_score - np.mean(hidden_scores))
 
         # Ask the user about the retrieved items
-        for item1, item2 in it.product(best_items, best_items):
+        for (i, item1), (j, item2) in it.product(enumerate(best_items), enumerate(best_items)):
+            if i >= j:
+                continue
             if (item1 == item2).all():
+                print "Warning: identical query items found"
                 continue
             queries.append(query_utility(hidden_w, item1, item2, rng,
                            deterministic=deterministic_answers))
