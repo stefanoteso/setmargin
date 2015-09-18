@@ -18,12 +18,13 @@ def declare_variables(items, queries, set_size):
             decls.append("(declare-fun w_{i}_{z} () Real)".format(i=i, z=z))
             decls.append("(declare-fun x_{i}_{z} () Bool)".format(i=i, z=z))
     for i in range(set_size):
-        for j in range(set_size):
-            for z in range(num_features):
-                decls.append("(declare-fun a_{i}_{j}_{z} () Real)".format(i=i, j=j, z=z))
-    for i in range(set_size):
         for k in range(num_examples):
             decls.append("(declare-fun slack_{i}_{k} () Real)".format(i=i, k=k))
+    if set_size > 1:
+        for i in range(set_size):
+            for j in range(set_size):
+                for z in range(num_features):
+                    decls.append("(declare-fun a_{i}_{j}_{z} () Real)".format(i=i, j=j, z=z))
     return decls
 
 def define_objective(items, queries, set_size, alphas):
@@ -46,10 +47,13 @@ def define_objective(items, queries, set_size, alphas):
     obj_weights = "(- 0 (* {beta} {sum_weights}))".format(beta=float2libsmt(alphas[1]),
                                                           sum_weights=sum_weights)
 
-    scores = ["a_{i}_{i}_{z}".format(i=i, z=z) for i in range(set_size) for z in range(num_features)]
-    sum_scores = "(+ {})".format("\n\t\t".join(scores))
-    obj_scores = "(* {gamma} {sum_scores})".format(gamma=float2libsmt(alphas[2]),
-                                                   sum_scores=sum_scores)
+    if set_size > 1:
+        scores = ["a_{i}_{i}_{z}".format(i=i, z=z) for i in range(set_size) for z in range(num_features)]
+        sum_scores = "(+ {})".format("\n\t\t".join(scores))
+        obj_scores = "(* {gamma} {sum_scores})".format(gamma=float2libsmt(alphas[2]),
+                                                       sum_scores=sum_scores)
+    else:
+        obj_scores = ""
 
     objective = """
 ;; Eq. 8
@@ -91,28 +95,29 @@ def define_constraints(domain_sizes, items, queries,
             constraints.append(";; -- plane {i}, example {k}".format(i=i, k=k))
             constraints.append(constraint)
 
-    constraints.append("\n;; Eq. 10")
-    for i in range(set_size):
-        for j in range(i) + range(i+1, set_size):
-            sum_ = "(+ {})".format(" ".join("(- a_{i}_{i}_{z} a_{i}_{j}_{z})".format(i=i, j=j, z=z)
-                                            for z in range(num_features)))
-            constraints.append("(>= {sum_} margin)".format(sum_=sum_))
+    if set_size > 1:
+        constraints.append("\n;; Eq. 10")
+        for i in range(set_size):
+            for j in range(i) + range(i+1, set_size):
+                sum_ = "(+ {})".format(" ".join("(- a_{i}_{i}_{z} a_{i}_{j}_{z})".format(i=i, j=j, z=z)
+                                                for z in range(num_features)))
+                constraints.append("(>= {sum_} margin)".format(sum_=sum_))
 
-    constraints.append("\n;; Eq. 11")
-    for i in range(set_size):
-        for z in range(num_features):
-            constraints.append("(<= a_{i}_{i}_{z} (* {max_w_z} (ite x_{i}_{z} 1 0)))".format(i=i, z=z, max_w_z=MAX_W_Z))
-
-    constraints.append("\n;; Eq. 12")
-    for i in range(set_size):
-        for z in range(num_features):
-            constraints.append("(<= a_{i}_{i}_{z} w_{i}_{z})".format(i=i, z=z))
-
-    constraints.append("\n;; Eq. 13")
-    for i in range(set_size):
-        for j in range(i) + range(i+1, set_size):
+        constraints.append("\n;; Eq. 11")
+        for i in range(set_size):
             for z in range(num_features):
-                constraints.append("(>= a_{i}_{j}_{z} (- w_{i}_{z} (* {c} (ite x_{j}_{z} 0 1))))".format(i=i, j=j, z=z, c=C))
+                constraints.append("(<= a_{i}_{i}_{z} (* {max_w_z} (ite x_{i}_{z} 1 0)))".format(i=i, z=z, max_w_z=MAX_W_Z))
+
+        constraints.append("\n;; Eq. 12")
+        for i in range(set_size):
+            for z in range(num_features):
+                constraints.append("(<= a_{i}_{i}_{z} w_{i}_{z})".format(i=i, z=z))
+
+        constraints.append("\n;; Eq. 13")
+        for i in range(set_size):
+            for j in range(i) + range(i+1, set_size):
+                for z in range(num_features):
+                    constraints.append("(>= a_{i}_{j}_{z} (- w_{i}_{z} (* {c} (ite x_{j}_{z} 0 1))))".format(i=i, j=j, z=z, c=C))
 
     constraints.append("\n;; Eq. 15")
     for i in range(set_size):
@@ -122,11 +127,12 @@ def define_constraints(domain_sizes, items, queries,
     constraints.append("\n;; Eq. 16")
     constraints.append(";; TODO: constraints on x")
 
-    constraints.append("\n;; Eq. 18")
-    for i in range(set_size):
-        for j in range(set_size):
-            for z in range(num_features):
-                constraints.append("(>= a_{i}_{j}_{z} 0)".format(i=i, j=j, z=z))
+    if set_size > 1:
+        constraints.append("\n;; Eq. 18")
+        for i in range(set_size):
+            for j in range(set_size):
+                for z in range(num_features):
+                    constraints.append("(>= a_{i}_{j}_{z} 0)".format(i=i, j=j, z=z))
 
     constraints.append("\n;; Eq. 19")
     for i in range(set_size):
@@ -152,8 +158,8 @@ def define_constraints(domain_sizes, items, queries,
 def solve(domain_sizes, items, queries, w_constraints, x_constraints,
           set_size, alphas, debug=False):
 
-    if not set_size > 1:
-        raise ValueError("set_size must be at least 2")
+    if not set_size > 0:
+        raise ValueError("set_size must be positive")
     if len(alphas) != 3:
         raise ValueError("len(alphas) must be 3")
     if any(alpha < 0 for alpha in alphas):
