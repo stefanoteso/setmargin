@@ -225,7 +225,7 @@ def print_queries(queries, hidden_w):
         print "  {} ({:6.3f}) {} {} ({:6.3f}) -- diff {:6.3f}".format(xi, score_xi, relation, xj, score_xj, score_xi - score_xj)
     print
 
-def update_queries(hidden_w, ws, best_items, old_best_items, rng, deterministic=False):
+def update_queries(hidden_w, ws, best_items, old_best_item, rng, deterministic=False):
     num_items, num_features = best_items.shape
 
     if num_items == 1:
@@ -234,20 +234,18 @@ def update_queries(hidden_w, ws, best_items, old_best_items, rng, deterministic=
         # and the best of the best items collected so far
         current_best_item = best_items[0]
 
-        if len(old_best_items) == 0:
-            best_old_best_item = rng.random_integers(0, 1, size=(num_features,))
-        else:
-            temp = np.array(old_best_items)
-            best_old_best_item = temp[np.argmax(np.dot(ws, temp.T), axis=1)].ravel()
+        if old_best_item is None:
+            old_best_item = rng.random_integers(0, 1, size=(num_features,))
 
-        new_queries = [query_utility(hidden_w, current_best_item, best_old_best_item,
+        new_queries = [query_utility(hidden_w, current_best_item, old_best_item,
                                      rng, deterministic=deterministic)]
-        new_best_items = [current_best_item]
 
     else:
 
         # multiple-hyperplane case; query the user about all pairs of
         # best items (asymmetrically)
+        current_best_item = None
+
         new_queries = []
         for (i, item1), (j, item2) in it.product(enumerate(best_items), enumerate(best_items)):
             if i >= j:
@@ -259,9 +257,7 @@ def update_queries(hidden_w, ws, best_items, old_best_items, rng, deterministic=
             new_queries.append(query_utility(hidden_w, item1, item2, rng,
                                deterministic=deterministic))
 
-        new_best_items = list(best_items)
-
-    return new_queries, new_best_items
+    return new_queries, current_best_item
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         rng, deterministic_answers=False, debug=False):
@@ -292,7 +288,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
     best_hidden_score = np.max(np.dot(hidden_w, items.T), axis=1)
 
     # Iterate
-    queries, old_best_items = [], []
+    queries, old_best_item = [], None
     avg_losses, times = [], []
     for t in range(num_iterations):
 
@@ -308,26 +304,19 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
                          set_size, alphas, debug=debug)
         # assert all(np.linalg.norm(w) > 0 for w in ws), "null weight vector found:\n{}".format(ws)
 
+        times.append(time.time() - old_time)
+
         if debug:
             print "ws =\n", ws
             print "xs =\n", xs
             print "scores =\n", scores
             print "margin =", margin
 
-        # Find the dataset items with highest score wrt each hyperplanes
-        best_items = items[np.argmax(np.dot(ws, items.T), axis=1)]
-
-        if debug:
-            print "best_items =\n", best_items
-
-        times.append(time.time() - old_time)
-
         # Ask the user about the retrieved items
-        new_queries, new_best_items = update_queries(hidden_w, ws, best_items,
-                                                     old_best_items, rng,
+        new_queries, old_best_item = update_queries(hidden_w, ws, xs,
+                                                     old_best_item, rng,
                                                      deterministic=deterministic_answers)
         queries.extend(new_queries)
-        old_best_items.extend(new_best_items)
 
         if debug:
             print_queries(queries, hidden_w)
