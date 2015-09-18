@@ -30,7 +30,10 @@ def define_objective(items, queries, set_size, alphas):
     num_features = items.shape[1]
 
     slacks = ["slack_{k}".format(k=k) for k in range(num_examples)]
-    sum_slacks = "(+ {})".format("\n\t\t".join(slacks))
+    if num_examples == 1:
+        sum_slacks = slacks[0]
+    else:
+        sum_slacks = "(+ {})".format("\n\t\t".join(slacks))
     if num_examples:
         obj_slacks = "(- 0 (* {alpha} {sum_slacks}))".format(alpha=float2libsmt(alphas[0]),
                                                              sum_slacks=sum_slacks)
