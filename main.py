@@ -8,9 +8,13 @@ import matplotlib.pyplot as plt
 import itertools as it
 import solver
 
-# TODO: guo synthetic experiment with more features
-# TODO: continuous case
-# TODO: hybrid case
+# TODO: compute loss on one-hyperplane solution
+# TODO: make queries asymmetric for non-deterministic answers
+# TODO: make slack per example-hyperplane pair
+# TODO: run synthetic experiment with more features
+# TODO: implement the one-hyperplane baseline with best-at-t-vs-best-in-set queries
+# TODO: implement the continuous case
+# TODO: implement the hybrid case
 
 def onehot(domain_size, value):
     assert 0 <= value < domain_size, "out-of-bounds value: 0/{}/{}".format(value, domain_size)
