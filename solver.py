@@ -127,12 +127,16 @@ def define_constraints(domain_sizes, items, queries,
     constraints.append("\n;; Eq. 16")
     constraints.append(";; TODO: constraints on x")
 
+    constraints.append("\n;; Eq. 18")
     if set_size > 1:
-        constraints.append("\n;; Eq. 18")
         for i in range(set_size):
             for j in range(set_size):
                 for z in range(num_features):
                     constraints.append("(>= a_{i}_{j}_{z} 0)".format(i=i, j=j, z=z))
+    else:
+        for i in range(set_size):
+            for z in range(num_features):
+                constraints.append("(>= w_{i}_{z} 0)".format(i=i, z=z))
 
     constraints.append("\n;; Eq. 19")
     for i in range(set_size):
