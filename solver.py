@@ -178,7 +178,7 @@ def solve(domain_sizes, items, queries, w_constraints, x_constraints,
         print "solving..."
 
     solver = OptiMathSAT5(debug=debug)
-    model = solver.optimize("\n".join(problem))
+    model, _, _, _ = solver.optimize("\n".join(problem))
 
     ws = np.zeros((set_size, num_features))
     xs = np.zeros((set_size, num_features))

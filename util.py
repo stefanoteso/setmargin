@@ -78,4 +78,4 @@ class OptiMathSAT5(object):
         finally:
             if not self._debug:
                 os.remove(fp.name)
-        return assignments
+        return assignments, ret, out, err
