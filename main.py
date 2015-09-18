@@ -216,6 +216,53 @@ def query_utility(w, xi, xj, rng, deterministic=False):
 
     return result
 
+def print_queries(queries, hidden_w):
+    print "queries ="
+    for xi, xj, sign in queries:
+        relation = {-1:"<", 0:"~", 1:">"}[sign]
+        score_xi = np.dot(hidden_w, xi.T)[0]
+        score_xj = np.dot(hidden_w, xj.T)[0]
+        print "  {} ({:6.3f}) {} {} ({:6.3f}) -- diff {:6.3f}".format(xi, score_xi, relation, xj, score_xj, score_xi - score_xj)
+    print
+
+def update_queries(hidden_w, ws, best_items, old_best_items, rng, deterministic=False):
+    num_items, num_features = best_items.shape
+
+    if num_items == 1:
+
+        # single-hyperplane case. query the user about the current best item
+        # and the best of the best items collected so far
+        current_best_item = best_items[0]
+
+        if len(old_best_items) == 0:
+            best_old_best_item = rng.random_integers(0, 1, size=(num_features,))
+        else:
+            temp = np.array(old_best_items)
+            best_old_best_item = temp[np.argmax(np.dot(ws, temp.T), axis=1)].ravel()
+
+        new_queries = [query_utility(hidden_w, current_best_item, best_old_best_item,
+                                     rng, deterministic=deterministic)]
+        new_best_items = [current_best_item]
+
+    else:
+
+        # multiple-hyperplane case; query the user about all pairs of
+        # best items (asymmetrically)
+        new_queries = []
+        for (i, item1), (j, item2) in it.product(enumerate(best_items), enumerate(best_items)):
+            if i >= j:
+                continue
+            if (item1 == item2).all():
+                print "Warning: identical query items found"
+                continue
+
+            new_queries.append(query_utility(hidden_w, item1, item2, rng,
+                               deterministic=deterministic))
+
+        new_best_items = list(best_items)
+
+    return new_queries, new_best_items
+
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         rng, deterministic_answers=False, debug=False):
 
@@ -234,8 +281,6 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         print "# of items =", len(items)
         print items
 
-    num_features = items.shape[1]
-
     # Sample the hidden utility function
     hidden_w = sample_utility(domain_sizes, rng, mode=utility_sampling_mode)
 
@@ -253,14 +298,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
         if debug:
             print "\n\n\n==== ITERATION {} ====\n".format(t)
-
-            print "queries ="
-            for xi, xj, sign in queries:
-                relation = {-1:"<", 0:"~", 1:">"}[sign]
-                score_xi = np.dot(hidden_w, xi.T)[0]
-                score_xj = np.dot(hidden_w, xj.T)[0]
-                print "  {} ({:6.3f}) {} {} ({:6.3f}) -- diff {:6.3f}".format(xi, score_xi, relation, xj, score_xj, score_xi - score_xj)
-            print
+            print_queries(queries, hidden_w)
 
         old_time = time.time()
 
@@ -268,7 +306,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         ws, xs, scores, margin = \
             solver.solve(domain_sizes, items, queries, w_constraints, x_constraints,
                          set_size, alphas, debug=debug)
-        assert all(np.linalg.norm(w) > 0 for w in ws), "null weight vector found:\n{}".format(ws)
+        # assert all(np.linalg.norm(w) > 0 for w in ws), "null weight vector found:\n{}".format(ws)
 
         if debug:
             print "ws =\n", ws
@@ -285,38 +323,14 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         times.append(time.time() - old_time)
 
         # Ask the user about the retrieved items
-        if best_items.shape[0] == 1:
+        new_queries, new_best_items = update_queries(hidden_w, ws, best_items,
+                                                     old_best_items, rng,
+                                                     deterministic=deterministic_answers)
+        queries.extend(new_queries)
+        old_best_items.extend(new_best_items)
 
-            # single-hyperplane case; query the user about the current best
-            # item and the best old best item
-            current_best_item = best_items[0]
-
-            if len(old_best_items) == 0:
-                # XXX the initial case is not well defined (yet)
-                best_old_best_item = rng.random_integers(0, 1, size=(num_features,))
-            else:
-                temp = np.array(old_best_items)
-                best_is = np.argmax(np.dot(ws, temp.T))
-                assert best_is.shape == tuple()
-                best_old_best_item = temp[best_is]
-
-            queries.append(query_utility(hidden_w, current_best_item, best_old_best_item,
-                                         rng, deterministic=deterministic_answers))
-
-            old_best_items.append(current_best_item)
-
-        else:
-
-            # multiple-hyperplane case; query the user about all pairs of
-            # best items (asymmetrically)
-            for (i, item1), (j, item2) in it.product(enumerate(best_items), enumerate(best_items)):
-                if i >= j:
-                    continue
-                if (item1 == item2).all():
-                    print "Warning: identical query items found"
-                    continue
-                queries.append(query_utility(hidden_w, item1, item2, rng,
-                               deterministic=deterministic_answers))
+        if debug:
+            print_queries(queries, hidden_w)
 
         # Compute the utility loss between the best item that we would
         # recommend given the queries collected so far and the best
