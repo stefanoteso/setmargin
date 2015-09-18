@@ -21,24 +21,25 @@ def declare_variables(items, queries, set_size):
         for j in range(set_size):
             for z in range(num_features):
                 decls.append("(declare-fun a_{i}_{j}_{z} () Real)".format(i=i, j=j, z=z))
-    for k in range(num_examples):
-        decls.append("(declare-fun slack_{k} () Real)".format(k=k))
+    for i in range(set_size):
+        for k in range(num_examples):
+            decls.append("(declare-fun slack_{i}_{k} () Real)".format(i=i, k=k))
     return decls
 
 def define_objective(items, queries, set_size, alphas):
-    num_examples = len(queries)
     num_features = items.shape[1]
 
-    slacks = ["slack_{k}".format(k=k) for k in range(num_examples)]
-    if num_examples == 1:
-        sum_slacks = slacks[0]
+    slacks = ["slack_{i}_{k}".format(i=i, k=k)
+              for i in range(set_size) for k in range(len(queries))]
+    if len(slacks) == 0:
+        obj_slacks = ""
     else:
-        sum_slacks = "(+ {})".format("\n\t\t".join(slacks))
-    if num_examples:
+        if len(slacks) == 1:
+            sum_slacks = slacks[0]
+        else:
+            sum_slacks = "(+ {})".format("\n\t\t".join(slacks))
         obj_slacks = "(- 0 (* {alpha} {sum_slacks}))".format(alpha=float2libsmt(alphas[0]),
                                                              sum_slacks=sum_slacks)
-    else:
-        obj_slacks = ""
 
     weights = ["w_{i}_{z}".format(i=i, z=z) for i in range(set_size) for z in range(num_features)]
     sum_weights = "(+ {})".format("\n\t\t".join(weights))
@@ -83,9 +84,9 @@ def define_constraints(domain_sizes, items, queries,
             dot = "(+ {})".format(" ".join(summands))
 
             if ans == 0:
-                constraint = "(<= (ite (>= {dot} 0) {dot} (- 0 {dot})) slack_{k})".format(dot=dot, k=k)
+                constraint = "(<= (ite (>= {dot} 0) {dot} (- 0 {dot})) slack_{i}_{k})".format(dot=dot, i=i, k=k)
             else:
-                constraint = "(>= {dot} (- margin slack_{k}))".format(dot=dot, k=k)
+                constraint = "(>= {dot} (- margin slack_{i}_{k}))".format(dot=dot, i=i, k=k)
 
             constraints.append(";; -- plane {i}, example {k}".format(i=i, k=k))
             constraints.append(constraint)
@@ -128,8 +129,9 @@ def define_constraints(domain_sizes, items, queries,
                 constraints.append("(>= a_{i}_{j}_{z} 0)".format(i=i, j=j, z=z))
 
     constraints.append("\n;; Eq. 19")
-    for k in range(num_examples):
-        constraints.append("(>= slack_{k} 0)".format(k=k))
+    for i in range(set_size):
+        for k in range(num_examples):
+            constraints.append("(>= slack_{i}_{k} 0)".format(i=i, k=k))
 
     constraints.append("\n;; Eq. 20")
     constraints.append("(>= margin 0)")
