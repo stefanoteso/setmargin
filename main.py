@@ -234,6 +234,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         print "# of items =", len(items)
         print items
 
+    num_features = items.shape[1]
+
     # Sample the hidden utility function
     hidden_w = sample_utility(domain_sizes, rng, mode=utility_sampling_mode)
 
@@ -245,7 +247,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
     best_hidden_score = np.max(np.dot(hidden_w, items.T), axis=1)
 
     # Iterate
-    queries, avg_losses, times = [], [], []
+    queries, old_best_items = [], []
+    avg_losses, times = [], []
     for t in range(num_iterations):
 
         if debug:
@@ -290,14 +293,38 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         avg_losses.append(best_hidden_score - np.mean(hidden_scores) / np.linalg.norm(hidden_w, ord=2))
 
         # Ask the user about the retrieved items
-        for (i, item1), (j, item2) in it.product(enumerate(best_items), enumerate(best_items)):
-            if i >= j:
-                continue
-            if (item1 == item2).all():
-                print "Warning: identical query items found"
-                continue
-            queries.append(query_utility(hidden_w, item1, item2, rng,
-                           deterministic=deterministic_answers))
+        if best_items.shape[0] == 1:
+
+            # single-hyperplane case; query the user about the current best
+            # item and the best old best item
+            current_best_item = best_items[0]
+
+            if len(old_best_items) == 0:
+                # XXX the initial case is not well defined (yet)
+                best_old_best_item = rng.random_integers(0, 1, size=(num_features,))
+            else:
+                temp = np.array(old_best_items)
+                best_is = np.argmax(np.dot(ws, temp.T))
+                assert best_is.shape == tuple()
+                best_old_best_item = temp[best_is]
+
+            queries.append(query_utility(hidden_w, current_best_item, best_old_best_item,
+                                         rng, deterministic=deterministic_answers))
+
+            old_best_items.append(current_best_item)
+
+        else:
+
+            # multiple-hyperplane case; query the user about all pairs of
+            # best items (asymmetrically)
+            for (i, item1), (j, item2) in it.product(enumerate(best_items), enumerate(best_items)):
+                if i >= j:
+                    continue
+                if (item1 == item2).all():
+                    print "Warning: identical query items found"
+                    continue
+                queries.append(query_utility(hidden_w, item1, item2, rng,
+                               deterministic=deterministic_answers))
 
     return avg_losses, times
 
