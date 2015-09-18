@@ -253,6 +253,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
         if debug:
             print "\n\n\n==== ITERATION {} ====\n".format(t)
+
             print "queries ="
             for xi, xj, sign in queries:
                 relation = {-1:"<", 0:"~", 1:">"}[sign]
@@ -276,14 +277,10 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
             print "margin =", margin
 
         # Find the dataset items with highest score wrt each hyperplanes
-        # XXX double check if this is the intended approach
-        scores = np.dot(ws, items.T)
-        best_is = np.argmax(scores, axis=1)
-        assert best_is.shape == (set_size,)
-        best_items = items[best_is]
+        best_items = items[np.argmax(np.dot(ws, items.T), axis=1)]
 
         if debug:
-            print "best_is, best_items =\n", zip(best_is, best_items)
+            print "best_items =\n", best_items
 
         times.append(time.time() - old_time)
 
