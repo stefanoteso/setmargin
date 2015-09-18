@@ -374,12 +374,17 @@ def main():
     data = avg_losses.reshape(args.num_trials, -1)
     means, stddevs = np.mean(data, axis=0), np.std(data, ddof=1, axis=0)
 
+    np.savetxt("results_{}_times.txt".format(basename), times)
+    np.savetxt("results_{}_losses.txt".format(basename), avg_losses)
+    np.savetxt("results_{}_avgloss_means.txt".format(basename), means)
+    np.savetxt("results_{}_avgloss_stddevs.txt".format(basename), stddevs)
+
     fig, ax = plt.subplots(1, 1)
     ax.errorbar(np.arange(1, args.num_iterations + 1), means)
     ax.set_title("Avg. loss over {} trials".format(args.num_trials))
     ax.set_xlabel("Iterations")
     ax.set_ylabel("Average loss")
-    fig.savefig("avgloss_{}.svg".format(basename), bbox_inches="tight")
+    fig.savefig("results_{}_avgloss.svg".format(basename), bbox_inches="tight")
 
 if __name__ == "__main__":
     main()
