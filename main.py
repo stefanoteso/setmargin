@@ -267,6 +267,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         ws, xs, scores, margin = \
             solver.solve(domain_sizes, items, queries, w_constraints, x_constraints,
                          set_size, alphas, debug=debug)
+        assert all(np.linalg.norm(w) > 0 for w in ws), "null weight vector found: {}\n".format(ws)
 
         if debug:
             print "ws =\n", ws
