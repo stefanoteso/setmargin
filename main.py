@@ -108,7 +108,7 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False):
     return queries
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
-        rng, deterministic_answers=False, debug=False):
+        rng, deterministic=False, debug=False):
 
     if not num_iterations > 0:
         raise ValueError("invalid num_iterations '{}'".format(num_iterations))
@@ -163,7 +163,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         # Ask the user about the retrieved items
         new_queries = update_queries(hidden_w, ws, xs,
                                      old_best_item, rng,
-                                     deterministic=deterministic_answers)
+                                     deterministic=deterministic)
         queries.extend(new_queries)
         old_best_item = xs[0] if xs.shape[0] == 1 else None
 
@@ -243,7 +243,7 @@ def main():
         ls, ts = run(DATASETS[args.dataset], args.num_iterations,
                      args.set_size, (args.alpha, args.beta, args.gamma),
                      args.utility_sampling_mode, rng,
-                     deterministic_answers=args.deterministic,
+                     deterministic=args.deterministic,
                      debug=args.debug)
 
         avg_losses.extend(ls)
