@@ -1,0 +1,19 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{researchpack}
+\begin{document}
+\begin{algorithm}
+\begin{algorithmic}[1]
+    \Procedure{PESetMargin}{$Y, m; \calW, \calX, \valpha, T$}
+        \State $\calQ \gets \emptyset$
+        \For{$t = 1, \ldots, T$}
+            \State $\vw^*_1, \ldots, \vw^*_m, \vx^*_1, \ldots, \vx^*_m \gets \text{{\sc Solve}}(Y, \calQ, m; \calW, \calX, \valpha)$
+            \For{$\vx^*_i,\vx^*_j \in \{ \vx^*_1, \ldots, \vx^*_m \} \; \text{{\bf s.t.}} \; i < j$}
+                \State $\calQ \gets \calQ \cup \text{{\sc QueryUser}}(\vx^*_i,\vx^*_j)$
+            \EndFor
+        \EndFor
+        \State $\vw^*, \vx^* \gets \text{{\sc Solve}}(Y, \calQ, 1; \calW, \calX, \valpha)$
+        \State ${\bf return}\; \vw^*, \vx^*$
+    \EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\end{document}
