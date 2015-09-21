@@ -133,6 +133,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         print hidden_w
 
     # Find the dataset item with the highest score wrt the hidden hyperlpane
+    # TODO use the optimizer to find the highest scoring configuration
     best_hidden_score = np.max(np.dot(hidden_w, items.T), axis=1)
 
     # Iterate
@@ -173,19 +174,19 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         # Compute the utility loss between the best item that we would
         # recommend given the queries collected so far and the best
         # recommendation according to the hidden user hyperplane
-        ws, _, _, margin = \
+        ws, xs, scores, margin = \
             solver.solve(domain_sizes, items, queries, w_constraints, x_constraints,
                          1, alphas, debug=debug)
         assert all(np.linalg.norm(w) > 0 for w in ws), "null weight vector found:\n{}".format(ws)
 
         if debug:
             print "ws =\n", ws
+            print "xs =\n", xs
+            print "scores =\n", scores
             print "margin =", margin
 
-        best_item = items[np.argmax(np.dot(ws, items.T), axis=1)][0]
-        hidden_score = np.dot(hidden_w, best_item)
-
-        avg_losses.append((best_hidden_score - hidden_score) / np.linalg.norm(hidden_w))
+        utility_loss = best_hidden_score - np.dot(hidden_w, xs[0])
+        avg_losses.append(utility_loss / np.linalg.norm(hidden_w))
 
     return avg_losses, times
 
