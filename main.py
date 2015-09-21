@@ -78,39 +78,34 @@ def print_queries(queries, hidden_w):
         print "  {} ({:6.3f}) {} {} ({:6.3f}) -- diff {:6.3f}".format(xi, score_xi, relation, xj, score_xj, score_xi - score_xj)
     print
 
-def update_queries(hidden_w, ws, best_items, old_best_item, rng, deterministic=False):
-    num_items, num_features = best_items.shape
+def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False):
+    """Computes the queries to ask the user for the given inputs.
 
+    If there is only one candidate best item, then only one query is returned,
+    namely a query comparing the current best item with the best item at the
+    previous iteration.
+
+    If there are multiple candidate best items, then multiple queries are
+    returned, one for each pair of candidate best items.
+
+    :param hidden_w: the hidden user preferences.
+    :param ws: the estimated user preference(s) at the current iteration.
+    :param xs: the estimated best item(s) at the current iteration.
+    :param old_best_item: the estimated best item at the previous iteration.
+    :param rng: an RNG object.
+    :param deterministic: whether the user answers should be deterministic.
+    :returns: a pair (list of new queries, 
+    """
+    num_items, num_features = xs.shape
     if num_items == 1:
-
-        # single-hyperplane case. query the user about the current best item
-        # and the best of the best items collected so far
-        current_best_item = best_items[0]
-
         if old_best_item is None:
             old_best_item = rng.random_integers(0, 1, size=(num_features,))
-
-        new_queries = [query_utility(hidden_w, current_best_item, old_best_item,
-                                     rng, deterministic=deterministic)]
-
+        queries = [query_utility(hidden_w, xs[0], old_best_item, rng,
+                                 deterministic=deterministic)]
     else:
-
-        # multiple-hyperplane case; query the user about all pairs of
-        # best items (asymmetrically)
-        current_best_item = None
-
-        new_queries = []
-        for (i, item1), (j, item2) in it.product(enumerate(best_items), enumerate(best_items)):
-            if i >= j:
-                continue
-            if (item1 == item2).all():
-                print "Warning: identical query items found"
-                continue
-
-            new_queries.append(query_utility(hidden_w, item1, item2, rng,
-                               deterministic=deterministic))
-
-    return new_queries, current_best_item
+        queries = [query_utility(hidden_w, xi, xj, rng, deterministic=deterministic)
+                   for (i, xi), (j, xj) in it.product(enumerate(xs), enumerate(xs)) if i < j]
+    return queries
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         rng, deterministic_answers=False, debug=False):
@@ -166,10 +161,11 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
             print "margin =", margin
 
         # Ask the user about the retrieved items
-        new_queries, old_best_item = update_queries(hidden_w, ws, xs,
-                                                     old_best_item, rng,
-                                                     deterministic=deterministic_answers)
+        new_queries = update_queries(hidden_w, ws, xs,
+                                     old_best_item, rng,
+                                     deterministic=deterministic_answers)
         queries.extend(new_queries)
+        old_best_item = xs[0] if xs.shape[0] == 1 else None
 
         if debug:
             print_queries(queries, hidden_w)
