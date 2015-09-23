@@ -5,10 +5,11 @@ Preference Elicitation via Set-wise Max-margin
 
 ## Requirements
 
-This package requires `numpy` and `OptiMathSat5`.
+This package requires `numpy`, `OptiMathSat5` and `matplotlib`.
 
 - [numpy](http://www.numpy.org/)
 - [optimathsat5](http://optimathsat.disi.unitn.it/)
+- [matplotlib](http://matplotlib.org/)
 
 Make sure that the `optimathsat` binary is visible from the `$PATH` environment
 variable.
