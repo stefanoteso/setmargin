@@ -9,9 +9,7 @@ import itertools as it
 from datasets import *
 import solver
 
-# TODO: compute loss on one-hyperplane solution
 # TODO: run synthetic experiment with more features
-# TODO: implement the one-hyperplane baseline with best-at-t-vs-best-in-set queries
 # TODO: implement the continuous case
 # TODO: implement the hybrid case
 
