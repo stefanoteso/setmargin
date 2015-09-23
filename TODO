@@ -1,0 +1,46 @@
+Motivation:
+- preference elicitation with large feature space (50-100) of boolean or continuous attributes
+-> bayesian approaches too expensive
+-> min-max regret assumes perfect feedback
+
+Requirements:
+max margin
+satisfy preferences
+diversify utilities
+maximize per-utility recommendation
+
+BOOLEAN CASE:
+- cast problem as MILP 
+
+CONTINUOUS CASE:
+- non-convex -> alternated optimization
+
+HYBRID CASE:
+- alternated OMT
+
+EXPERIMENTS:
+
+BOOLEAN CASE:
+- comparison with bayesian approaches (viappiani if appropriate and guo&sanner) for increasing number of features
+
+CONTINUOUS CASE:
+- comparison with bayesian approaches (bonilla?) for increasing number of features
+
+HYBRID CASE:
+- comparison con campigotto?
+
+TODO:
+- engineer boolean version (python?)
+- implement continuous version (python)
+- implement hybrid version ?
+- gather competing methods
+- run experiments
+
+PB
+- no theoretical guarantees
+- non-linear features?
+
+DEADLINE:
+- AAAI 2016 (15 sept)
+- DM and RecSys workshop (7 sept)
+- IJCAI 2016 (2 feb)
