@@ -217,12 +217,19 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
 class _TestSolver(object):
 
     def _solve(self, domain_sizes, queries, set_size, alphas):
-        return solve(domain_sizes, sum(domain_sizes), queries,
+        return solve(domain_sizes, queries,
                      np.array([]), np.array([]),
                      set_size, alphas, debug=True)
 
-    def test_sanity(self):
+    def onehot(self, queries):
         from util import onehot
+    
+        def vonehot(vector):
+            return np.hstack([onehot(2, x) for x in vector])
+
+        return [(vonehot(query[0]), vonehot(query[1]), 1) for query in queries]
+
+    def test_sanity(self):
 
         QUERIES = [
             (np.array([1, 1, 0, 0, 0]), np.array([0, 0, 1, 0, 0])),
@@ -243,11 +250,8 @@ class _TestSolver(object):
         ])
 
         SET_SIZE, ALPHAS = 3, (0.1, 0.1, 0.1)
-    
-        def vonehot(vector):
-            return np.hstack([onehot(2, x) for x in vector])
-        onehot_queries = [(vonehot(query[0]), vonehot(query[1]), 1) for query in QUERIES]
 
+        onehot_queries = self.onehot(QUERIES)
         ws, xs, scores, margin = self._solve([2] * 5, onehot_queries, SET_SIZE, ALPHAS)
 
         assert (ws == EXPECTED_WS).all()
