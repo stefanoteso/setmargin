@@ -2,9 +2,16 @@ import os
 import subprocess
 import tempfile
 import fractions
+import numpy as np
 
 def _cls(obj):
     return type(obj).__name__
+
+def onehot(domain_size, value):
+    assert 0 <= value < domain_size, "out-of-bounds value: 0/{}/{}".format(value, domain_size)
+    value_onehot = np.zeros(domain_size, dtype=np.int8)
+    value_onehot[value] = 1
+    return value_onehot
 
 def float2libsmt(x):
     z = fractions.Fraction(x)

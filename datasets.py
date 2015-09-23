@@ -2,12 +2,7 @@
 
 import numpy as np
 import itertools as it
-
-def onehot(domain_size, value):
-    assert 0 <= value < domain_size, "out-of-bounds value: 0/{}/{}".format(value, domain_size)
-    value_onehot = np.zeros(domain_size, dtype=np.int8)
-    value_onehot[value] = 1
-    return value_onehot
+from util import onehot
 
 def get_synthetic_dataset(domain_sizes=[2, 2, 5]):
     """Builds the synthetic dataset of Guo & Sanner 2010.
