@@ -64,7 +64,6 @@ def query_utility(w, xi, xj, rng, deterministic=False):
     return result
 
 def print_queries(queries, hidden_w):
-    print "queries ="
     for xi, xj, sign in queries:
         relation = {-1:"<", 0:"~", 1:">"}[sign]
         score_xi = np.dot(hidden_w, xi.T)[0]
@@ -138,6 +137,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
         if debug:
             print "\n\n\n==== ITERATION {} ====\n".format(t)
+            print "input queries ="
             print_queries(queries, hidden_w)
 
         old_time = time.time()
@@ -166,6 +166,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         old_best_item = xs[0] if xs.shape[0] == 1 else None
 
         if debug:
+            print "updated queries ="
             print_queries(queries, hidden_w)
 
         # Compute the utility loss between the best item that we would
