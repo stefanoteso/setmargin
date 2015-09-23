@@ -10,6 +10,9 @@ This package requires `numpy` and `OptiMathSat5`.
 - [numpy](http://www.numpy.org/)
 - [optimathsat5](http://optimathsat.disi.unitn.it/)
 
+Make sure that the `optimathsat` binary is visible from the `$PATH` environment
+variable.
+
 ## Usage
 
 The experiments and source code can be found in the `src/` directory.
