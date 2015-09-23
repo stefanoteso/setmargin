@@ -9,10 +9,6 @@ import itertools as it
 from datasets import *
 import solver
 
-# TODO: run synthetic experiment with more features
-# TODO: implement the continuous case
-# TODO: implement the hybrid case
-
 def sample_utility(domain_sizes, rng, mode="uniform"):
     """Samples a utility weight vector.
 
