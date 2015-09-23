@@ -38,17 +38,17 @@ def define_objective(num_features, queries, set_size, alphas):
             sum_slacks = slacks[0]
         else:
             sum_slacks = "(+ {})".format("\n\t\t".join(slacks))
-        obj_slacks = "(- 0 (* {alpha} {sum_slacks}))".format(alpha=float2libsmt(alphas[0]),
+        obj_slacks = "(- 0 (* {alpha} {sum_slacks}))".format(alpha=float2libsmt(alphas[0] / (set_size * len(queries))),
                                                              sum_slacks=sum_slacks)
 
     weights = ["w_{i}_{z}".format(i=i, z=z) for i in range(set_size) for z in range(num_features)]
     sum_weights = "(+ {})".format("\n\t\t".join(weights))
-    obj_weights = "(- 0 (* {beta} {sum_weights}))".format(beta=float2libsmt(alphas[1]),
+    obj_weights = "(- 0 (* {beta} {sum_weights}))".format(beta=float2libsmt(alphas[1] / set_size),
                                                           sum_weights=sum_weights)
 
     scores = ["a_{i}_{i}_{z}".format(i=i, z=z) for i in range(set_size) for z in range(num_features)]
     sum_scores = "(+ {})".format("\n\t\t".join(scores))
-    obj_scores = "(* {gamma} {sum_scores})".format(gamma=float2libsmt(alphas[2]),
+    obj_scores = "(* {gamma} {sum_scores})".format(gamma=float2libsmt(alphas[2] / set_size),
                                                    sum_scores=sum_scores)
 
     objective = """
