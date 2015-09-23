@@ -147,11 +147,15 @@ def define_constraints(domain_sizes, items, queries,
     for i in range(set_size):
         last_z = 0
         for domain_size in domain_sizes:
+            assert domain_size > 1
             zs_in_domain = range(last_z, last_z + domain_size)
             for z1 in zs_in_domain:
                 for z2 in zs_in_domain:
                     if z1 != z2:
                         constraints.append("(=> x_{i}_{z1} (not x_{i}_{z2}))".format(i=i, z1=z1, z2=z2))
+            xs_in_domain = ["x_{i}_{z}".format(i=i, z=z)
+                            for z in zs_in_domain]
+            constraints.append("(or {})".format(" ".join(xs_in_domain)))
             last_z += domain_size
 
     return constraints
