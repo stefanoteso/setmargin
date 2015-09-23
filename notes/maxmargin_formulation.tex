@@ -1,0 +1,250 @@
+%\documentclass{ecai2012}
+\documentclass[a4paper,10pt]{article}
+\usepackage{amsmath,amssymb,theorem,enumerate}
+%\usepackage{latexsym}
+%\usepackage{commath}
+%\usepackage{mathcomp}
+%\usepackage{amssymb}
+\usepackage{subfigure}
+\usepackage{epsfig}
+
+
+
+\newcommand{\veps}{\varepsilon}
+\newcommand{\vphi}{\varphi}
+
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\calD}{\mathcal{D}}
+
+\newcommand{\bfa}{\mathbf{a}}
+\newcommand{\bfA}{\mathbf{A}}
+\newcommand{\bfb}{\mathbf{b}}
+\newcommand{\bfB}{\mathbf{B}}
+\newcommand{\bfx}{\mathbf{x}}
+\newcommand{\bfX}{\mathbf{X}}
+\newcommand{\bfy}{\mathbf{y}}
+\newcommand{\bfY}{\mathbf{Y}}
+\newcommand{\bfz}{\mathbf{z}}
+\newcommand{\bfZ}{\mathbf{Z}}
+\newcommand{\bfw}{\mathbf{w}}
+\newcommand{\bfV}{\mathbf{V}}
+
+
+\newcommand{\Feas}{\mathit{Feasible}}
+\newcommand{\tuple}[1]{\langle #1 \rangle}
+\newcommand{\denselist}{\itemsep 0pt\partopsep 0pt}
+\newcommand{\mynote}[1]{\begin{center}\fbox{\parbox{4.7in}{#1}}\end{center}}
+\newcommand{\mynoteSmaller}[1]{\begin{center}\fbox{\parbox{4.3in}{#1}}\end{center}}
+\newcommand{\mynotetwocol}[1]{\begin{center}\fbox{\parbox{2.3in}{#1}}\end{center}}
+
+%\title{A MILP Formulation for Setwise Max-Margin Learning}
+%\author{Paolo Viappiani and friends}
+\begin{document}
+%\maketitle
+
+
+\section*{Setwise Max-Margin Formulation}
+
+{\em Preliminary assumptions:}
+
+\begin{itemize}
+ \item A multi attribute feature space $\bfX$; $n$ is the number of features. A configuration is written as $(x_1,\ldots,x_n)$.
+  \item We suppose binary features: $x_i \in \{ 0, 1 \}$. 
+ \item We assume possible options are specified by linear configuration constraints; as for example $x_1 + x_2 \geq 1$ to express an OR constraint.\\
+ We will simply write $\bfx \in \Feas(\bfX)$ in the optimizations below.
+
+ \item Vector of weights $\bfw = ( w_1, ..., w_n )$; the utility of an option $\bfx$ is then $\bfw \cdot \bfx = \sum_{z=1}^{n} w_z x_z$.
+\end{itemize}
+\vspace{-0.5cm} \mynote{Note: The weight vector $\bfw$ is unknown to the system
+but we are given preference constraints (that encode a ``feasible region'').}
+\vspace{0.2cm} \noindent {\em Input:}
+\begin{itemize}
+ \item The configuration constraints representing $\Feas(\bfX)$
+ \item $\calD$ the ``learning set'', consisting of pairwise comparisons between a more preferred product $\bfy_{+}$ and a less preferred product $\bfy_{-}$ . 
+ Each preference induces a constraint of the type $\bfw \cdot (\bfy_{+} - \bfy_{-}) \geq 0$.
+\item Possibly other additional  constraints (representing some kind of ``prior'' knowledge, as for
+example $w_2 > 0.3$)\\
+We'll write $w^{\bot}_i \leq w_i \leq w^{\top}_i$ to represent such constraints.
+\end{itemize}
+
+\vspace{0.2cm} \noindent {\em Output:}
+\begin{itemize}
+ \item We want to find a {\em set} of vectors $\bfw^1, ..., \bfw^k$ (with $k$ given) of utility weights and associated configurations $\{ \bfx^1, ..., \bfx^k \}$ such that  
+ \begin{itemize}
+ \item All preferences are satisfied and does that by the largest margin; so for that a binary preference $\bfy_{+} \succeq \bfy_{-}$ induces the constraint $\bfw \cdot (\bfy_{+} - \bfy_{-}) \geq M$.
+%  \item  We also use the same margin to enforce each
+% vector $\bfw^i$ to be as ``farther away'' from each other as possible.
+% This insight is realized by introducing a set of options $\{ \bfx^1, ..., \bfx^k \}$ as decision variables (of the same cardinality $k$).
+\item For each $i$, we impose $\bfx^i$ to be the ``best'' option among the $\bfx^1,\ldots,\bfx^k$  when evaluated according to $\bfw^i$; we require these constraints to hold by at least the shared  margin $M$.\\
+The imposed constraints are of the type: $\bfw^i \cdot ( \bfx^i -  \bfx^j ) \geq M$ with $i \neq j,\; i,j \in [ 1,k ]$.
+ \end{itemize}
+\end{itemize}
+
+\vspace{0.2cm} \noindent {\em Additional requirements:}
+
+\begin{itemize}
+ \item {\bf Slack variables}: allow for non satisfied preference constraints and include a penalty term $\sum_{h=1}^{|\calD|} \veps_{h}$ in the objective function
+ \item {\bf Sparsification}: we introduce a L1 norm term in the objective.
+ This is achieved by adding the following term in the objective function
+ $$
+ \sum_{i=1}^{k} \sum_{z=1}^{n}|w^i_{z}|.
+ $$
+ \item {\bf Accordance of the $\bfx^i$s with $\bfw^i$s}: we would like to have 
+ $$\bfx^i = \arg \max_{\bfx \in \Feas(\bfX)} \bfw^i \cdot \bfx.$$ 
+ However since this is not possible (the solver will pick $\bfx^i$ high enough to meet the margin, but not necessarily better), we favor $\bfx^i$ with high utility  by adding a term $\sum_{i=1}^{k} \bfw^i \bfx^i$ in the objective function.
+\end{itemize}
+
+% 
+% our goal is to find a number of utility weight vectors $\bfw^1, ..., \bfw^k$ (with $k$ given), consistent
+% with out knowledge about the user,  but that are representative of different parts of the weights' feasible region.
+
+
+\paragraph{Initial Non-linear Optimization}
+We first provide a formulation with quadratic terms, that is not directly solvable.
+
+{\footnotesize
+\begin{align} 
+\max_{M, \bfw^i, \bfx^i} & M \!-\!  \alpha \sum_{h} \veps_h - \beta \sum_{i=1}^{k} \sum_{z=1}^{n}|w^i_{z}| + \gamma \sum_{i=1}^{k} \sum_{z=1}^{n} w^i_z x^i_z \\ % \!-\! \alpha_2 \sum_{i,j} \veps^{\prime}_{i,j} & \! & \\
+s.t. \;\; & \bfw^i \cdot (\bfy^{h}_{+} - \bfy^{h}_{-} ) \geq M \! - \! \veps_{h} &  \!  &
+\forall (\bfy^{h}_{+}, \bfy^{h}_{-}) \! \in \! \calD, \forall i \! \in \! \{ 1, \ldots, k\} \\
+ & \bfw^i \cdot ( \bfx^i -  \bfx^j ) \geq M \;\; &  \!  &  \forall j \! \neq \! i; \; i,j \! \in \{  1, \ldots, k \}
+ \label{cnst-wx-m} \\
+ & w^{\bot}_i \leq w_i \leq w^{\top}_i & & \forall i \in \{ 1, \ldots, k \} \\
+ & \bfx^i \in Feasible(\bfX) &  \!  & \forall i \in \{ 1, \ldots, k\} \\
+ & \veps_h \geq 0 & & \forall h \in \{ 1,\ldots, |\calD| \} \\
+ & M \geq 0 & &
+\end{align}}
+
+\noindent {\em Decision variables:}
+\begin{itemize}
+ \item $\bfw^1,\ldots,\bfw^k$: set of $k$ utility weights; each $\bfw^i$ is a vector of $n$ binary attributes, for example $\bfw^i = (w^i_1,\ldots,w^i_n)$.
+ \item $\bfx^1,\ldots,\bfx^k$: set of $k$ options; each  $\bfx^i$ is a vector of $n$ binary attributes, for example $\bfx^i = (x^i_1,\ldots,x^i_n)$.
+ \item $M$: the shared margin.
+ \item $\veps_1,\ldots,\veps_{|\calD|}$: slack variables representing penalties for violated preferences.
+\end{itemize}
+
+
+\vspace{-0.4cm}
+\mynote{
+Note that, we are choosing the options $\bfx^1, ..., \bfx^k$ and the weights $\bfw^1, ..., \bfw^k$
+simultaneously: 
+since we want to maximize $M$, the optimizer will be better off by choosing
+a set of outcomes $\bfx^i$ that divide the weight space roughly equally,
+and the utility functions such each $\bfw^i$ should lie (intuitively) near the centre of each subregion.}
+
+This initial formulation is problematic, as we have quadratic terms. However, there is a solution:
+in fact, by using integer programming tricks, the problem can be formulated as a mixed integer
+linear program (MILP). 
+
+\paragraph{{\em Setwise} max margin} 
+
+We propose a Mixed Integer Linear Programming (MILP) model with {\em non-negative weights}.
+
+{\footnotesize
+\begin{align}
+\max_{M, \bfw^i, \bfx^i, \bfA^{i,j}} &  \; \; M - \alpha \sum_{h} \veps_h - \beta \sum_{i=1}^{k} \sum_z w^i_z + \gamma \sum_{i=1}^{k} \sum_{z=1}^{n} A^{i,i}_{z}   \span   \\
+s.t. \;\; & \bfw^i \cdot (\bfy^{h}_{+} - \bfy^{h}_{-} ) \geq M -\veps_{h}  & 
+\forall (\bfy^{h}_{+}, \bfy^{h}_{-}) \in \calD, \; \forall i \in \{1,\ldots,k\}  \\
+  & \sum_{z=1}^{n} A^{i,i}_z - A^{i,j}_z \geq M  \;\;\; &  \forall j \neq i , \; i,j \in \{1,\ldots,k\}  \label{cnst-ab-m} \\
+  & A^{i,i}_{z} \leq w\!\uparrow x^i_z & \forall i \in \{1,\ldots,k\}, \; z \in \{1,\ldots,m\}  \label{cnst-a-1} \\
+  & A^{i,i}_{z} \leq w^i_z & \forall i \in \{1,\ldots,k\}, \; z \in \{1,\ldots,m\} \label{cnst-a-2} \\
+  & A^{i,j}_{z} \geq w^i_z - C \cdot (1 - x^j_z) & \forall j \neq i , \; i,j \in \{1,\ldots,k\}, \; z \in [1,m]  \label{cnst-b-1}   \\
+  & A^{i,j}_{z} \geq 0 & \forall j \neq i , \; i,j \in \{1,\ldots,k\}, \; z \in \{1,\ldots,m\} \\
+& w^{\bot}_i \leq w_i \leq w^{\top}_i & \forall i \! \in \! [1, k]  \\
+ & \bfx^i \in Feasible(\bfX) & \forall i \in \{ 1, \ldots, k\} \\
+ & x^i_z \in \{0,1\} & \forall i \in \{1,\ldots,k\}; z \in \{1,\ldots,m\}  \\
+ & A^{i,j}_z \geq 0 & \forall i, j \in \{1,\ldots,k\}; \forall z \in \{1,\ldots,m\} \label{cnst-b-2} \\
+ & \veps_h \geq 0 & \forall h \in \{ 1,\ldots, |\calD| \} \\ 
+ & M \geq 0 
+\end{align}
+}
+
+% {\footnotesize
+% \begin{align} % _{M, \bfw^i, \bfx^i, \bfA^i, \bfB^{i,j}}
+% \max & \;\; M \!-\! \alpha_1 \sum_{h} \veps_h \!-\! \alpha_2 \sum_{i,j} \veps^{\prime}_{i,j} & & \\
+% s.t. & \;\; \bfw^i \cdot (\bfy^{h}_{+} \!-\! \bfy^{h}_{-} ) \geq M \!-\! \veps_{h} & & \forall (\bfy^{h}_{+}, \bfy^{h}_{-}) \in \calD, \forall i \in [1,k] \\
+% & \sum_{z} A^{i}_z \!-\! B^{i,j}_z \geq M \!-\! \veps^{\prime}_{i,j} & & \forall j \! \neq i; \; i,j \in [1, k] \label{cnst-ab-m} \\
+% & A^{i}_{z} \leq w\!\uparrow x^i_z & & \forall i \in [1, k], z \in [1,m]  \label{cnst-a-1} \\
+% & A^{i}_{z} \leq w^i_z & & \forall i \in [1, k], z \in [1,m]  \label{cnst-a-2} \\
+% & B^{i,j}_{z} \geq w^i_z - C \!\cdot\! (1 \!-\! x^j_z) & & \forall j \! \neq \! i  \in [1, k], z \in [1,m] \label{cnst-b-1}  \\
+% & B^{i,j}_{z} \geq 0 & & \forall j \! \neq \! i \! \in \! [1, k], z \! \in \! [1,m] \label{cnst-b-2} \\
+% & w^{\bot}_i \leq w_i \leq w^{\top}_i & & \forall i \! \in \! [1, k]\\
+% & \bfx \in \Feas(\bfX) &  \!  &  \forall i \! \in \! [1,k] \nonumber
+% \end{align} % \forall j \! \neq \! i , i,\! j \! \in \! [1, k], z 
+% }
+% 
+% {\footnotesize
+% \begin{align}
+% \max_{M, \bfw^i, \bfx^i, \bfA^{i,j}, \bfB^j, \bfV^i} & \; \; M - \alpha_1 \sum_{h} \veps_h - \alpha_2 \sum_i \sum_z V^i_z + \beta \sum_i \sum_z A^{i}_{z} & \\
+% s.t. \;\; & \bfw^i \cdot (\bfy^{h}_{+} - \bfy^{h}_{-} ) \geq M -\veps_{h}  & 
+% \forall (\bfy^{h}_{+}, \bfy^{h}_{-}) \in D, \; \forall 1 \leq i \leq k \\
+%   & \sum_{z} A^{i}_z - B^{i,j}_z \geq M  \;\;\; &  \forall j \neq i , \; i,j \in [1, k] \\
+%   & A^{i}_{z} \leq w\!\uparrow x^i_z & \forall i \in [1, k], \; z \in [1,m]  \\
+%   & A^{i}_{z} \leq w^i_z & \forall i \in [1, k], \; z \in [1,m] \\
+%   & B^{i,j}_{z} \geq w^i_z - C \cdot (1 - x^j_z) & \forall j \neq i , \; i,j \in [1, k], \; z \in [1,m]  \\
+%   & B^{i,j}_{z} \geq 0 & \forall j \neq i , \; i,j \in [1, k], \; z \in [1,m] \\
+% & w^{\bot}_i \leq w_i \leq w^{\top}_i & & \forall i \! \in \! [1, k]\\  
+%   & V^{i}_{z} \geq w^i_z & \forall i \in [1, k], \; z \in [1,m] \\
+%   & V^{i}_{z} \geq -w^i_z & \forall i \in [1, k], \; z \in [1,m] \\ 
+% \end{align}
+% }
+
+\noindent In the optimization, the decision variables are the following:
+\begin{itemize}
+\item $M$ is the shared margin.
+\item $\bfw^1,...,\bfw^k$ is a set of utility vectors; each vector defined over $m$ attributes (features): $\bfw^i = (w^i_1, ..., w^i_m)$ .
+\vspace{-0.4cm} 
+\mynoteSmaller{{\em \bf Important:} The weights need to be non-negative in this formulation:\\ $w^{\bot}_z \geq 0 \;\, \forall z$.}
+\item $\bfx^1,...,\bfx^k$ is a set of configurations (options) with each configuration $\bfx^i = (x^i_1, ..., x^i_m)$;
+each element $x^i_z$ is binary.
+\item $\veps$ slack variables to represent cost of unsatisfied constraints in $D$.
+	%$\veps^{\prime}$ slack variables to represent cost of not respecting the margin $M$ when choosing the hyperplanes 
+\item $\bfA^{i,j}$ encodes the vector $(w^i_1 x^j_1, ..., w^i_m x^j_m)$, the element-by-element product of $ \bfw^i$ and $\bfx^j$; $A^{i,j}_z$ is forced to take value $w^i_z x^i_z$.
+%\item $\bfB^{i,j}$ encodes $(w^i_1 x^j_1, ..., w^i_m x^j_m)$, the element-by-element product of $\bfw^i$  and $\bfx^j$
+\end{itemize}
+\noindent We list all the parameters used, including newly introduced parameters: 
+\vspace{-0.2cm}
+\begin{itemize}
+\item $n$ is the number of attributes.
+\item $k$ is the size of the set.
+\item $\alpha > 0$ control the tolerance with respect to violated constraints (we can differentiate
+the tolerance for the two different types of constraints).
+\item $\beta > 0$ is the weight associated to the L1 norm considering the absolute value of the weights (since this formulation assumes non negative weights $w_z^i$, we simply sum over the weights in the objective function).
+\item $\gamma > 0$ in order to favour the choice of $\bfx^i$ that achieves high utility with respect to $\bfw^i$.
+\item $\calD$ is the {\em learning set}: a set of pairwise comparisons known to the system.
+\item Upper and lower bounds (from prior knowledge) on weights: $w^{\bot}_1,\ldots,w^{\bot}_n$ and $w^{\top}_1,\ldots,w^{\top}_n$,
+\item $w\!\uparrow$ is any upper bound of the value of the utility weights (for instnace, it can bet set to $\max_z w^{\top}_z$).
+\item $C$ is an arbitrary large number. 
+\end{itemize}
+
+\mynote{{\em Intuition:} \\
+The solver aims at setting $M$, that is a decision variable, as large as possible.
+\begin{itemize}
+ \item Constraint \ref{cnst-wx-m} of the original program is replaced by constraint \ref{cnst-ab-m},
+enforcing $M$ to be smaller than $\sum_{z} A^{i,i}_z \!-\! A^{i,j}_z$ for any $i,j$. \\
+$\sum_{z} A^{i,i}_z \!-\! A^{i,j}_z$ is forced to evaluate to $\bfw^i \cdot ( \bfx^i -  \bfx^j )$
+by setting some specific additional constraints.
+ \item Note that, in order to maximize $M$, the solver will try to keep the $A^{i,i}_z $ as large as possible and the $A^{i,j}_z$ (with $i \neq j$) as small as possible.
+ \item The fact that $A^{i,j}_z$ takes value $w^i_z x^j_z$ (and therefore $\bfw^i \cdot \bfx^j = \sum_{z=1}^{n} A^{i,j}_z$) is achieved by setting additional constraints.\\
+ We differentiate between the cases 1) $A^{i,i}_z$ and 2) $A^{i,j}_z$ with $i \neq j$ (since they appear with opposite signs in the objective function):
+ \begin{itemize}
+  \item {\em [case $A^{i,i}_z$]} Constraints \ref{cnst-a-1} and \ref{cnst-a-2} together force each $\bfA^{i,i}$ to be the element-by-element  product of $ \bfw^i$ and $\bfx^i$  ($A^{i,i}_z = w^i_z x^i_z$): 
+\begin{itemize}
+\item If $x^i_z=0$ then (constraint \ref{cnst-a-1}) also $A^{i,i}_z$ must be $0$; 
+\item Otherwise (if  $x^i_z=1$) $A^{i,i}_z \leq w^i_z$ (constraint \ref{cnst-a-2})  but because
+of the objective function maximizing $M$, and each $A$ constrain $M$, the solver will set $A^{i,i}_z$ to $w^i_z$.
+\end{itemize}
+ \item {\em [case $A^{i,j}_z$ with $i \neq j$]} Similarly constraints \ref{cnst-b-1} and \ref{cnst-b-2} together make it so that $\bfA^{i,j}$ encodes $(w^i_1 x^j_1, ..., w^i_m x^j_m)$, the element-by-element product of $\bfw^i$  and $\bfx^j$
+(as $C$ is an arbitrary large constant, constraint \ref{cnst-b-1} is binding only when $x_z^j$ is 1,
+otherwise it is always satisfied).
+ \end{itemize}
+\end{itemize}
+}
+
+% {
+% \tiny
+% \bibliographystyle{plain}
+% \bibliography{local,standard}
+% }
+
+\end{document}

@@ -1,0 +1,6 @@
+
+* regularization term (L1 norm)
+
+* maximization term
+
+* negative weights?
