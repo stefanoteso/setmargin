@@ -117,9 +117,10 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
     # Retrieve the dataset
     domain_sizes, items, w_constraints, x_constraints = get_dataset()
+    assert sum(domain_sizes) == items.shape[1]
 
     if debug:
-        print "domain_sizes =", domain_sizes
+        print "domain_sizes =", domain_sizes, "num_features =", sum(domain_sizes)
         print "# of items =", len(items)
         print items
 
@@ -147,7 +148,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
         # Solve the utility/item learning problem for the current iteration
         ws, xs, scores, margin = \
-            solver.solve(domain_sizes, items, queries, w_constraints, x_constraints,
+            solver.solve(domain_sizes, queries,
+                         w_constraints, x_constraints,
                          set_size, alphas, debug=debug)
         # assert all(np.linalg.norm(w) > 0 for w in ws), "null weight vector found:\n{}".format(ws)
 
@@ -173,7 +175,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         # recommend given the queries collected so far and the best
         # recommendation according to the hidden user hyperplane
         ws, xs, scores, margin = \
-            solver.solve(domain_sizes, items, queries, w_constraints, x_constraints,
+            solver.solve(domain_sizes, queries,
+                         w_constraints, x_constraints,
                          1, alphas, debug=debug)
         assert all(np.linalg.norm(w) > 0 for w in ws), "null weight vector found:\n{}".format(ws)
 

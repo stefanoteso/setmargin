@@ -6,9 +6,8 @@ from util import *
 C = 10000
 MAX_W_Z = 1
 
-def declare_variables(items, queries, set_size):
+def declare_variables(num_features, queries, set_size):
     num_examples = len(queries)
-    num_features = items.shape[1]
 
     decls = []
     decls.append("(declare-fun objective () Real)")
@@ -28,8 +27,7 @@ def declare_variables(items, queries, set_size):
                 decls.append("(declare-fun a_{i}_{j}_{z} () Real)".format(i=i, j=j, z=z))
     return decls
 
-def define_objective(items, queries, set_size, alphas):
-    num_features = items.shape[1]
+def define_objective(num_features, queries, set_size, alphas):
 
     slacks = ["slack_{i}_{k}".format(i=i, k=k)
               for i in range(set_size) for k in range(len(queries))]
@@ -67,10 +65,9 @@ def define_objective(items, queries, set_size, alphas):
 
     return objective
 
-def define_constraints(domain_sizes, items, queries,
+def define_constraints(domain_sizes, num_features, queries,
                        x_constraints, w_constraints, set_size):
     num_examples = len(queries)
-    num_features = items.shape[1]
 
     constraints = []
 
@@ -160,9 +157,14 @@ def define_constraints(domain_sizes, items, queries,
 
     return constraints
 
-def solve(domain_sizes, items, queries, w_constraints, x_constraints,
+def solve(domain_sizes, queries, w_constraints, x_constraints,
           set_size, alphas, debug=False):
 
+    num_features = sum(domain_sizes)
+
+    if any(query[0].shape[0] != num_features for query in queries) or \
+       any(query[1].shape[0] != num_features for query in queries):
+        raise ValueError("domain_sizes and query items shape mismatch")
     if not set_size > 0:
         raise ValueError("set_size must be positive")
     if len(alphas) != 3:
@@ -170,18 +172,16 @@ def solve(domain_sizes, items, queries, w_constraints, x_constraints,
     if any(alpha < 0 for alpha in alphas):
         raise ValueError("all alphas must be non-negative")
 
-    num_features = items.shape[1]
-
     if debug:
         print "building problem..."
 
     problem = []
     problem.append("(set-logic QF_LRA)")
     problem.append("(set-option :produce-models true)")
-    problem.extend(declare_variables(items, queries, set_size))
+    problem.extend(declare_variables(num_features, queries, set_size))
     problem.append("(assert (and")
-    problem.append(define_objective(items, queries, set_size, alphas))
-    problem.extend(define_constraints(domain_sizes, items, queries,
+    problem.append(define_objective(num_features, queries, set_size, alphas))
+    problem.extend(define_constraints(domain_sizes, num_features, queries,
                                       x_constraints, w_constraints, set_size))
     problem.append("))")
     problem.append("(maximize objective)")
@@ -217,8 +217,7 @@ def solve(domain_sizes, items, queries, w_constraints, x_constraints,
 class _TestSolver(object):
 
     def _solve(self, domain_sizes, queries, set_size, alphas):
-        items = np.array([q[0] for q in queries] + [q[1] for q in queries])
-        return solve(domain_sizes, items, queries,
+        return solve(domain_sizes, sum(domain_sizes), queries,
                      np.array([]), np.array([]),
                      set_size, alphas, debug=True)
 
