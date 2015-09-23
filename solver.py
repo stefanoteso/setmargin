@@ -209,3 +209,43 @@ def solve(domain_sizes, items, queries, w_constraints, x_constraints,
             margin = assignment
 
     return ws, xs, scores, margin
+
+class _TestSolver(object):
+
+    def _solve(self, domain_sizes, queries, set_size, alphas):
+        items = np.array([q[0] for q in queries] + [q[1] for q in queries])
+        return solve(domain_sizes, items, queries,
+                     np.array([]), np.array([]),
+                     set_size, alphas, debug=True)
+
+    def test_sanity(self):
+        from util import onehot
+
+        QUERIES = [
+            (np.array([1, 1, 0, 0, 0]), np.array([0, 0, 1, 0, 0])),
+            (np.array([0, 0, 0, 0, 1]), np.array([0, 1, 0, 1, 0])),
+            (np.array([1, 0, 0, 0, 1]), np.array([0, 1, 0, 0, 0])),
+        ]
+
+        EXPECTED_WS = np.array([
+            [0, 1, 0, 0, 1, 0, 0, 1, 0, 1],
+            [0, 1, 0, 0, 0, 1, 1, 0, 0, 1],
+            [0, 1, 1, 0, 1, 0, 1, 0, 0, 0],
+        ])
+
+        EXPECTED_XS = np.array([
+            [0, 1,  0, 1,  1, 0,  0, 1,  0, 1], # [1, 1, 0, 1, 1]
+            [0, 1,  0, 1,  0, 1,  1, 0,  0, 1], # [1, 1, 1, 0, 1]
+            [0, 1,  1, 0,  1, 0,  1, 0,  1, 0], # [1, 0, 0, 0, 0]
+        ])
+
+        SET_SIZE, ALPHAS = 3, (0.1, 0.1, 0.1)
+    
+        def vonehot(vector):
+            return np.hstack([onehot(2, x) for x in vector])
+        onehot_queries = [(vonehot(query[0]), vonehot(query[1]), 1) for query in QUERIES]
+
+        ws, xs, scores, margin = self._solve([2] * 5, onehot_queries, SET_SIZE, ALPHAS)
+
+        assert (ws == EXPECTED_WS).all()
+        assert (xs == EXPECTED_XS).all()
