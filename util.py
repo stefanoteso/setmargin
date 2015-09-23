@@ -74,7 +74,7 @@ class OptiMathSAT5(object):
         return assignments
 
     def optimize(self, problem):
-        fp = tempfile.NamedTemporaryFile(delete=False)
+        fp = tempfile.NamedTemporaryFile(prefix="setmargin_", delete=False)
         try:
             fp.write(problem)
             fp.close()
