@@ -3,7 +3,6 @@
 import numpy as np
 from util import *
 
-C = 10000
 MAX_W_Z = 1
 
 def declare_variables(num_features, queries, set_size):
@@ -111,7 +110,7 @@ def define_constraints(domain_sizes, num_features, queries,
     for i in range(set_size):
         for j in range(i) + range(i+1, set_size):
             for z in range(num_features):
-                constraints.append("(>= a_{i}_{j}_{z} (- w_{i}_{z} (* {c} (ite x_{j}_{z} 0 1))))".format(i=i, j=j, z=z, c=C))
+                constraints.append("(>= a_{i}_{j}_{z} (- w_{i}_{z} (* {c} (ite x_{j}_{z} 0 1))))".format(i=i, j=j, z=z, c=MAX_W_Z))
 
     constraints.append("\n;; Eq. 15")
     for i in range(set_size):
