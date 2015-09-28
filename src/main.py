@@ -68,7 +68,7 @@ def print_queries(queries, hidden_w):
         relation = {-1:"<", 0:"~", 1:">"}[sign]
         score_xi = np.dot(hidden_w, xi.T)[0]
         score_xj = np.dot(hidden_w, xj.T)[0]
-        print "  {} ({:6.3f}) {} {} ({:6.3f}) -- diff {:6.3f}".format(xi, score_xi, relation, xj, score_xj, score_xi - score_xj)
+        print "  {} ({:6.3f}) {} ({:6.3f}) {} -- diff {:6.3f}".format(xi, score_xi, relation, score_xj, xj, score_xi - score_xj)
     print
 
 def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False):
@@ -147,6 +147,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
             solver.solve(domain_sizes, queries,
                          w_constraints, x_constraints,
                          set_size, alphas, debug=debug)
+        assert (scores == np.dot(ws, xs.T)).all(), "solver scores and debug scores mismatch"
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the m-item case:\n{}".format(ws)
 
@@ -166,7 +167,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         old_best_item = xs[0] if xs.shape[0] == 1 else None
 
         if debug:
-            print "updated queries ="
+            print "\nupdated queries ="
             print_queries(queries, hidden_w)
 
         # Compute the utility loss between the best item that we would
@@ -176,6 +177,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
             solver.solve(domain_sizes, queries,
                          w_constraints, x_constraints,
                          1, alphas, debug=debug)
+        assert (scores == np.dot(ws, xs.T)).all(), "solver scores and debug scores mismatch"
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
 
