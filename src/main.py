@@ -7,7 +7,8 @@ from sklearn.utils import check_random_state
 import matplotlib.pyplot as plt
 import itertools as it
 from datasets import *
-import solver
+import solver_omt
+import solver_gurobi
 
 def sample_utility(domain_sizes, rng, mode="uniform"):
     """Samples a utility weight vector.
@@ -101,12 +102,19 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False):
     return queries
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
-        rng, deterministic=False, debug=False):
+        rng, deterministic=False, solver="optimathsat", debug=False):
 
     if not num_iterations > 0:
         raise ValueError("invalid num_iterations '{}'".format(num_iterations))
     if not len(alphas) == 3 or not all([alpha >= 0 for alpha in alphas]):
         raise ValueError("invalid hyperparameters '{}'".format(alphas))
+
+    if solver == "optimathsat":
+        solver = solver_omt
+    elif solver == "gurobi":
+        solver = solver_gurobi
+    else:
+        raise ValueError("invalid solver '{}'".format(solver))
 
     rng = check_random_state(rng)
 
@@ -225,6 +233,8 @@ def main():
                         help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
     parser.add_argument("-d", "--deterministic", action="store_true",
                         help="whether the user answers should be deterministic rather than stochastic (default: False)")
+    parser.add_argument("-S", "--solver", type=str, default="optimathsat",
+                        help="solver to use (default: 'optimathsat')")
     parser.add_argument("-s", "--seed", type=int, default=None,
                         help="RNG seed (default: None)")
     parser.add_argument("--debug", action="store_true",
@@ -252,6 +262,7 @@ def main():
                      args.set_size, (args.alpha, args.beta, args.gamma),
                      args.utility_sampling_mode, rng,
                      deterministic=args.deterministic,
+                     solver=args.solver,
                      debug=args.debug)
 
         avg_losses.extend(ls)
