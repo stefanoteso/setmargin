@@ -289,7 +289,7 @@ def main():
     np.savetxt("results_{}_avgloss_stddevs.txt".format(basename), stddevs)
 
     fig, ax = plt.subplots(1, 1)
-    ax.errorbar(np.arange(1, args.num_iterations + 1), means)
+    ax.errorbar(np.arange(1, args.num_iterations + 1), means, yerr=stddevs.reshape(-1,1))
     ax.set_title("Avg. loss over {} trials".format(args.num_trials))
     ax.set_xlabel("Iterations")
     ax.set_ylabel("Average loss")
