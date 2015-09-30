@@ -63,7 +63,7 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
             assert ans in (-1, 0, 1)
 
             diff = x1 - x2 if ans >= 0 else x2 - x1
-            dot = grb.quicksum([w[i,z] * diff[z] for z in range(num_features)])
+            dot = grb.quicksum([ws[i,z] * diff[z] for z in range(num_features)])
 
             if ans == 0:
                 model.addConstr(abs(dot) <= slacks[i,j])
@@ -79,23 +79,23 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
     # Eq. 11
     for i in range(set_size):
         for z in range(num_features):
-            model.addConstr(a[i,i,z] <= (MAX_W_Z * xs[i,z]))
+            model.addConstr(ps[i,i,z] <= (MAX_W_Z * xs[i,z]))
 
     # Eq. 12
     for i in range(set_size):
         for z in range(num_features):
-            model.addConstr(a[i,i,z] <= ws[i,z])
+            model.addConstr(ps[i,i,z] <= ws[i,z])
 
     # Eq. 13
     for i in range(set_size):
         for j in range(i) + range(i+1, set_size):
             for z in range(num_features):
-                model.addConstr(a[i,j,z] >= (w[i,z] - MAX_W_Z * (1 - x[j,z])))
+                model.addConstr(ps[i,j,z] >= (ws[i,z] - MAX_W_Z * (1 - xs[j,z])))
 
     # Eq. 15
     for i in range(set_size):
         for z in range(num_features):
-            model.addConstr(w[i,z] <= MAX_W_Z)
+            model.addConstr(ws[i,z] <= MAX_W_Z)
 
     # Eq. 16
     # TODO constraints on x
@@ -104,17 +104,17 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
     for i in range(set_size):
         for j in range(set_size):
             for z in range(num_features):
-                model.addConstr(a[i,j,z] >= 0)
+                model.addConstr(ps[i,j,z] >= 0)
 
     # Eq. 18b
     for i in range(set_size):
         for z in range(num_features):
-            model.addConstr(w[i,z] >= 0)
+            model.addConstr(ws[i,z] >= 0)
 
     # Eq. 19
     for i in range(set_size):
         for k in range(num_examples):
-            model.addConstr(slack[i,k] >= 0)
+            model.addConstr(slacks[i,k] >= 0)
 
     # One-hot constraints
     for i in range(set_size):
@@ -122,7 +122,7 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
         for domain_size in domain_sizes:
             assert domain_size > 1
             zs_in_domain = range(last_z, last_z + domain_size)
-            model.addConstr(grb.quicksum([x[i,z] for z in zs_in_domains]) == 1)
+            model.addConstr(grb.quicksum([xs[i,z] for z in zs_in_domain]) == 1)
             last_z += domain_size
 
     # Solve
@@ -150,6 +150,6 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
     for i in range(set_size):
         for j in range(set_size):
             for z in range(num_features):
-                output_scores[i,j,z] = scores[i,j,z].x
+                output_scores[i,j] += ps[i,j,z].x
 
     return output_ws, output_xs, output_scores, output_slacks, margin.x
