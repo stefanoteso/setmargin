@@ -178,7 +178,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
             solver.solve(domain_sizes, queries,
                          w_constraints, x_constraints,
                          1, alphas, debug=debug)
-        assert (scores == np.dot(ws, xs.T)).all(), "solver scores and debug scores mismatch"
+        assert (scores == 0).all(), "solver scores are non-zero"
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
 
