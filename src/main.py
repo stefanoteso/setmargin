@@ -148,7 +148,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
                          w_constraints, x_constraints,
                          set_size, alphas, debug=debug)
         debug_scores = np.dot(ws, xs.T)
-        assert (scores == debug_scores).all(), "solver scores and debug scores mismatch:\n{}\n{}".format(scores, debug_scores)
+        assert (np.abs(scores - debug_scores) < 1e-6).all(), "solver scores and debug scores mismatch:\n{}\n{}".format(scores, debug_scores)
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the m-item case:\n{}".format(ws)
 
