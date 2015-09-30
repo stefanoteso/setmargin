@@ -143,7 +143,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         old_time = time.time()
 
         # Solve the utility/item learning problem for the current iteration
-        ws, xs, scores, margin = \
+        ws, xs, scores, slacks, margin = \
             solver.solve(domain_sizes, queries,
                          w_constraints, x_constraints,
                          set_size, alphas, debug=debug)
@@ -157,6 +157,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
             print "ws =\n", ws
             print "xs =\n", xs
             print "scores =\n", scores
+            print "slacks =\n", slacks
             print "margin =", margin
 
         # Ask the user about the retrieved items
@@ -173,7 +174,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         # Compute the utility loss between the best item that we would
         # recommend given the queries collected so far and the best
         # recommendation according to the hidden user hyperplane
-        ws, xs, scores, margin = \
+        ws, xs, scores, slacks, margin = \
             solver.solve(domain_sizes, queries,
                          w_constraints, x_constraints,
                          1, alphas, debug=debug)
@@ -185,6 +186,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
             print "ws =\n", ws
             print "xs =\n", xs
             print "scores =\n", scores
+            print "slacks =\n", slacks
             print "margin =", margin
 
         utility_loss = best_hidden_score - np.dot(hidden_w, xs[0])

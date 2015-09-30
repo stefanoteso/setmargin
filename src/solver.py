@@ -197,6 +197,10 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
 
     ws = np.zeros((set_size, num_features))
     xs = np.zeros((set_size, num_features))
+    if len(queries):
+        slacks = np.zeros((set_size, len(queries)))
+    else:
+        slacks = []
     scores = np.zeros((set_size, set_size))
     for variable, assignment in sorted(model.iteritems()):
         if variable.startswith("w_"):
@@ -208,10 +212,13 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
         elif variable.startswith("a_"):
             _, i, j, z = variable.split("_")
             scores[i,j] += assignment
+        elif variable.startswith("slack_"):
+            _, i, j = variable.split("_")
+            slacks[i,j] = assignment
         elif variable == "margin":
             margin = assignment
 
-    return ws, xs, scores, margin
+    return ws, xs, scores, slacks, margin
 
 class _TestSolver(object):
 
