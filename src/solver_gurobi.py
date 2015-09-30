@@ -94,7 +94,7 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
     for i in range(set_size):
         for j in range(i) + range(i+1, set_size):
             for z in range(num_features):
-                model.addConstr(ps[i,j,z] >= (ws[i,z] - MAX_W_Z * (1 - xs[j,z])))
+                model.addConstr(ps[i,j,z] >= (ws[i,z] - 2 * MAX_W_Z * (1 - xs[j,z])))
 
     # Eq. 15
     for i in range(set_size):
