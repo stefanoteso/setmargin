@@ -66,7 +66,11 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
             dot = grb.quicksum([ws[i,z] * diff[z] for z in range(num_features)])
 
             if ans == 0:
-                model.addConstr(abs(dot) <= slacks[i,j])
+                # Only one of dot and -dot is positive, and the slacks are
+                # always positive, so this should work fine as a replacement
+                # for abs(dot) <= slacks[i,j]
+                model.addConstr(dot <= slacks[i,j])
+                model.addConstr(-dot <= slacks[i,j])
             else:
                 model.addConstr(dot >= (margin - slacks[i,k]))
 
@@ -128,7 +132,11 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
     # Solve
     model.optimize()
 
-    print "cost =", model.objVal
+    try:
+        print "cost =", model.objVal
+    except:
+        print "the optimization failed"
+        raise RuntimeError
 
     output_ws = np.zeros((set_size, num_features))
     output_xs = np.zeros((set_size, num_features))
