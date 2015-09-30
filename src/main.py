@@ -27,9 +27,9 @@ def sample_utility(domain_sizes, rng, mode="uniform"):
     assert mode in ("uniform", "normal")
     rng = check_random_state(rng)
     if mode == "uniform":
-        return rng.uniform(1, 100, size=(sum(domain_sizes), 1)).reshape(1,-1)
+        return rng.uniform(0, 1, size=(sum(domain_sizes), 1)).reshape(1,-1)
     else:
-        return rng.normal(25.0, 25.0 / 3, size=(sum(domain_sizes), 1)).reshape(1,-1)
+        return rng.normal(0.25, 0.25 / 3, size=(sum(domain_sizes), 1)).reshape(1,-1)
 
 def query_utility(w, xi, xj, rng, deterministic=False):
     """Use the indifference-augmented Bradley-Terry model to compute the
@@ -154,11 +154,11 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         times.append(time.time() - old_time)
 
         if debug:
-            print "ws =\n", ws
-            print "xs =\n", xs
-            print "scores =\n", scores
-            print "slacks =\n", slacks
-            print "margin =", margin
+            print "set_size=n ws =\n", ws
+            print "set_size=n xs =\n", xs
+            print "set_size=n scores =\n", scores
+            print "set_size=n slacks =\n", slacks
+            print "set_size=n margin =", margin
 
         # Ask the user about the retrieved items
         new_queries = update_queries(hidden_w, ws, xs,
@@ -178,19 +178,21 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
             solver.solve(domain_sizes, queries,
                          w_constraints, x_constraints,
                          1, alphas, debug=debug)
-        assert (scores == 0).all(), "solver scores are non-zero"
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
 
-        if debug:
-            print "ws =\n", ws
-            print "xs =\n", xs
-            print "scores =\n", scores
-            print "slacks =\n", slacks
-            print "margin =", margin
-
         utility_loss = best_hidden_score - np.dot(hidden_w, xs[0])
         avg_losses.append(utility_loss / np.linalg.norm(hidden_w))
+
+        if debug:
+            print "set_size=1 ws =", ws, "hidden_w =", hidden_w
+            print "set_size=1 xs =", xs
+            print "set_size=1 scores =", scores
+            print "set_size=1 slacks =", slacks
+            print "set_size=1 margin =", margin
+
+            print "u(x) =", np.dot(hidden_w, xs[0])
+            print "utility_loss =", utility_loss
 
     return avg_losses, times
 
