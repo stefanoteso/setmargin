@@ -123,6 +123,12 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
 
     # Eq. 20
     model.addConstr(margin >= 0)
+    if set_size == 1 and all(ans == 0 for _, _, ans in queries):
+        # XXX work around the fact that if we only have one hyperplane and
+        # the user is indifferent to everything we throwed at her, the margin
+        # will not appear in any constraint and thus the problem will be
+        # unbounded.
+        model.addConstr(margin == 0)
 
     # One-hot constraints
     for i in range(set_size):
