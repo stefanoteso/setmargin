@@ -120,6 +120,9 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
         for k in range(num_examples):
             model.addConstr(slacks[i,k] >= 0)
 
+    # Eq. 20
+    model.addConstr(margin >= 0)
+
     # One-hot constraints
     for i in range(set_size):
         last_z = 0
