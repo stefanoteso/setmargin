@@ -5,10 +5,11 @@ Preference Elicitation via Set-wise Max-margin
 
 ## Requirements
 
-This package requires `numpy`, `OptiMathSat5` and `matplotlib`.
+This package requires `numpy`, `OptiMathSat5` (alternatively `gurobi`) and `matplotlib`.
 
 - [numpy](http://www.numpy.org/)
 - [optimathsat5](http://optimathsat.disi.unitn.it/)
+- [gurobi](http://www.gurobi.com/)
 - [matplotlib](http://matplotlib.org/)
 
 Make sure that the `optimathsat` binary is visible from the `$PATH` environment
@@ -28,5 +29,5 @@ $ ./main.py --help
 ```
 A more complex usage example:
 ```
-$ ./main.py synthetic -N 2 -n 10 -m 2 -d --seed 0 --debug
+$ ./main.py synthetic -N 2 -n 10 -m 2 -d -S optimathsat --seed 0 --debug
 ```
