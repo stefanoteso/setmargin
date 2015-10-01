@@ -7,6 +7,7 @@ from sklearn.utils import check_random_state
 import matplotlib.pyplot as plt
 import itertools as it
 from datasets import *
+from util import *
 import solver_omt
 import solver_gurobi
 
@@ -71,6 +72,14 @@ def print_queries(queries, hidden_w):
         score_xj = np.dot(hidden_w, xj.T)[0]
         print "  {} ({:6.3f}) {} ({:6.3f}) {} -- diff {:6.3f}".format(xi, score_xi, relation, score_xj, xj, score_xi - score_xj)
     print
+
+def is_onehot(domain_sizes, set_size, xs):
+    zs_in_domains = get_zs_in_domains(domain_sizes)
+    for i in range(set_size):
+        for zs_in_domain in zs_in_domains:
+            if sum(xs[i,z] for z in zs_in_domain) != 1:
+                return False
+    return True
 
 def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False):
     """Computes the queries to ask the user for the given inputs.
@@ -168,6 +177,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
             print "set_size=n slacks =\n", slacks
             print "set_size=n margin =", margin
 
+        assert is_onehot(domain_sizes, set_size, xs), "xs are not in onehot format"
         if solver_name != "gurobi":
             # XXX somehow gurobi fails to satisfy this assertion...
             assert (np.abs(scores - debug_scores) < 1e-6).all(), "solver scores and debug scores mismatch:\n{}\n{}".format(scores, debug_scores)
@@ -205,6 +215,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
             print "u(x) =", np.dot(hidden_w, xs[0])
             print "utility_loss =", utility_loss
+
+        assert is_onehot(domain_sizes, 1, xs), "xs are not in onehot format"
 
     return avg_losses, times
 
