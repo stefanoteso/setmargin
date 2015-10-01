@@ -33,13 +33,15 @@ def sample_utility(domain_sizes, rng, mode="uniform"):
     else:
         return rng.normal(0.25, 0.25 / 3, size=(sum(domain_sizes), 1)).reshape(1,-1)
 
-def query_utility(w, xi, xj, rng, deterministic=False):
+def query_utility(w, xi, xj, rng, deterministic=False, no_indifference=False):
     """Use the indifference-augmented Bradley-Terry model to compute the
     preferences of a user between two items.
 
     :param w: the utility vector.
     :param xi: attribute vector of object i.
     :param xj: attribute vector of object j.
+    :param deterministic: WRITEME.
+    :param no_indifference: WRITEME.
     :returns: 0 (indifferent), 1 (i wins over j) or -1 (j wins over i).
     """
     rng = check_random_state(rng)
@@ -50,6 +52,8 @@ def query_utility(w, xi, xj, rng, deterministic=False):
         result = (xi, xj, int(np.sign(diff)))
     else:
         eq = np.exp(-np.abs(diff))
+        if no_indifference:
+            eq = 0.0
         gt = np.exp(diff) / (1 + np.exp(diff))
         lt = np.exp(-diff) / (1 + np.exp(-diff))
 
@@ -81,7 +85,8 @@ def is_onehot(domain_sizes, set_size, xs):
                 return False
     return True
 
-def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False):
+def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
+                   no_indifference=False):
     """Computes the queries to ask the user for the given inputs.
 
     If there is only one candidate best item, then only one query is returned,
@@ -97,6 +102,7 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False):
     :param old_best_item: the estimated best item at the previous iteration.
     :param rng: an RNG object.
     :param deterministic: whether the user answers should be deterministic.
+    :param no_indifference: disable 'whatever' answers.
     :returns: a pair (list of new queries, 
     """
     num_items, num_features = xs.shape
@@ -104,14 +110,18 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False):
         if old_best_item is None:
             old_best_item = rng.random_integers(0, 1, size=(num_features,))
         queries = [query_utility(hidden_w, xs[0], old_best_item, rng,
-                                 deterministic=deterministic)]
+                                 deterministic=deterministic,
+                                 no_indifference=no_indifference)]
     else:
-        queries = [query_utility(hidden_w, xi, xj, rng, deterministic=deterministic)
+        queries = [query_utility(hidden_w, xi, xj, rng,
+                                 deterministic=deterministic,
+                                 no_indifference=no_indifference)
                    for (i, xi), (j, xj) in it.product(enumerate(xs), enumerate(xs)) if i < j]
     return queries
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
-        rng, deterministic=False, solver_name="optimathsat", debug=False):
+        rng, deterministic=False, no_indifference=False,
+        solver_name="optimathsat", debug=False):
 
     if not num_iterations > 0:
         raise ValueError("invalid num_iterations '{}'".format(num_iterations))
@@ -185,7 +195,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         # Ask the user about the retrieved items
         new_queries = update_queries(hidden_w, ws, xs,
                                      old_best_item, rng,
-                                     deterministic=deterministic)
+                                     deterministic=deterministic,
+                                     no_indifference=no_indifference)
         queries.extend(new_queries)
         old_best_item = xs[0] if xs.shape[0] == 1 else None
 
@@ -248,6 +259,8 @@ def main():
                         help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
     parser.add_argument("-d", "--deterministic", action="store_true",
                         help="whether the user answers should be deterministic rather than stochastic (default: False)")
+    parser.add_argument("--no-indifference", action="store_true",
+                        help="whether the user can (not) be indifferent (default: False)")
     parser.add_argument("-S", "--solver", type=str, default="optimathsat",
                         help="solver to use (default: 'optimathsat')")
     parser.add_argument("-s", "--seed", type=int, default=None,
@@ -259,7 +272,7 @@ def main():
     argsdict = vars(args)
     argsdict["dataset"] = args.dataset
 
-    basename = "{dataset}_{num_trials}_{num_iterations}_{set_size}_{alpha}_{beta}_{gamma}_{utility_sampling_mode}_{deterministic}_{seed}".format(**argsdict)
+    basename = "{dataset}_{num_trials}_{num_iterations}_{set_size}_{alpha}_{beta}_{gamma}_{utility_sampling_mode}_{deterministic}_{no_indifference}_{seed}".format(**argsdict)
 
     if not args.dataset in DATASETS:
         raise ValueError("invalid dataset '{}'".format(args.dataset))
@@ -277,6 +290,7 @@ def main():
                      args.set_size, (args.alpha, args.beta, args.gamma),
                      args.utility_sampling_mode, rng,
                      deterministic=args.deterministic,
+                     no_indifference=args.no_indifference,
                      solver_name=args.solver,
                      debug=args.debug)
 
