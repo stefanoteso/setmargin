@@ -13,6 +13,14 @@ def onehot(domain_size, value):
     value_onehot[value] = 1
     return value_onehot
 
+def get_zs_in_domains(domain_sizes):
+    zs_in_domains, last_z = [], 0
+    for domain_size in domain_sizes:
+        assert domain_size > 1
+        zs_in_domains.append(range(last_z, last_z + domain_size))
+        last_z += domain_size
+    return zs_in_domains
+
 def float2libsmt(x):
     z = fractions.Fraction(x)
     p, q = z.numerator, z.denominator
