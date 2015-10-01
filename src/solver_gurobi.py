@@ -131,13 +131,10 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
         model.addConstr(margin == 0)
 
     # One-hot constraints
+    zs_in_domains = get_zs_in_domains(domain_sizes)
     for i in range(set_size):
-        last_z = 0
-        for domain_size in domain_sizes:
-            assert domain_size > 1
-            zs_in_domain = range(last_z, last_z + domain_size)
+        for zs_in_domain in zs_in_domains:
             model.addConstr(grb.quicksum([xs[i,z] for z in zs_in_domain]) == 1)
-            last_z += domain_size
 
     # Dump the problem for later inspection
     if debug:

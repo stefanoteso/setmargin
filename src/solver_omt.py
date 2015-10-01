@@ -140,11 +140,9 @@ def define_constraints(domain_sizes, num_features, queries,
     constraints.append("(>= margin 0)")
 
     constraints.append("\n;; one-hot constraints")
+    zs_in_domains = get_zs_in_domains(domain_sizes)
     for i in range(set_size):
-        last_z = 0
-        for domain_size in domain_sizes:
-            assert domain_size > 1
-            zs_in_domain = range(last_z, last_z + domain_size)
+        for zs_in_domain in zs_in_domains:
             for z1 in zs_in_domain:
                 for z2 in zs_in_domain:
                     if z1 != z2:
@@ -152,7 +150,6 @@ def define_constraints(domain_sizes, num_features, queries,
             xs_in_domain = ["x_{i}_{z}".format(i=i, z=z)
                             for z in zs_in_domain]
             constraints.append("(or {})".format(" ".join(xs_in_domain)))
-            last_z += domain_size
 
     return constraints
 
