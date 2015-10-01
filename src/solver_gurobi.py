@@ -69,8 +69,8 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
                 # Only one of dot and -dot is positive, and the slacks are
                 # always positive, so this should work fine as a replacement
                 # for abs(dot) <= slacks[i,j]
-                model.addConstr(dot <= slacks[i,j])
-                model.addConstr(-dot <= slacks[i,j])
+                model.addConstr(dot <= slacks[i,k])
+                model.addConstr(-dot <= slacks[i,k])
             else:
                 model.addConstr(dot >= (margin - slacks[i,k]))
 
