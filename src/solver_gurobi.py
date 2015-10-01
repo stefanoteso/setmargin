@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import tempfile
 import gurobipy as grb
 from gurobipy import GRB
 from util import *
@@ -131,6 +132,14 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
             zs_in_domain = range(last_z, last_z + domain_size)
             model.addConstr(grb.quicksum([xs[i,z] for z in zs_in_domain]) == 1)
             last_z += domain_size
+
+    # Dump the problem for later inspection
+    if debug:
+        fp = tempfile.NamedTemporaryFile(prefix="setmargin_gurobi_", suffix=".lp", delete=False)
+        fp.close()
+        model.update()
+        model.write(fp.name)
+        print "dumped gurobi model to '{}'".format(fp.name)
 
     # Solve
     model.optimize()
