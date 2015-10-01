@@ -18,10 +18,6 @@ def sample_utility(domain_sizes, rng, mode="uniform"):
 
         The computation is taken from p. 293 of the Guo & Sanner paper.
 
-    .. warning:::
-
-        I am not sure if this is what Guo & Sanner actually do!
-
     :param domains: list of attribute domains (that is, integer intervals).
     :param mode: either ``"uniform"`` or ``"normal"``.
     :returns: a row vector with as many components as attributes.
