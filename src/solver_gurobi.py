@@ -148,7 +148,7 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
     model.optimize()
 
     try:
-        print "cost =", model.objVal
+        _ = model.objVal
     except:
         print "the optimization failed"
         raise RuntimeError
