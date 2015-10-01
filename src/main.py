@@ -102,19 +102,19 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False):
     return queries
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
-        rng, deterministic=False, solver="optimathsat", debug=False):
+        rng, deterministic=False, solver_name="optimathsat", debug=False):
 
     if not num_iterations > 0:
         raise ValueError("invalid num_iterations '{}'".format(num_iterations))
     if not len(alphas) == 3 or not all([alpha >= 0 for alpha in alphas]):
         raise ValueError("invalid hyperparameters '{}'".format(alphas))
 
-    if solver == "optimathsat":
+    if solver_name == "optimathsat":
         solver = solver_omt
-    elif solver == "gurobi":
+    elif solver_name == "gurobi":
         solver = solver_gurobi
     else:
-        raise ValueError("invalid solver '{}'".format(solver))
+        raise ValueError("invalid solver '{}'".format(solver_name))
 
     rng = check_random_state(rng)
 
@@ -168,8 +168,9 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
             print "set_size=n slacks =\n", slacks
             print "set_size=n margin =", margin
 
-        # XXX somehow gurobi fails to satisfy this assertion...
-#        assert (np.abs(scores - debug_scores) < 1e-6).all(), "solver scores and debug scores mismatch:\n{}\n{}".format(scores, debug_scores)
+        if solver_name != "gurobi":
+            # XXX somehow gurobi fails to satisfy this assertion...
+            assert (np.abs(scores - debug_scores) < 1e-6).all(), "solver scores and debug scores mismatch:\n{}\n{}".format(scores, debug_scores)
 
         # Ask the user about the retrieved items
         new_queries = update_queries(hidden_w, ws, xs,
@@ -264,7 +265,7 @@ def main():
                      args.set_size, (args.alpha, args.beta, args.gamma),
                      args.utility_sampling_mode, rng,
                      deterministic=args.deterministic,
-                     solver=args.solver,
+                     solver_name=args.solver,
                      debug=args.debug)
 
         avg_losses.extend(ls)
