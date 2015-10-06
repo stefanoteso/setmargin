@@ -324,7 +324,7 @@ def main():
     ax.set_title("Avg. loss over {} trials".format(args.num_trials))
     ax.set_xlabel("Iterations")
     ax.set_ylabel("Average loss")
-    ax.set_ylim([0.0, 1.0])
+    ax.set_ylim([0.0, 0.4])
     ax.errorbar(np.arange(1, args.num_iterations + 1), means, yerr=stddevs.reshape(-1,1))
     fig.savefig("results_{}_avgloss.svg".format(basename), bbox_inches="tight")
 
