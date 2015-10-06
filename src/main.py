@@ -86,7 +86,7 @@ def is_onehot(domain_sizes, set_size, xs):
     return True
 
 def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
-                   no_indifference=False):
+                   no_indifference=False, ranking_mode="all_pairs"):
     """Computes the queries to ask the user for the given inputs.
 
     If there is only one candidate best item, then only one query is returned,
@@ -103,6 +103,7 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
     :param rng: an RNG object.
     :param deterministic: whether the user answers should be deterministic.
     :param no_indifference: disable 'whatever' answers.
+    :param ranking_mode: either ``"all_pairs"`` or ``"random_list"``.
     :returns: a pair (list of new queries, 
     """
     num_items, num_features = xs.shape
@@ -112,16 +113,51 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
         queries = [query_utility(hidden_w, xs[0], old_best_item, rng,
                                  deterministic=deterministic,
                                  no_indifference=no_indifference)]
-    else:
+        num_queries = 1
+    elif ranking_mode == "all_pairs":
+        # requires 1/2 * n * (n - 1) queries
+        # XXX note that in the non-deterministic setting we may actually lose
+        # information by only querying for ~half the pairs!
         queries = [query_utility(hidden_w, xi, xj, rng,
                                  deterministic=deterministic,
                                  no_indifference=no_indifference)
                    for (i, xi), (j, xj) in it.product(enumerate(xs), enumerate(xs)) if i < j]
+        num_queries = len(queries)
+    elif ranking_mode == "random_list":
+        # requires at most 1 + 2 + ... + (n-1) = 1/2 * (n - 1) * (n - 2)
+        # queries
+        # XXX note that in the non-deterministic setting we may actually lose
+        # information by only querying for a subset of the pairs!
+        permuted_xs = rng.permutation(xs)
+
+        num_queries = 0
+        sorted_xs, indifferent_queries = [permuted_xs[0]], []
+        for x in permuted_xs[1:]:
+            inserted = False
+            for i, other_x in enumerate(sorted_xs):
+                _, _, ans = query_utility(hidden_w, x, other_x, rng)
+                num_queries += 1
+                if ans == 0:
+                    indifferent_queries.append((x, other_x, 0))
+                    inserted = True
+                    break
+                elif ans == 1:
+                    sorted_xs.insert(i, x)
+                    inserted = True
+                    break
+            if not inserted:
+                sorted_xs.append(x)
+        queries = [(xi, xj, 1) for (i, xi), (j, xj)
+                   in it.product(enumerate(sorted_xs), enumerate(sorted_xs)) if i < j] + \
+                  indifferent_queries
+    else:
+        raise ValueError("invalid ranking_mode '{}'".format(ranking_mode))
     return queries
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
-        rng, deterministic=False, no_indifference=False, multimargin=False,
-        solver_name="optimathsat", debug=False):
+        rng, ranking_mode="all_pairs", deterministic=False,
+        no_indifference=False, multimargin=False, solver_name="optimathsat",
+        debug=False):
 
     if not num_iterations > 0:
         raise ValueError("invalid num_iterations '{}'".format(num_iterations))
@@ -196,6 +232,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         # Ask the user about the retrieved items
         new_queries = update_queries(hidden_w, ws, xs,
                                      old_best_item, rng,
+                                     ranking_mode=ranking_mode,
                                      deterministic=deterministic,
                                      no_indifference=no_indifference)
         queries.extend(new_queries)
@@ -215,6 +252,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
                          debug=debug)
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
+
+        # XXX replicate the result by the number of new_queries asked
 
         utility_loss = best_hidden_score - np.dot(hidden_w, xs[0])
         avg_losses.append(utility_loss / np.linalg.norm(hidden_w))
@@ -259,6 +298,8 @@ def main():
                         help="hyperparameter controlling the score of the output items (default: 0.1)")
     parser.add_argument("-u", "--utility_sampling_mode", type=str, default="uniform",
                         help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
+    parser.add_argument("-r", "--ranking-mode", type=str, default="all_pairs",
+                        help="ranking mode, any of ('all_pairs', 'random_list') (default: 'all_pairs')")
     parser.add_argument("-d", "--deterministic", action="store_true",
                         help="whether the user answers should be deterministic rather than stochastic (default: False)")
     parser.add_argument("--no-indifference", action="store_true",
@@ -293,6 +334,7 @@ def main():
         ls, ts = run(DATASETS[args.dataset], args.num_iterations,
                      args.set_size, (args.alpha, args.beta, args.gamma),
                      args.utility_sampling_mode, rng,
+                     ranking_mode=args.ranking_mode,
                      deterministic=args.deterministic,
                      no_indifference=args.no_indifference,
                      multimargin=args.multimargin,
