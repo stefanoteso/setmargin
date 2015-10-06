@@ -265,8 +265,8 @@ def main():
                         help="whether the user can (not) be indifferent (default: False)")
     parser.add_argument("-M", "--multimargin", action="store_true",
                         help="whether the example and generated object margins should be independent (default: False)")
-    parser.add_argument("-S", "--solver", type=str, default="optimathsat",
-                        help="solver to use (default: 'optimathsat')")
+    parser.add_argument("-S", "--solver", type=str, default="gurobi",
+                        help="solver to use (default: 'gurobi')")
     parser.add_argument("-s", "--seed", type=int, default=None,
                         help="RNG seed (default: None)")
     parser.add_argument("--debug", action="store_true",
