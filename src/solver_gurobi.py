@@ -9,7 +9,7 @@ from util import *
 MAX_W_Z = 1
 
 def solve(domain_sizes, queries, w_constraints, x_constraints,
-          set_size, alphas, debug=False):
+          set_size, alphas, multimargin=False, debug=False):
 
     num_examples = len(queries)
     num_features = sum(domain_sizes)
@@ -34,12 +34,16 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
             for z in range(num_features):
                 ps[i,j,z] = model.addVar(vtype=GRB.CONTINUOUS, name="p_{}_{}_{}".format(i, j, z))
 
-    margin = model.addVar(vtype=GRB.CONTINUOUS, name="margin")
+    margins = [model.addVar(vtype=GRB.CONTINUOUS, name="margin_on_examples")]
+    if multimargin:
+        margins.append(model.addVar(vtype=GRB.CONTINUOUS, name="margin_on_generated_objects"))
 
     model.modelSense = GRB.MAXIMIZE
     model.update()
 
     # Define the objective function
+    obj_margins = grb.quicksum(margins)
+
     obj_slacks = 0
     if len(slacks) > 0:
         alpha = alphas[0] / (set_size * num_examples)
@@ -53,7 +57,7 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
                                for i in range(set_size)
                                for z in range(num_features)])
 
-    model.setObjective(margin - obj_slacks - obj_weights + obj_scores)
+    model.setObjective(obj_margins - obj_slacks - obj_weights + obj_scores)
 
     # Add the various constraints
 
@@ -73,13 +77,13 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
                 model.addConstr(dot <= slacks[i,k])
                 model.addConstr(-dot <= slacks[i,k])
             else:
-                model.addConstr(dot >= (margin - slacks[i,k]))
+                model.addConstr(dot >= (margins[0] - slacks[i,k]))
 
     # Eq. 10
     for i in range(set_size):
         for j in range(i) + range(i+1, set_size):
             score_diff = grb.quicksum([ps[i,i,z] - ps[i,j,z] for z in range(num_features)])
-            model.addConstr(score_diff >= margin)
+            model.addConstr(score_diff >= margins[-1])
 
     # Eq. 11
     for i in range(set_size):
@@ -122,13 +126,19 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
             model.addConstr(slacks[i,k] >= 0)
 
     # Eq. 20
-    model.addConstr(margin >= 0)
-    if set_size == 1 and all(ans == 0 for _, _, ans in queries):
-        # XXX work around the fact that if we only have one hyperplane and
-        # the user is indifferent to everything we throwed at her, the margin
-        # will not appear in any constraint and thus the problem will be
-        # unbounded.
-        model.addConstr(margin == 0)
+    for margin in margins:
+        model.addConstr(margin >= 0)
+        if set_size == 1 and all(ans == 0 for _, _, ans in queries):
+            # XXX work around the fact that if we only have one hyperplane and
+            # the user is indifferent to everything we throwed at her, the margin
+            # will not appear in any constraint and thus the problem will be
+            # unbounded.
+            model.addConstr(margin == 0)
+    if multimargin:
+        if all(ans == 0 for _, _, ans in queries):
+            model.addConstr(margins[0] == 0)
+        if set_size == 1:
+            model.addConstr(margins[1] == 0)
 
     # One-hot constraints
     zs_in_domains = get_zs_in_domains(domain_sizes)

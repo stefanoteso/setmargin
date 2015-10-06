@@ -154,7 +154,9 @@ def define_constraints(domain_sizes, num_features, queries,
     return constraints
 
 def solve(domain_sizes, queries, w_constraints, x_constraints,
-          set_size, alphas, debug=False):
+          set_size, alphas, multimargin=False, debug=False):
+    if multimargin:
+        raise NotImplementedError()
 
     num_features = sum(domain_sizes)
 

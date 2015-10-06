@@ -116,7 +116,7 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
     return queries
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
-        rng, deterministic=False, no_indifference=False,
+        rng, deterministic=False, no_indifference=False, multimargin=False,
         solver_name="optimathsat", debug=False):
 
     if not num_iterations > 0:
@@ -169,7 +169,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         ws, xs, scores, slacks, margin = \
             solver.solve(domain_sizes, queries,
                          w_constraints, x_constraints,
-                         set_size, alphas, debug=debug)
+                         set_size, alphas, multimargin=multimargin,
+                         debug=debug)
         debug_scores = np.dot(ws, xs.T)
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the m-item case:\n{}".format(ws)
@@ -206,7 +207,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         ws, xs, scores, slacks, margin = \
             solver.solve(domain_sizes, queries,
                          w_constraints, x_constraints,
-                         1, alphas, debug=debug)
+                         1, alphas, multimargin=multimargin,
+                         debug=debug)
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
 
@@ -257,6 +259,8 @@ def main():
                         help="whether the user answers should be deterministic rather than stochastic (default: False)")
     parser.add_argument("--no-indifference", action="store_true",
                         help="whether the user can (not) be indifferent (default: False)")
+    parser.add_argument("-M", "--multimargin", action="store_true",
+                        help="whether the example and generated object margins should be independent (default: False)")
     parser.add_argument("-S", "--solver", type=str, default="optimathsat",
                         help="solver to use (default: 'optimathsat')")
     parser.add_argument("-s", "--seed", type=int, default=None,
@@ -268,7 +272,7 @@ def main():
     argsdict = vars(args)
     argsdict["dataset"] = args.dataset
 
-    basename = "{dataset}_{num_trials}_{num_iterations}_{set_size}_{alpha}_{beta}_{gamma}_{utility_sampling_mode}_{deterministic}_{no_indifference}_{seed}".format(**argsdict)
+    basename = "{dataset}_{num_trials}_{num_iterations}_{set_size}_{alpha}_{beta}_{gamma}_{utility_sampling_mode}_{deterministic}_{no_indifference}_{multimargin}_{seed}".format(**argsdict)
 
     if not args.dataset in DATASETS:
         raise ValueError("invalid dataset '{}'".format(args.dataset))
@@ -287,6 +291,7 @@ def main():
                      args.utility_sampling_mode, rng,
                      deterministic=args.deterministic,
                      no_indifference=args.no_indifference,
+                     multimargin=args.multimargin,
                      solver_name=args.solver,
                      debug=args.debug)
 
