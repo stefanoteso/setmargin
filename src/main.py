@@ -40,18 +40,23 @@ def query_utility(w, xi, xj, rng, deterministic=False, no_indifference=False):
     :param no_indifference: WRITEME.
     :returns: 0 (indifferent), 1 (i wins over j) or -1 (j wins over i).
     """
+    # The original problem has weights sampled in the range [0, 100], and
+    # uses ALPHA=1, BETA=1; here however we have weights in the range [0, 1]
+    # so we must rescale ALPHA and BETA to obtain the same probabilities. 
+    ALPHA, BETA = 100, 100
+
     rng = check_random_state(rng)
 
     diff = np.dot(w, xi.T - xj.T)
 
     if deterministic:
-        result = (xi, xj, int(np.sign(diff)))
+        ans = int(np.sign(diff))
     else:
-        eq = np.exp(-np.abs(diff))
+        eq = np.exp(-BETA * np.abs(diff))
         if no_indifference:
             eq = 0.0
-        gt = np.exp(diff) / (1 + np.exp(diff))
-        lt = np.exp(-diff) / (1 + np.exp(-diff))
+        gt = np.exp(ALPHA * diff) / (1 + np.exp(ALPHA * diff))
+        lt = np.exp(-ALPHA * diff) / (1 + np.exp(-ALPHA * diff))
 
         z = rng.uniform(0, eq + gt + lt)
 
@@ -61,9 +66,8 @@ def query_utility(w, xi, xj, rng, deterministic=False, no_indifference=False):
             ans = 1
         else:
             ans = -1
-        result = (xi, xj, ans)
 
-    return result
+    return (xi, xj, ans)
 
 def print_queries(queries, hidden_w):
     for xi, xj, sign in queries:
