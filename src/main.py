@@ -274,15 +274,9 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 def main():
     import argparse as ap
 
-    DATASETS = {
-        "synthetic": get_synthetic_dataset,
-        "pc": get_pc_dataset,
-        "housing": get_housing_dataset,
-    }
-
     parser = ap.ArgumentParser(description="setmargin experiment")
     parser.add_argument("dataset", type=str,
-                        help="dataset, any of {}".format(DATASETS.keys()))
+                        help="dataset")
     parser.add_argument("-N", "--num_trials", type=int, default=20,
                         help="number of trials (default: 20)")
     parser.add_argument("-n", "--num_iterations", type=int, default=20,
@@ -309,17 +303,33 @@ def main():
                         help="solver to use (default: 'gurobi')")
     parser.add_argument("-s", "--seed", type=int, default=None,
                         help="RNG seed (default: None)")
+    parser.add_argument("--domain-sizes", type=str, default="2,2,5",
+                        help="domain sizes for the synthetic dataset only (default: 2,2,5)")
     parser.add_argument("--debug", action="store_true",
                         help="Enable debug spew")
     args = parser.parse_args()
 
+    domain_sizes = map(int, args.domain_sizes.split(","))
+    datasets = {
+        "synthetic": lambda: get_synthetic_dataset(domain_sizes=domain_sizes),
+        "pc": get_pc_dataset,
+        "housing": get_housing_dataset,
+    }
+    if not args.dataset in datasets:
+        raise ValueError("invalid dataset '{}'".format(args.dataset))
+
     argsdict = vars(args)
     argsdict["dataset"] = args.dataset
 
-    basename = "{dataset}_{num_trials}_{num_iterations}_{set_size}_{alpha}_{beta}_{gamma}_{utility_sampling_mode}_{deterministic}_{no_indifference}_{multimargin}_{seed}".format(**argsdict)
+    hyperparams = [
+        "dataset", "num_trials", "num_iterations", "set_size", "alpha", "beta",
+        "gamma", "utility_sampling_mode", "deterministic", "no_indifference",
+        "multimargin", "seed"
+    ]
+    if args.dataset == "synthetic":
+        hyperparams.insert(1, "domain_sizes")
 
-    if not args.dataset in DATASETS:
-        raise ValueError("invalid dataset '{}'".format(args.dataset))
+    basename = "_".join(str(argsdict[h]) for h in hyperparams)
 
     print "running {} trials on {}, {} iterations per trial, seed is {}".format(args.num_trials, args.dataset, args.num_iterations, args.seed)
 
@@ -330,7 +340,7 @@ def main():
         print "==== TRIAL {} ====".format(i)
 
         losses_for_trial, times_for_trial = \
-            run(DATASETS[args.dataset], args.num_iterations,
+            run(datasets[args.dataset], args.num_iterations,
                 args.set_size, (args.alpha, args.beta, args.gamma),
                 args.utility_sampling_mode, rng,
                 ranking_mode=args.ranking_mode,
