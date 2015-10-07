@@ -325,49 +325,57 @@ def main():
 
     rng = np.random.RandomState(args.seed)
 
-    avg_losses, times = [], []
+    losses, times = [], []
     for i in range(args.num_trials):
-
         print "==== TRIAL {} ====".format(i)
 
-        ls, ts = run(DATASETS[args.dataset], args.num_iterations,
-                     args.set_size, (args.alpha, args.beta, args.gamma),
-                     args.utility_sampling_mode, rng,
-                     ranking_mode=args.ranking_mode,
-                     deterministic=args.deterministic,
-                     no_indifference=args.no_indifference,
-                     multimargin=args.multimargin,
-                     solver_name=args.solver,
-                     debug=args.debug)
+        losses_for_trial, times_for_trial = \
+            run(DATASETS[args.dataset], args.num_iterations,
+                args.set_size, (args.alpha, args.beta, args.gamma),
+                args.utility_sampling_mode, rng,
+                ranking_mode=args.ranking_mode,
+                deterministic=args.deterministic,
+                no_indifference=args.no_indifference,
+                multimargin=args.multimargin,
+                solver_name=args.solver,
+                debug=args.debug)
 
-        avg_losses.extend(ls)
-        times.extend(ts)
+        losses.append(np.array(losses_for_trial).ravel())
+        times.append(np.array(times_for_trial))
 
-    avg_losses, times = np.array(avg_losses), np.array(times)
+    # Since distinct trials may have incurred a different number of queries
+    # each, here we resize the performance data to be uniformly shaped
+    max_queries = max(len(ls) for ls in losses)
+    loss_matrix = np.zeros((args.num_trials, max_queries))
+    time_matrix = np.zeros((args.num_trials, max_queries))
+    for i, (ls, ts) in enumerate(zip(losses, times)):
+        assert ls.shape == ts.shape
+        loss_matrix[i,:ls.shape[0]] = ls
+        time_matrix[i,:ts.shape[0]] = ts
 
-    if args.debug:
-        print "average losses:"
-        print avg_losses
+    np.savetxt("results_{}_time_matrix.txt".format(basename), time_matrix)
+    np.savetxt("results_{}_loss_matrix.txt".format(basename), loss_matrix)
 
-    print "results for {} trials:".format(args.num_trials)
-    print "maximum likelihood mean/std loss per iteration =", np.mean(avg_losses), "±", np.std(avg_losses, ddof=1)
-    print "maximum likelihood mean/std of time per iteration =", np.mean(times), "±", np.std(times, ddof=1)
-
-    data = avg_losses.reshape(args.num_trials, -1)
-    means, stddevs = np.mean(data, axis=0), np.std(data, ddof=1, axis=0)
-
-    np.savetxt("results_{}_times.txt".format(basename), times)
-    np.savetxt("results_{}_losses.txt".format(basename), avg_losses)
-    np.savetxt("results_{}_avgloss_means.txt".format(basename), means)
-    np.savetxt("results_{}_avgloss_stddevs.txt".format(basename), stddevs)
+    loss_means = np.mean(loss_matrix, axis=0)
+    loss_stddevs = np.std(loss_matrix, ddof=1, axis=0).reshape(-1, 1)
 
     fig, ax = plt.subplots(1, 1)
-    ax.set_title("Avg. loss over {} trials".format(args.num_trials))
-    ax.set_xlabel("Iterations")
+    ax.set_title("Avgerage loss over {} trials".format(args.num_trials))
+    ax.set_xlabel("Number of queries")
     ax.set_ylabel("Average loss")
     ax.set_ylim([0.0, 0.4])
-    ax.errorbar(np.arange(1, args.num_iterations + 1), means, yerr=stddevs.reshape(-1,1))
+    ax.errorbar(np.arange(1, max_queries + 1), loss_means, yerr=loss_stddevs)
     fig.savefig("results_{}_avgloss.svg".format(basename), bbox_inches="tight")
+
+    time_means = np.mean(time_matrix, axis=0)
+    time_stddevs = np.std(time_matrix, ddof=1, axis=0).reshape(-1, 1)
+
+    fig, ax = plt.subplots(1, 1)
+    ax.set_title("Average time over {} trials".format(args.num_trials))
+    ax.set_xlabel("Number of queries")
+    ax.set_ylabel("Average time")
+    ax.errorbar(np.arange(1, max_queries + 1), time_means, yerr=time_stddevs)
+    fig.savefig("results_{}_avgtime.svg".format(basename), bbox_inches="tight")
 
 if __name__ == "__main__":
     main()
