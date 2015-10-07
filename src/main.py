@@ -215,8 +215,6 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the m-item case:\n{}".format(ws)
 
-        times.append(time.time() - old_time)
-
         if debug:
             print "set_size=n ws =\n", ws
             print "set_size=n xs =\n", xs
@@ -241,6 +239,9 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         if debug:
             print "\nupdated queries ="
             print_queries(queries, hidden_w)
+
+        elapsed = time.time() - old_time
+        times.extend([elapsed / num_queries] * num_queries)
 
         # Compute the utility loss between the best item that we would
         # recommend given the queries collected so far and the best
