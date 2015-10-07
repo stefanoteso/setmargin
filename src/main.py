@@ -152,7 +152,7 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
                   indifferent_queries
     else:
         raise ValueError("invalid ranking_mode '{}'".format(ranking_mode))
-    return queries
+    return queries, num_queries
 
 def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         rng, ranking_mode="all_pairs", deterministic=False,
@@ -230,11 +230,11 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
             assert (np.abs(scores - debug_scores) < 1e-6).all(), "solver scores and debug scores mismatch:\n{}\n{}".format(scores, debug_scores)
 
         # Ask the user about the retrieved items
-        new_queries = update_queries(hidden_w, ws, xs,
-                                     old_best_item, rng,
-                                     ranking_mode=ranking_mode,
-                                     deterministic=deterministic,
-                                     no_indifference=no_indifference)
+        new_queries, num_queries = \
+            update_queries(hidden_w, ws, xs, old_best_item, rng,
+                           ranking_mode=ranking_mode,
+                           deterministic=deterministic,
+                           no_indifference=no_indifference)
         queries.extend(new_queries)
         old_best_item = xs[0] if xs.shape[0] == 1 else None
 
@@ -253,10 +253,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
 
-        # XXX replicate the result by the number of new_queries asked
-
         utility_loss = best_hidden_score - np.dot(hidden_w, xs[0])
-        avg_losses.append(utility_loss / np.linalg.norm(hidden_w))
+        avg_losses.extend([utility_loss / np.linalg.norm(hidden_w)] * num_queries)
 
         if debug:
             print "set_size=1 ws =", ws, "hidden_w =", hidden_w
