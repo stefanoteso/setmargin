@@ -269,6 +269,10 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
         assert is_onehot(domain_sizes, 1, xs), "xs are not in onehot format"
 
+        # If the user is fully satisfied, we are done
+        if utility_loss < 1e-6:
+            break
+
     return avg_losses, times
 
 def main():
