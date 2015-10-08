@@ -309,7 +309,7 @@ def main():
                         help="Enable debug spew")
     args = parser.parse_args()
 
-    domain_sizes = map(int, args.domain_sizes.split(","))
+    domain_sizes = map(int, [ds for ds in args.domain_sizes.split(",") if len(ds)])
     datasets = {
         "synthetic": lambda: get_synthetic_dataset(domain_sizes=domain_sizes),
         "pc": get_pc_dataset,
