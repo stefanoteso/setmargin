@@ -335,7 +335,8 @@ def main():
 
     basename = "_".join(str(argsdict[h]) for h in hyperparams)
 
-    print "running {} trials on {}, {} iterations per trial, seed is {}".format(args.num_trials, args.dataset, args.num_iterations, args.seed)
+    print "running {num_trials} trials on {dataset}, {num_iterations} iterations per trial, seed is {seed}" \
+            .format(**argsdict)
 
     rng = np.random.RandomState(args.seed)
 
