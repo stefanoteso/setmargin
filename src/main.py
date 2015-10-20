@@ -85,6 +85,39 @@ def is_onehot(domain_sizes, set_size, xs):
                 return False
     return True
 
+def quicksort(w, xs, rng, deterministic, no_indifference, answers={}):
+    lt, eq, gt = [], [], []
+    if len(xs) > 1:
+        pivot, num_queries = xs[0], 0
+        eq.append(pivot)
+        for x in xs[1:]:
+            try:
+                ans = answers[(tuple(x), tuple(pivot))]
+            except KeyError:
+                _, _, ans = query_utility(w, x, pivot, rng,
+                                          deterministic=deterministic,
+                                          no_indifference=no_indifference)
+                num_queries += 1
+                answers[(tuple(x), tuple(pivot))] = ans
+            if ans < 0:
+                lt.append(x)
+            elif ans == 0:
+                eq.append(x)
+            else:
+                gt.append(x)
+        assert len(lt) < len(xs)
+        assert len(gt) < len(xs)
+        sorted_lt, num_queries_lt, _ = \
+            quicksort(w, lt, rng, deterministic, no_indifference, answers=answers)
+        sorted_gt, num_queries_gt, _ = \
+            quicksort(w, gt, rng, deterministic, no_indifference, answers=answers)
+
+        return sorted_lt + eq + sorted_gt, \
+               num_queries_lt + num_queries + num_queries_gt, \
+               answers
+    else:
+        return xs, 0, answers
+
 def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
                    no_indifference=False, ranking_mode="all_pairs"):
     """Computes the queries to ask the user for the given inputs.
@@ -103,7 +136,7 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
     :param rng: an RNG object.
     :param deterministic: whether the user answers should be deterministic.
     :param no_indifference: disable 'whatever' answers.
-    :param ranking_mode: either ``"all_pairs"`` or ``"random_list"``.
+    :param ranking_mode: either ``"all_pairs"`` or ``"sorted_pairs"``.
     :returns: a pair (list of new queries, 
     """
     num_items, num_features = xs.shape
@@ -123,33 +156,17 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
                                  no_indifference=no_indifference)
                    for (i, xi), (j, xj) in it.product(enumerate(xs), enumerate(xs)) if i < j]
         num_queries = len(queries)
-    elif ranking_mode == "random_list":
-        # requires at most 1 + 2 + ... + (n-1) = 1/2 * (n - 1) * (n - 2)
-        # queries
+    elif ranking_mode == "sorted_pairs":
+        # requires n*log(n) queries
         # XXX note that in the non-deterministic setting we may actually lose
         # information by only querying for a subset of the pairs!
-        permuted_xs = rng.permutation(xs)
-
-        num_queries = 0
-        sorted_xs, indifferent_queries = [permuted_xs[0]], []
-        for x in permuted_xs[1:]:
-            inserted = False
-            for i, other_x in enumerate(sorted_xs):
-                _, _, ans = query_utility(hidden_w, x, other_x, rng)
-                num_queries += 1
-                if ans == 0:
-                    indifferent_queries.append((x, other_x, 0))
-                    inserted = True
-                    break
-                elif ans == 1:
-                    sorted_xs.insert(i, x)
-                    inserted = True
-                    break
-            if not inserted:
-                sorted_xs.append(x)
+        sorted_xs, num_queries, answers = \
+            quicksort(hidden_w, xs, rng, deterministic, no_indifference)
+        sorted_xs = np.array(sorted_xs)
+        assert xs.shape == sorted_xs.shape
+        assert num_queries > 0
         queries = [(xi, xj, 1) for (i, xi), (j, xj)
-                   in it.product(enumerate(sorted_xs), enumerate(sorted_xs)) if i < j] + \
-                  indifferent_queries
+                   in it.product(enumerate(sorted_xs), enumerate(sorted_xs)) if i < j]
     else:
         raise ValueError("invalid ranking_mode '{}'".format(ranking_mode))
     return queries, num_queries
@@ -233,6 +250,8 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
                            ranking_mode=ranking_mode,
                            deterministic=deterministic,
                            no_indifference=no_indifference)
+        assert num_queries > 0
+
         queries.extend(new_queries)
         old_best_item = xs[0] if xs.shape[0] == 1 else None
 
@@ -296,7 +315,7 @@ def main():
     parser.add_argument("-u", "--utility_sampling_mode", type=str, default="uniform",
                         help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
     parser.add_argument("-r", "--ranking-mode", type=str, default="all_pairs",
-                        help="ranking mode, any of ('all_pairs', 'random_list') (default: 'all_pairs')")
+                        help="ranking mode, any of ('all_pairs', 'sorted_pairs') (default: 'all_pairs')")
     parser.add_argument("-d", "--deterministic", action="store_true",
                         help="whether the user answers should be deterministic rather than stochastic (default: False)")
     parser.add_argument("--no-indifference", action="store_true",
