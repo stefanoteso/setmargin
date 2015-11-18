@@ -9,12 +9,13 @@ from util import *
 MAX_W_Z = 1
 
 def solve(domain_sizes, queries, w_constraints, x_constraints,
-          set_size, alphas, multimargin=False, debug=False):
+          set_size, alphas, multimargin=False, threads=1, debug=False):
 
     num_examples = len(queries)
     num_features = sum(domain_sizes)
 
     model = grb.Model("facility")
+    model.params.Threads = threads
 
     # Declare the variables
     ws, xs = {}, {}
