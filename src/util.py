@@ -13,6 +13,9 @@ def onehot(domain_size, value):
     value_onehot[value] = 1
     return value_onehot
 
+def vonehot(domain_sizes, item):
+    return np.hstack((onehot(domain_sizes[i], v) for i, v in enumerate(item)))
+
 def get_zs_in_domains(domain_sizes):
     zs_in_domains, last_z = [], 0
     for domain_size in domain_sizes:
