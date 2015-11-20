@@ -307,17 +307,16 @@ def main():
         print "# of items =", len(items)
         print items
 
-    # Sample the user
-    user = User(domain_sizes, sampling_mode=args.sampling_mode,
-                is_deterministic=args.is_deterministic,
-                is_indifferent=args.is_indifferent,
-                rng=rng)
-    if args.debug:
-        print "user =\n", user
-
     losses, times = [], []
     for i in range(args.num_trials):
         print "==== TRIAL {} ====".format(i)
+
+        user = User(domain_sizes, sampling_mode=args.sampling_mode,
+                    is_deterministic=args.is_deterministic,
+                    is_indifferent=args.is_indifferent,
+                    rng=rng)
+        if args.debug:
+            print "user =\n", user
 
         losses_for_trial, times_for_trial = \
             run(domain_sizes, items, w_constraints, x_constraints,
