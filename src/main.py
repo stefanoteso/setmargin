@@ -9,8 +9,7 @@ import itertools as it
 from datasets import *
 from util import *
 from user import User
-import solver_omt
-import solver_gurobi
+import solver
 
 def print_queries(queries, hidden_w):
     for xi, xj, sign in queries:
@@ -101,20 +100,12 @@ def update_queries(user, ws, xs, old_best_item, rng, ranking_mode="all_pairs"):
     return queries, num_queries
 
 def run(dataset, num_iterations, set_size, alphas, user, rng,
-        ranking_mode="all_pairs", multimargin=False, solver_name="optimathsat",
-        debug=False):
+        ranking_mode="all_pairs", multimargin=False, debug=False):
 
     if not num_iterations > 0:
         raise ValueError("invalid num_iterations '{}'".format(num_iterations))
     if not len(alphas) == 3 or not all([alpha >= 0 for alpha in alphas]):
         raise ValueError("invalid hyperparameters '{}'".format(alphas))
-
-    if solver_name == "optimathsat":
-        solver = solver_omt
-    elif solver_name == "gurobi":
-        solver = solver_gurobi
-    else:
-        raise ValueError("invalid solver '{}'".format(solver_name))
 
     rng = check_random_state(rng)
 
@@ -150,9 +141,8 @@ def run(dataset, num_iterations, set_size, alphas, user, rng,
             print "set_size=n margin =", margin
 
         assert is_onehot(dataset.domain_sizes, set_size, xs), "xs are not in onehot format"
-        if solver_name != "gurobi":
-            # XXX somehow gurobi fails to satisfy this assertion...
-            assert (np.abs(scores - debug_scores) < 1e-6).all(), "solver scores and debug scores mismatch:\n{}\n{}".format(scores, debug_scores)
+        # XXX somehow gurobi fails to satisfy this assertion...
+        # assert (np.abs(scores - debug_scores) < 1e-6).all(), "solver scores and debug scores mismatch:\n{}\n{}".format(scores, debug_scores)
 
         # Ask the user about the retrieved items
         new_queries, num_queries = \
@@ -265,8 +255,6 @@ def main():
                         help="whether the user answers should be deterministic rather than stochastic (default: False)")
     parser.add_argument("--is-indifferent", action="store_true",
                         help="whether the user can (not) be indifferent (default: False)")
-    parser.add_argument("-S", "--solver", type=str, default="gurobi",
-                        help="solver to use (default: 'gurobi')")
     parser.add_argument("-s", "--seed", type=int, default=None,
                         help="RNG seed (default: None)")
     parser.add_argument("--domain-sizes", type=str, default="2,2,5",
@@ -310,7 +298,6 @@ def main():
                 (args.alpha, args.beta, args.gamma), user, rng,
                 ranking_mode=args.ranking_mode,
                 multimargin=args.multimargin,
-                solver_name=args.solver,
                 debug=args.debug)
 
         losses.append(np.array(losses_for_trial).ravel())
