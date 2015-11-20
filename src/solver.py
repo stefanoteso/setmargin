@@ -4,14 +4,74 @@ import numpy as np
 import tempfile
 import gurobipy as grb
 from gurobipy import GRB
+from textwrap import dedent
 from util import *
 
 MAX_W_Z = 1
+
+def solve_best_score(dataset, user, debug=False):
+    """Returns the highest-scoring item in the dataset accordin to the user.
+
+    The solution is given by:
+
+    .. math::
+
+        \\max_x \\langle w, x \\rangle
+
+    :param dataset: the dataset.
+    :param user: the user.
+    :returns: a scalar.
+    """
+    assert dataset.horn_constraints is None
+
+    num_features = sum(dataset.domain_sizes)
+    w = user.w.ravel()
+
+    print w[0]
+
+    model = grb.Model("setmargin_dot")
+    xs = [model.addVar(vtype=GRB.BINARY, name="x_{}".format(z))
+          for z in range(num_features)]
+    model.modelSense = GRB.MAXIMIZE
+    model.update()
+    model.setObjective(grb.quicksum([w[i] * xs[i] for i in range(num_features)]))
+
+    # One-hot constraints
+    zs_in_domains = get_zs_in_domains(dataset.domain_sizes)
+    for zs_in_domain in zs_in_domains:
+        model.addConstr(grb.quicksum([xs[z] for z in zs_in_domain]) == 1)
+
+    # Horn constraints
+    # TODO
+
+    model.optimize()
+    best_score = model.objVal
+
+    if dataset.items is not None:
+        # We have the grounded items
+        scores = np.dot(user.w, dataset.items.T)
+        debug_best_score = np.max(scores, axis=1)
+        if np.abs(best_score - debug_best_score) > 1e-10:
+            best_item = np.array([x.x for x in xs])
+            debug_best_item = dataset.items[np.argmax(scores, axis=1)].ravel()
+            raise RuntimeError(dedent("""\
+                best_score sanity check failed!
+                best_score = {}
+                best_item = {}
+                debug best_score = {}
+                debug best_item = {}
+                """).format(best_score, best_item, debug_best_score,
+                            debug_best_item))
+
+        assert best_score == debug_best_score
+
+    return best_score
 
 def solve(dataset, queries, set_size, alphas,
           multimargin=False, threads=1, debug=False):
     assert dataset.w_constraints is None
     assert dataset.x_constraints is None
+    assert dataset.horn_constraints is None
 
     num_examples = len(queries)
     num_features = sum(dataset.domain_sizes)

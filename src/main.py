@@ -110,8 +110,7 @@ def run(dataset, num_iterations, set_size, alphas, user, rng,
     rng = check_random_state(rng)
 
     # Find the dataset item with the highest score wrt the hidden hyperlpane
-    # TODO use the optimizer to find the highest scoring configuration
-    best_hidden_score = np.max(np.dot(user.w, dataset.items.T), axis=1)
+    best_hidden_score = solver.solve_best_score(dataset, user)
 
     # Iterate
     queries, old_best_item = [], None
