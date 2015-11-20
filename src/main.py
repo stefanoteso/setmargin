@@ -107,16 +107,14 @@ def quicksort(w, xs, rng, deterministic, no_indifference, answers={}):
                 gt.append(x)
         assert len(lt) < len(xs)
         assert len(gt) < len(xs)
-        sorted_lt, num_queries_lt, _ = \
-            quicksort(w, lt, rng, deterministic, no_indifference, answers=answers)
-        sorted_gt, num_queries_gt, _ = \
-            quicksort(w, gt, rng, deterministic, no_indifference, answers=answers)
 
-        return sorted_lt + eq + sorted_gt, \
-               num_queries_lt + num_queries + num_queries_gt, \
-               answers
+        sorted_lt, _ = quicksort(w, lt, rng, deterministic, no_indifference,
+                                 answers=answers)
+        sorted_gt, _ = quicksort(w, gt, rng, deterministic, no_indifference,
+                                 answers=answers)
+        return sorted_lt + eq + sorted_gt, answers
     else:
-        return xs, 0, answers
+        return xs, answers
 
 def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
                    no_indifference=False, ranking_mode="all_pairs"):
@@ -160,8 +158,9 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
         # requires n*log(n) queries
         # XXX note that in the non-deterministic setting we may actually lose
         # information by only querying for a subset of the pairs!
-        sorted_xs, num_queries, answers = \
+        sorted_xs, answers = \
             quicksort(hidden_w, xs, rng, deterministic, no_indifference)
+        num_queries = len(answers)
         sorted_xs = np.array(sorted_xs)
         assert xs.shape == sorted_xs.shape
         assert num_queries > 0
