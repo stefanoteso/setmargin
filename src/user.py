@@ -29,6 +29,9 @@ class User(object):
         self._rng = check_random_state(rng)
         self.w = self._sample(sampling_mode, domain_sizes) if w is None else w
 
+    def __str__(self):
+        return "User({} D={} I={})".format(self.w, self.is_deterministic, self.is_indifferent)
+
     def _sample(self, sampling_mode, domain_sizes):
         if sampling_mode == "uniform":
             return self._rng.uniform(0, 1, size=(sum(domain_sizes), 1)).reshape(1,-1)
