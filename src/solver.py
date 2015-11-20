@@ -42,7 +42,10 @@ def solve_best_score(dataset, user, debug=False):
             model.addConstr((1 - xs[head]) + grb.quicksum([xs[atom] for atom in body]) >= 1)
 
     model.optimize()
-    best_score = model.objVal
+    try:
+        best_score = model.objVal
+    except:
+        raise RuntimeError("optimization failed!")
 
     if dataset.items is not None and dataset.horn_constraints is None:
         # We have the grounded items
@@ -223,8 +226,7 @@ def solve(dataset, queries, set_size, alphas,
     try:
         _ = model.objVal
     except:
-        print "the optimization failed"
-        raise RuntimeError
+        raise RuntimeError("optimization failed!")
 
     output_ws = np.zeros((set_size, num_features))
     output_xs = np.zeros((set_size, num_features))
