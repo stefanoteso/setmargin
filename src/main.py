@@ -271,9 +271,11 @@ def main():
 
     rng = np.random.RandomState(args.seed)
 
+    domain_sizes = map(int, [ds for ds in args.domain_sizes.split(",") if len(ds)])
     if args.dataset == "synthetic":
-        domain_sizes = map(int, [ds for ds in args.domain_sizes.split(",") if len(ds)])
         dataset = SyntheticDataset(domain_sizes)
+    elif args.dataset == "constsynthetic":
+        dataset = RandomlyConstrainedSyntheticDataset(domain_sizes, rng=rng)
     elif args.dataset == "pc":
         dataset = PCDataset()
     else:
@@ -307,7 +309,7 @@ def main():
         "gamma", "multimargin", "sampling_mode", "is_deterministic",
         "is_indifferent", "seed"
     ]
-    if args.dataset == "synthetic":
+    if args.dataset in ("synthetic", "constsynthetic"):
         hyperparams.insert(1, "domain_sizes")
     dump_performance("_".join(str(argsdict[h]) for h in hyperparams),
                      args.num_trials, losses, times)

@@ -2,7 +2,13 @@
 
 import numpy as np
 import itertools as it
+from sklearn.utils import check_random_state
 from util import vonehot, prod
+
+def _attr_index(domain_sizes, dom_i, feature_i):
+    assert 0 <= dom_i < len(domain_sizes)
+    assert 0 <= feature_i < len(domain_sizes[dom_i])
+    return sum(domain_sizes[:dom_i]) + feature_i
 
 class Dataset(object):
     def __str__(self):
@@ -27,6 +33,23 @@ class SyntheticDataset(Dataset):
                           for item in self._ground(domain_sizes)])
         assert items.shape == (prod(domain_sizes), sum(domain_sizes))
         return items
+
+class RandomlyConstrainedSyntheticDataset(SyntheticDataset):
+    def __init__(self, domain_sizes, rng=None):
+        super(RandomlyConstrainedSyntheticDataset, self).__init__(domain_sizes)
+        self.horn_constraints = self._sample_constraints(domain_sizes,
+                                                         check_random_state(rng))
+
+    def _sample_constraints(self, domain_sizes, rng):
+        constraints = []
+        for (i, dsi), (j, dsj) in enumerate(it.product(domain_sizes, domain_sizes)):
+            # XXX come up with something smarter
+            head = np.random.random_integer(0, dsi - 1)
+            body = np.random.random_integer(0, dsj - 1)
+            index_head = attr_index(domain_sizes, dsi, head)
+            index_body = attr_index(domain_sizes, dsj, body)
+            constraints.append((index_head, [index_body]))
+        return constraints
 
 class PCDataset(Dataset):
     def __init__(self):
