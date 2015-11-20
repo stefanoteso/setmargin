@@ -132,8 +132,11 @@ def run(dataset, num_iterations, set_size, alphas, user, rng,
             print "set_size=n margin =", margin
 
         assert all(dataset.is_item_valid(x) for x in xs)
-        # XXX somehow gurobi fails to satisfy this assertion...
-        # assert (np.abs(scores - debug_scores) < 1e-6).all(), "solver scores and debug scores mismatch:\n{}\n{}".format(scores, debug_scores)
+
+        if (np.abs(scores - debug_scores) >= 1e-10).any():
+            print "Warning: solver and debug scores mismatch:\n" \
+                  "scores =\n{}\n" \
+                  "debug scores =\n{}\n".format(scores, debug_scores)
 
         # Ask the user about the retrieved items
         new_queries, num_queries = \
