@@ -11,55 +11,65 @@ from util import *
 import solver_omt
 import solver_gurobi
 
-def sample_utility(domain_sizes, rng, mode="uniform"):
-    """Samples a utility weight vector.
+class User(object):
+    """A randomly sampled user that can answer ternary queries.
 
-    .. note::
+    Implemented according to the tree-structured Bradley-Torr model of
+    indifference (see [1]_).
 
-        The computation is taken from p. 293 of the Guo & Sanner paper.
+    The sampling ranges are adapted from those used in [1]_.
 
-    :param domains: list of attribute domains (that is, integer intervals).
-    :param mode: either ``"uniform"`` or ``"normal"``.
-    :returns: a row vector with as many components as attributes.
+    :param domain_sizes: list of domain sizes.
+    :param sampling_mode: sampling mode. (default: ``"uniform"``)
+    :param is_deterministic: whether the user is deterministic. (default: ``False``)
+    :param is_indifferent: whether the user can be indifferent. (default: ``False``)
+    :param w: user-provided preference vector. (default: ``None``)
+    :param rng: random stream. (default: ``None``)
+
+    .. [1] Shengbo Guo and Scott Sanner, *Real-time Multiattribute Bayesian
+           Preference Elicitation with Pairwise Comparison Queries*, AISTATS
+           2010.
     """
-    assert mode in ("uniform", "normal")
-    rng = check_random_state(rng)
-    if mode == "uniform":
-        return rng.uniform(0, 1, size=(sum(domain_sizes), 1)).reshape(1,-1)
-    else:
-        return rng.normal(0.25, 0.25 / 3, size=(sum(domain_sizes), 1)).reshape(1,-1)
+    def __init__(self, domain_sizes, sampling_mode="uniform",
+                 is_deterministic=False, is_indifferent=False, w=None,
+                 rng=None):
+        self._domain_sizes = domain_sizes
+        self.is_deterministic = is_deterministic
+        self.is_indifferent = is_indifferent
+        self._rng = check_random_state(rng)
+        self.w = self._sample(sampling_mode, domain_sizes) if w is None else w
 
-def query_utility(w, xi, xj, rng, deterministic=False, no_indifference=False):
-    """Use the indifference-augmented Bradley-Terry model to compute the
-    preferences of a user between two items.
+    def _sample(self, sampling_mode, domain_sizes):
+        if sampling_mode == "uniform":
+            return self._rng.uniform(0, 1, size=(sum(domain_sizes), 1)).reshape(1,-1)
+        elif sampling_mode == "normal":
+            return self._rng.normal(0.25, 0.25 / 3, size=(sum(domain_sizes), 1)).reshape(1,-1)
+        else:
+            raise ValueError("invalid sampling_mode")
 
-    :param w: the utility vector.
-    :param xi: attribute vector of object i.
-    :param xj: attribute vector of object j.
-    :param deterministic: WRITEME.
-    :param no_indifference: WRITEME.
-    :returns: 0 (indifferent), 1 (i wins over j) or -1 (j wins over i).
-    """
-    # The original problem has weights sampled in the range [0, 100], and
-    # uses ALPHA=1, BETA=1; here however we have weights in the range [0, 1]
-    # so we must rescale ALPHA and BETA to obtain the same probabilities. 
-    ALPHA, BETA = 100, 100
+    def query(self, xi, xj):
+        """Queries the user about a single pairwise choice.
 
-    rng = check_random_state(rng)
+        :param xi: an item.
+        :param xj: the other item.
+        :returns: 0 if the user is indifferent, 1 if xi is better than xj,
+            and -1 if xi is worse than xj.
+        """
+        # The original problem has weights sampled in the range [0, 100], and
+        # uses ALPHA=1, BETA=1; here however we have weights in the range [0, 1]
+        # so we must rescale ALPHA and BETA to obtain the same probabilities.
+        ALPHA, BETA = 100, 100
 
-    diff = np.dot(w, xi.T - xj.T)
+        diff = np.dot(self.w, xi.T - xj.T)
 
-    if deterministic:
-        ans = int(np.sign(diff))
-    else:
-        eq = np.exp(-BETA * np.abs(diff))
-        if no_indifference:
-            eq = 0.0
+        if self.is_deterministic:
+            return int(np.sign(diff))
+
+        eq = 0.0 if self.is_indifferent else np.exp(-BETA * np.abs(diff))
         gt = np.exp(ALPHA * diff) / (1 + np.exp(ALPHA * diff))
         lt = np.exp(-ALPHA * diff) / (1 + np.exp(-ALPHA * diff))
 
-        z = rng.uniform(0, eq + gt + lt)
-
+        z = self._rng.uniform(0, eq + gt + lt)
         if z < eq:
             ans = 0
         elif z < (eq + gt):
@@ -67,7 +77,8 @@ def query_utility(w, xi, xj, rng, deterministic=False, no_indifference=False):
         else:
             ans = -1
 
-    return (xi, xj, ans)
+        return ans
+
 
 def print_queries(queries, hidden_w):
     for xi, xj, sign in queries:
@@ -85,7 +96,7 @@ def is_onehot(domain_sizes, set_size, xs):
                 return False
     return True
 
-def quicksort(w, xs, rng, deterministic, no_indifference, answers={}):
+def quicksort(user, xs, rng, deterministic, no_indifference, answers={}):
     lt, eq, gt = [], [], []
     if len(xs) > 1:
         pivot, num_queries = xs[0], 0
@@ -94,9 +105,7 @@ def quicksort(w, xs, rng, deterministic, no_indifference, answers={}):
             try:
                 ans = answers[(tuple(x), tuple(pivot))]
             except KeyError:
-                _, _, ans = query_utility(w, x, pivot, rng,
-                                          deterministic=deterministic,
-                                          no_indifference=no_indifference)
+                ans = user.query(x, pivot)
                 num_queries += 1
                 answers[(tuple(x), tuple(pivot))] = ans
             if ans < 0:
@@ -108,15 +117,15 @@ def quicksort(w, xs, rng, deterministic, no_indifference, answers={}):
         assert len(lt) < len(xs)
         assert len(gt) < len(xs)
 
-        sorted_lt, _ = quicksort(w, lt, rng, deterministic, no_indifference,
+        sorted_lt, _ = quicksort(user, lt, rng, deterministic, no_indifference,
                                  answers=answers)
-        sorted_gt, _ = quicksort(w, gt, rng, deterministic, no_indifference,
+        sorted_gt, _ = quicksort(user, gt, rng, deterministic, no_indifference,
                                  answers=answers)
         return sorted_lt + eq + sorted_gt, answers
     else:
         return xs, answers
 
-def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
+def update_queries(user, ws, xs, old_best_item, rng, deterministic=False,
                    no_indifference=False, ranking_mode="all_pairs"):
     """Computes the queries to ask the user for the given inputs.
 
@@ -127,7 +136,7 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
     If there are multiple candidate best items, then multiple queries are
     returned, one for each pair of candidate best items.
 
-    :param hidden_w: the hidden user preferences.
+    :param user: the user.
     :param ws: the estimated user preference(s) at the current iteration.
     :param xs: the estimated best item(s) at the current iteration.
     :param old_best_item: the estimated best item at the previous iteration.
@@ -141,17 +150,13 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
     if num_items == 1:
         if old_best_item is None:
             old_best_item = rng.random_integers(0, 1, size=(num_features,))
-        queries = [query_utility(hidden_w, xs[0], old_best_item, rng,
-                                 deterministic=deterministic,
-                                 no_indifference=no_indifference)]
+        queries = [(xs[0], old_best_item, user.query(xs[0], old_best_item))]
         num_queries = 1
     elif ranking_mode == "all_pairs":
         # requires 1/2 * n * (n - 1) queries
         # XXX note that in the non-deterministic setting we may actually lose
         # information by only querying for ~half the pairs!
-        queries = [query_utility(hidden_w, xi, xj, rng,
-                                 deterministic=deterministic,
-                                 no_indifference=no_indifference)
+        queries = [(xi, xj, user.query(xi, xj))
                    for (i, xi), (j, xj) in it.product(enumerate(xs), enumerate(xs)) if i < j]
         num_queries = len(queries)
     elif ranking_mode == "sorted_pairs":
@@ -159,7 +164,7 @@ def update_queries(hidden_w, ws, xs, old_best_item, rng, deterministic=False,
         # XXX note that in the non-deterministic setting we may actually lose
         # information by only querying for a subset of the pairs!
         sorted_xs, answers = \
-            quicksort(hidden_w, xs, rng, deterministic, no_indifference)
+            quicksort(user, xs, rng, deterministic, no_indifference)
         num_queries = len(answers)
         sorted_xs = np.array(sorted_xs)
         assert xs.shape == sorted_xs.shape
@@ -199,15 +204,17 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         print items
 
     # Sample the hidden utility function
-    hidden_w = sample_utility(domain_sizes, rng, mode=utility_sampling_mode)
+    user = User(domain_sizes, sampling_mode=utility_sampling_mode,
+                is_deterministic=deterministic, is_indifferent=not no_indifference,
+                rng=rng)
 
     if debug:
-        print "hidden_w ="
-        print hidden_w
+        print "user w ="
+        print user.w
 
     # Find the dataset item with the highest score wrt the hidden hyperlpane
     # TODO use the optimizer to find the highest scoring configuration
-    best_hidden_score = np.max(np.dot(hidden_w, items.T), axis=1)
+    best_hidden_score = np.max(np.dot(user.w, items.T), axis=1)
 
     # Iterate
     queries, old_best_item = [], None
@@ -217,7 +224,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         if debug:
             print "\n\n\n==== ITERATION {} ====\n".format(t)
             print "input queries ="
-            print_queries(queries, hidden_w)
+            print_queries(queries, user.w)
 
         old_time = time.time()
 
@@ -245,7 +252,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
         # Ask the user about the retrieved items
         new_queries, num_queries = \
-            update_queries(hidden_w, ws, xs, old_best_item, rng,
+            update_queries(user, ws, xs, old_best_item, rng,
                            ranking_mode=ranking_mode,
                            deterministic=deterministic,
                            no_indifference=no_indifference)
@@ -256,7 +263,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
 
         if debug:
             print "\nupdated queries ="
-            print_queries(queries, hidden_w)
+            print_queries(queries, user.w)
 
         elapsed = time.time() - old_time
         times.extend([elapsed / num_queries] * num_queries)
@@ -272,17 +279,17 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
 
-        utility_loss = best_hidden_score - np.dot(hidden_w, xs[0])
-        avg_losses.extend([utility_loss / np.linalg.norm(hidden_w)] * num_queries)
+        utility_loss = best_hidden_score - np.dot(user.w, xs[0])
+        avg_losses.extend([utility_loss / np.linalg.norm(user.w)] * num_queries)
 
         if debug:
-            print "set_size=1 ws =", ws, "hidden_w =", hidden_w
+            print "set_size=1 ws =", ws, "user's w =", user.w
             print "set_size=1 xs =", xs
             print "set_size=1 scores =", scores
             print "set_size=1 slacks =", slacks
             print "set_size=1 margin =", margin
 
-            print "u(x) =", np.dot(hidden_w, xs[0])
+            print "u(x) =", np.dot(user.w, xs[0])
             print "utility_loss =", utility_loss
 
         assert is_onehot(domain_sizes, 1, xs), "xs are not in onehot format"
