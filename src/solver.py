@@ -49,7 +49,7 @@ def solve_best_score(dataset, user, debug=False):
     if dataset.items is not None and dataset.horn_constraints is None:
         # We have the grounded items
         scores = np.dot(user.w, dataset.items.T)
-        debug_best_score = np.max(scores, axis=1)
+        debug_best_score = np.max(scores, axis=1)[0]
         if np.abs(best_score - debug_best_score) > 1e-10:
             best_item = np.array([x.x for x in xs])
             debug_best_item = dataset.items[np.argmax(scores, axis=1)].ravel()
@@ -61,8 +61,6 @@ def solve_best_score(dataset, user, debug=False):
                 debug best_item = {}
                 """).format(best_score, best_item, debug_best_score,
                             debug_best_item))
-
-        assert best_score == debug_best_score
 
     return best_score
 
