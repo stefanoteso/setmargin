@@ -31,14 +31,13 @@ def is_onehot(domain_sizes, set_size, xs):
 def quicksort(user, xs, rng, deterministic, no_indifference, answers={}):
     lt, eq, gt = [], [], []
     if len(xs) > 1:
-        pivot, num_queries = xs[0], 0
+        pivot = xs[0], 0
         eq.append(pivot)
         for x in xs[1:]:
             try:
                 ans = answers[(tuple(x), tuple(pivot))]
             except KeyError:
                 ans = user.query(x, pivot)
-                num_queries += 1
                 answers[(tuple(x), tuple(pivot))] = ans
             if ans < 0:
                 lt.append(x)
