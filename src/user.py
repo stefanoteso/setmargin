@@ -58,7 +58,7 @@ class User(object):
         if self.is_deterministic:
             return int(np.sign(diff))
 
-        eq = 0.0 if self.is_indifferent else np.exp(-BETA * np.abs(diff))
+        eq = np.exp(-BETA * np.abs(diff)) if self.is_indifferent else 0.0
         gt = np.exp(ALPHA * diff) / (1 + np.exp(ALPHA * diff))
         lt = np.exp(-ALPHA * diff) / (1 + np.exp(-ALPHA * diff))
 
