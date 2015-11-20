@@ -8,13 +8,13 @@ from util import *
 
 MAX_W_Z = 1
 
-def solve(domain_sizes, queries, w_constraints, x_constraints,
-          set_size, alphas, multimargin=False, threads=1, debug=False):
-    assert len(w_constraints) == 0
-    assert len(x_constraints) == 0
+def solve(dataset, queries, set_size, alphas,
+          multimargin=False, threads=1, debug=False):
+    assert dataset.w_constraints is None
+    assert dataset.x_constraints is None
 
     num_examples = len(queries)
-    num_features = sum(domain_sizes)
+    num_features = sum(dataset.domain_sizes)
 
     model = grb.Model("facility")
     model.params.Threads = threads
@@ -144,7 +144,7 @@ def solve(domain_sizes, queries, w_constraints, x_constraints,
             model.addConstr(margins[1] == 0)
 
     # One-hot constraints
-    zs_in_domains = get_zs_in_domains(domain_sizes)
+    zs_in_domains = get_zs_in_domains(dataset.domain_sizes)
     for i in range(set_size):
         for zs_in_domain in zs_in_domains:
             model.addConstr(grb.quicksum([xs[i,z] for z in zs_in_domain]) == 1)

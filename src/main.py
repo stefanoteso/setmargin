@@ -100,8 +100,7 @@ def update_queries(user, ws, xs, old_best_item, rng, ranking_mode="all_pairs"):
         raise ValueError("invalid ranking_mode '{}'".format(ranking_mode))
     return queries, num_queries
 
-def run(domain_sizes, items, w_constraints, x_constraints, num_iterations,
-        set_size, alphas, user, rng,
+def run(dataset, num_iterations, set_size, alphas, user, rng,
         ranking_mode="all_pairs", multimargin=False, solver_name="optimathsat",
         debug=False):
 
@@ -121,7 +120,7 @@ def run(domain_sizes, items, w_constraints, x_constraints, num_iterations,
 
     # Find the dataset item with the highest score wrt the hidden hyperlpane
     # TODO use the optimizer to find the highest scoring configuration
-    best_hidden_score = np.max(np.dot(user.w, items.T), axis=1)
+    best_hidden_score = np.max(np.dot(user.w, dataset.items.T), axis=1)
 
     # Iterate
     queries, old_best_item = [], None
@@ -137,10 +136,8 @@ def run(domain_sizes, items, w_constraints, x_constraints, num_iterations,
 
         # Solve the utility/item learning problem for the current iteration
         ws, xs, scores, slacks, margin = \
-            solver.solve(domain_sizes, queries,
-                         w_constraints, x_constraints,
-                         set_size, alphas, multimargin=multimargin,
-                         debug=debug)
+            solver.solve(dataset, queries, set_size, alphas,
+                         multimargin=multimargin, debug=debug)
         debug_scores = np.dot(ws, xs.T)
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the m-item case:\n{}".format(ws)
@@ -152,7 +149,7 @@ def run(domain_sizes, items, w_constraints, x_constraints, num_iterations,
             print "set_size=n slacks =\n", slacks
             print "set_size=n margin =", margin
 
-        assert is_onehot(domain_sizes, set_size, xs), "xs are not in onehot format"
+        assert is_onehot(dataset.domain_sizes, set_size, xs), "xs are not in onehot format"
         if solver_name != "gurobi":
             # XXX somehow gurobi fails to satisfy this assertion...
             assert (np.abs(scores - debug_scores) < 1e-6).all(), "solver scores and debug scores mismatch:\n{}\n{}".format(scores, debug_scores)
@@ -177,10 +174,8 @@ def run(domain_sizes, items, w_constraints, x_constraints, num_iterations,
         # recommend given the queries collected so far and the best
         # recommendation according to the hidden user hyperplane
         ws, xs, scores, slacks, margin = \
-            solver.solve(domain_sizes, queries,
-                         w_constraints, x_constraints,
-                         1, alphas, multimargin=multimargin,
-                         debug=debug)
+            solver.solve(dataset, queries, 1, alphas,
+                         multimargin=multimargin, debug=debug)
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
 
@@ -197,7 +192,7 @@ def run(domain_sizes, items, w_constraints, x_constraints, num_iterations,
             print "u(x) =", np.dot(user.w, xs[0])
             print "utility_loss =", utility_loss
 
-        assert is_onehot(domain_sizes, 1, xs), "xs are not in onehot format"
+        assert is_onehot(dataset.domain_sizes, 1, xs), "xs are not in onehot format"
 
         # If the user is fully satisfied, we are done
         if utility_loss < 1e-6:
@@ -280,15 +275,6 @@ def main():
                         help="Enable debug spew")
     args = parser.parse_args()
 
-    domain_sizes = map(int, [ds for ds in args.domain_sizes.split(",") if len(ds)])
-    datasets = {
-        "synthetic": lambda: get_synthetic_dataset(domain_sizes=domain_sizes),
-        "pc": get_pc_dataset,
-        "housing": get_housing_dataset,
-    }
-    if not args.dataset in datasets:
-        raise ValueError("invalid dataset '{}'".format(args.dataset))
-
     argsdict = vars(args)
     argsdict["dataset"] = args.dataset
 
@@ -298,14 +284,15 @@ def main():
 
     rng = np.random.RandomState(args.seed)
 
-    # Retrieve the dataset
-    domain_sizes, items, w_constraints, x_constraints = datasets[args.dataset]()
-    assert sum(domain_sizes) == items.shape[1]
-
+    if args.dataset == "synthetic":
+        domain_sizes = map(int, [ds for ds in args.domain_sizes.split(",") if len(ds)])
+        dataset = SyntheticDataset(domain_sizes)
+    elif args.dataset == "pc":
+        dataset = PCDataset()
+    else:
+        raise ValueError("invalid dataset.")
     if args.debug:
-        print "domain_sizes =", domain_sizes, "num_features =", sum(domain_sizes)
-        print "# of items =", len(items)
-        print items
+        print dataset
 
     losses, times = [], []
     for i in range(args.num_trials):
@@ -319,8 +306,7 @@ def main():
             print "user =\n", user
 
         losses_for_trial, times_for_trial = \
-            run(domain_sizes, items, w_constraints, x_constraints,
-                args.num_iterations, args.set_size,
+            run(dataset, args.num_iterations, args.set_size,
                 (args.alpha, args.beta, args.gamma), user, rng,
                 ranking_mode=args.ranking_mode,
                 multimargin=args.multimargin,
