@@ -125,7 +125,7 @@ def run(domain_sizes, items, w_constraints, x_constraints, num_iterations,
 
     # Iterate
     queries, old_best_item = [], None
-    avg_losses, times = [], []
+    losses, times = [], []
     for t in range(num_iterations):
 
         if debug:
@@ -185,7 +185,7 @@ def run(domain_sizes, items, w_constraints, x_constraints, num_iterations,
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
 
         utility_loss = best_hidden_score - np.dot(user.w, xs[0])
-        avg_losses.extend([utility_loss / np.linalg.norm(user.w)] * num_queries)
+        losses.extend([utility_loss / np.linalg.norm(user.w)] * num_queries)
 
         if debug:
             print "set_size=1 ws =", ws, "user's w =", user.w
@@ -203,7 +203,7 @@ def run(domain_sizes, items, w_constraints, x_constraints, num_iterations,
         if utility_loss < 1e-6:
             break
 
-    return avg_losses, times
+    return losses, times
 
 def dump_performance(basename, num_trials, losses, times):
     # Since distinct trials may have incurred a different number of queries
