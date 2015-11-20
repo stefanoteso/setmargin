@@ -25,8 +25,6 @@ def solve_best_score(dataset, user, debug=False):
     num_features = sum(dataset.domain_sizes)
     w = user.w.ravel()
 
-    print w[0]
-
     model = grb.Model("setmargin_dot")
     xs = [model.addVar(vtype=GRB.BINARY, name="x_{}".format(z)) for z in range(num_features)]
     model.modelSense = GRB.MAXIMIZE
