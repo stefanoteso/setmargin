@@ -3,12 +3,22 @@
 import numpy as np
 import itertools as it
 from sklearn.utils import check_random_state
-from util import vonehot, prod
+from util import *
 
-def _attr_index(domain_sizes, dom_i, feature_i):
+def feat_to_var(domain_sizes, dom_i, feature_i):
     assert 0 <= dom_i < len(domain_sizes)
     assert 0 <= feature_i < len(domain_sizes[dom_i])
     return sum(domain_sizes[:dom_i]) + feature_i
+
+def atom_to_var(domain_sizes, atom_i):
+    assert 0 <= atom_i <= sum(domain_sizes)
+    base = 0
+    for dom_i, domain_size in enumerate(domain_sizes):
+        if base <= atom_i < base + domain_size:
+            break
+        base += domain_size
+    feature_i = atom_i - base
+    return feat_to_var(domain_sizes, dom_i, feature_i)
 
 class Dataset(object):
     def __str__(self):
@@ -16,6 +26,17 @@ class Dataset(object):
                    .format(self.domain_sizes, len(self.items),
                            self.w_constraints, self.x_constraints,
                            self.horn_constraints)
+
+    def is_item_valid(self, x):
+        for zs_in_domain in get_zs_in_domains(self.domain_sizes):
+            if sum(x[z] for z in zs_in_domain) != 1:
+                return False
+        if self.horn_constraints is not None:
+            for head, body in self.horn_constraints:
+                if x[atom_to_var(self.domain_sizes, head)] and \
+                   not any(x[atom_to_var(self.domain_sizes, atom)] == 1 for atom in body):
+                    return False
+        return True
 
 class SyntheticDataset(Dataset):
     def __init__(self, domain_sizes):
@@ -46,8 +67,8 @@ class RandomlyConstrainedSyntheticDataset(SyntheticDataset):
             # XXX come up with something smarter
             head = np.random.random_integer(0, dsi - 1)
             body = np.random.random_integer(0, dsj - 1)
-            index_head = attr_index(domain_sizes, dsi, head)
-            index_body = attr_index(domain_sizes, dsj, body)
+            index_head = feat_to_var(domain_sizes, dsi, head)
+            index_body = feat_to_var(domain_sizes, dsj, body)
             constraints.append((index_head, [index_body]))
         return constraints
 

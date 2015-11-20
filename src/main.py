@@ -19,14 +19,6 @@ def print_queries(queries, hidden_w):
         print "  {} ({:6.3f}) {} ({:6.3f}) {} -- diff {:6.3f}".format(xi, score_xi, relation, score_xj, xj, score_xi - score_xj)
     print
 
-def is_onehot(domain_sizes, set_size, xs):
-    zs_in_domains = get_zs_in_domains(domain_sizes)
-    for i in range(set_size):
-        for zs_in_domain in zs_in_domains:
-            if sum(xs[i,z] for z in zs_in_domain) != 1:
-                return False
-    return True
-
 def quicksort(user, xs, answers={}):
     lt, eq, gt = [], [], []
     if len(xs) > 1:
@@ -139,7 +131,7 @@ def run(dataset, num_iterations, set_size, alphas, user, rng,
             print "set_size=n slacks =\n", slacks
             print "set_size=n margin =", margin
 
-        assert is_onehot(dataset.domain_sizes, set_size, xs), "xs are not in onehot format"
+        assert all(dataset.is_item_valid(x) for x in xs)
         # XXX somehow gurobi fails to satisfy this assertion...
         # assert (np.abs(scores - debug_scores) < 1e-6).all(), "solver scores and debug scores mismatch:\n{}\n{}".format(scores, debug_scores)
 
@@ -181,7 +173,7 @@ def run(dataset, num_iterations, set_size, alphas, user, rng,
             print "u(x) =", np.dot(user.w, xs[0])
             print "utility_loss =", utility_loss
 
-        assert is_onehot(dataset.domain_sizes, 1, xs), "xs are not in onehot format"
+        assert dataset.is_item_valid(xs[0])
 
         # If the user is fully satisfied, we are done
         if utility_loss < 1e-6:
