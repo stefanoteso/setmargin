@@ -46,7 +46,7 @@ def solve_best_score(dataset, user, debug=False):
     model.optimize()
     best_score = model.objVal
 
-    if dataset.items is not None:
+    if dataset.items is not None and dataset.horn_constraints is None:
         # We have the grounded items
         scores = np.dot(user.w, dataset.items.T)
         debug_best_score = np.max(scores, axis=1)
