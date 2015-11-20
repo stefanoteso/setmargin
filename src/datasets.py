@@ -7,7 +7,7 @@ from util import *
 
 def feat_to_var(domain_sizes, dom_i, feature_i):
     assert 0 <= dom_i < len(domain_sizes)
-    assert 0 <= feature_i < len(domain_sizes[dom_i])
+    assert 0 <= feature_i < domain_sizes[dom_i]
     return sum(domain_sizes[:dom_i]) + feature_i
 
 def atom_to_var(domain_sizes, atom_i):
@@ -63,13 +63,21 @@ class RandomlyConstrainedSyntheticDataset(SyntheticDataset):
 
     def _sample_constraints(self, domain_sizes, rng):
         constraints = []
-        for (i, dsi), (j, dsj) in enumerate(it.product(domain_sizes, domain_sizes)):
+        print "sampling constraints"
+        print "--------------------"
+        print "domain_sizes =", domain_sizes
+        for (i, dsi), (j, dsj) in it.product(enumerate(domain_sizes), enumerate(domain_sizes)):
+            if i >= j:
+                continue
             # XXX come up with something smarter
-            head = np.random.random_integer(0, dsi - 1)
-            body = np.random.random_integer(0, dsj - 1)
-            index_head = feat_to_var(domain_sizes, dsi, head)
-            index_body = feat_to_var(domain_sizes, dsj, body)
+            head = rng.random_integers(0, dsi - 1)
+            body = rng.random_integers(0, dsj - 1)
+            print "{}:{} -> {}:{}".format(i, head, j, body)
+            index_head = feat_to_var(domain_sizes, i, head)
+            index_body = feat_to_var(domain_sizes, j, body)
             constraints.append((index_head, [index_body]))
+        print "constraints =\n", constraints
+        print "--------------------"
         return constraints
 
 class PCDataset(Dataset):
