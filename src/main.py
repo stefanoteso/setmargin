@@ -205,6 +205,43 @@ def run(domain_sizes, items, w_constraints, x_constraints, num_iterations,
 
     return avg_losses, times
 
+def dump_performance(basename, num_trials, losses, times):
+    # Since distinct trials may have incurred a different number of queries
+    # each, here we resize the performance data to be uniformly shaped
+    max_queries = max(len(ls) for ls in losses)
+
+    loss_matrix = np.zeros((num_trials, max_queries))
+    time_matrix = np.zeros((num_trials, max_queries))
+    for i, (ls, ts) in enumerate(zip(losses, times)):
+        assert ls.shape == ts.shape
+        loss_matrix[i,:ls.shape[0]] = ls
+        time_matrix[i,:ts.shape[0]] = ts
+
+    np.savetxt("results_{}_time_matrix.txt".format(basename), time_matrix)
+    np.savetxt("results_{}_loss_matrix.txt".format(basename), loss_matrix)
+
+    loss_means = np.mean(loss_matrix, axis=0)
+    loss_stddevs = np.std(loss_matrix, ddof=1, axis=0).reshape(-1, 1)
+
+    fig, ax = plt.subplots(1, 1)
+    ax.set_title("Avgerage loss over {} trials".format(num_trials))
+    ax.set_xlabel("Number of queries")
+    ax.set_ylabel("Average loss")
+    ax.set_ylim([0.0, max(0.5, max(loss_means) + max(loss_stddevs) + 0.1)])
+    ax.errorbar(np.arange(1, max_queries + 1), loss_means, yerr=loss_stddevs)
+    fig.savefig("results_{}_avgloss.svg".format(basename), bbox_inches="tight")
+
+    time_means = np.mean(time_matrix, axis=0)
+    time_stddevs = np.std(time_matrix, ddof=1, axis=0).reshape(-1, 1)
+
+    fig, ax = plt.subplots(1, 1)
+    ax.set_title("Average time over {} trials".format(num_trials))
+    ax.set_xlabel("Number of queries")
+    ax.set_ylabel("Average time")
+    ax.set_ylim([0.0, max(1.0, max(time_means) + max(time_stddevs) + 0.1)])
+    ax.errorbar(np.arange(1, max_queries + 1), time_means, yerr=time_stddevs)
+    fig.savefig("results_{}_avgtime.svg".format(basename), bbox_inches="tight")
+
 def main():
     import argparse as ap
 
@@ -255,17 +292,8 @@ def main():
     argsdict = vars(args)
     argsdict["dataset"] = args.dataset
 
-    hyperparams = [
-        "dataset", "num_trials", "num_iterations", "set_size", "alpha", "beta",
-        "gamma", "multimargin", "sampling_mode", "is_deterministic",
-        "is_indifferent", "seed"
-    ]
-    if args.dataset == "synthetic":
-        hyperparams.insert(1, "domain_sizes")
-
-    basename = "_".join(str(argsdict[h]) for h in hyperparams)
-
-    print "running {num_trials} trials on {dataset}, {num_iterations} iterations per trial, seed is {seed}" \
+    print "running {num_trials} trials on {dataset}, " \
+          "{num_iterations} iterations per trial, seed is {seed}" \
             .format(**argsdict)
 
     rng = np.random.RandomState(args.seed)
@@ -303,40 +331,15 @@ def main():
         losses.append(np.array(losses_for_trial).ravel())
         times.append(np.array(times_for_trial))
 
-    # Since distinct trials may have incurred a different number of queries
-    # each, here we resize the performance data to be uniformly shaped
-    max_queries = max(len(ls) for ls in losses)
-    loss_matrix = np.zeros((args.num_trials, max_queries))
-    time_matrix = np.zeros((args.num_trials, max_queries))
-    for i, (ls, ts) in enumerate(zip(losses, times)):
-        assert ls.shape == ts.shape
-        loss_matrix[i,:ls.shape[0]] = ls
-        time_matrix[i,:ts.shape[0]] = ts
-
-    np.savetxt("results_{}_time_matrix.txt".format(basename), time_matrix)
-    np.savetxt("results_{}_loss_matrix.txt".format(basename), loss_matrix)
-
-    loss_means = np.mean(loss_matrix, axis=0)
-    loss_stddevs = np.std(loss_matrix, ddof=1, axis=0).reshape(-1, 1)
-
-    fig, ax = plt.subplots(1, 1)
-    ax.set_title("Avgerage loss over {} trials".format(args.num_trials))
-    ax.set_xlabel("Number of queries")
-    ax.set_ylabel("Average loss")
-    ax.set_ylim([0.0, max(0.5, max(loss_means) + max(loss_stddevs) + 0.1)])
-    ax.errorbar(np.arange(1, max_queries + 1), loss_means, yerr=loss_stddevs)
-    fig.savefig("results_{}_avgloss.svg".format(basename), bbox_inches="tight")
-
-    time_means = np.mean(time_matrix, axis=0)
-    time_stddevs = np.std(time_matrix, ddof=1, axis=0).reshape(-1, 1)
-
-    fig, ax = plt.subplots(1, 1)
-    ax.set_title("Average time over {} trials".format(args.num_trials))
-    ax.set_xlabel("Number of queries")
-    ax.set_ylabel("Average time")
-    ax.set_ylim([0.0, max(1.0, max(time_means) + max(time_stddevs) + 0.1)])
-    ax.errorbar(np.arange(1, max_queries + 1), time_means, yerr=time_stddevs)
-    fig.savefig("results_{}_avgtime.svg".format(basename), bbox_inches="tight")
+    hyperparams = [
+        "dataset", "num_trials", "num_iterations", "set_size", "alpha", "beta",
+        "gamma", "multimargin", "sampling_mode", "is_deterministic",
+        "is_indifferent", "seed"
+    ]
+    if args.dataset == "synthetic":
+        hyperparams.insert(1, "domain_sizes")
+    dump_performance("_".join(str(argsdict[h]) for h in hyperparams),
+                     args.num_trials, losses, times)
 
 if __name__ == "__main__":
     main()
