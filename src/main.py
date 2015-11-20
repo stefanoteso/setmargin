@@ -28,7 +28,7 @@ def is_onehot(domain_sizes, set_size, xs):
                 return False
     return True
 
-def quicksort(user, xs, rng, deterministic, no_indifference, answers={}):
+def quicksort(user, xs, answers={}):
     lt, eq, gt = [], [], []
     if len(xs) > 1:
         pivot = xs[0], 0
@@ -48,16 +48,13 @@ def quicksort(user, xs, rng, deterministic, no_indifference, answers={}):
         assert len(lt) < len(xs)
         assert len(gt) < len(xs)
 
-        sorted_lt, _ = quicksort(user, lt, rng, deterministic, no_indifference,
-                                 answers=answers)
-        sorted_gt, _ = quicksort(user, gt, rng, deterministic, no_indifference,
-                                 answers=answers)
+        sorted_lt, _ = quicksort(user, lt, rng, answers=answers)
+        sorted_gt, _ = quicksort(user, gt, rng, answers=answers)
         return sorted_lt + eq + sorted_gt, answers
     else:
         return xs, answers
 
-def update_queries(user, ws, xs, old_best_item, rng, deterministic=False,
-                   no_indifference=False, ranking_mode="all_pairs"):
+def update_queries(user, ws, xs, old_best_item, rng, ranking_mode="all_pairs"):
     """Computes the queries to ask the user for the given inputs.
 
     If there is only one candidate best item, then only one query is returned,
@@ -71,9 +68,6 @@ def update_queries(user, ws, xs, old_best_item, rng, deterministic=False,
     :param ws: the estimated user preference(s) at the current iteration.
     :param xs: the estimated best item(s) at the current iteration.
     :param old_best_item: the estimated best item at the previous iteration.
-    :param rng: an RNG object.
-    :param deterministic: whether the user answers should be deterministic.
-    :param no_indifference: disable 'whatever' answers.
     :param ranking_mode: either ``"all_pairs"`` or ``"sorted_pairs"``.
     :returns: a pair (list of new queries, 
     """
@@ -106,9 +100,9 @@ def update_queries(user, ws, xs, old_best_item, rng, deterministic=False,
         raise ValueError("invalid ranking_mode '{}'".format(ranking_mode))
     return queries, num_queries
 
-def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
-        rng, ranking_mode="all_pairs", deterministic=False,
-        no_indifference=False, multimargin=False, solver_name="optimathsat",
+def run(domain_sizes, items, w_constraints, x_constraints, num_iterations,
+        set_size, alphas, user, rng,
+        ranking_mode="all_pairs", multimargin=False, solver_name="optimathsat",
         debug=False):
 
     if not num_iterations > 0:
@@ -124,24 +118,6 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         raise ValueError("invalid solver '{}'".format(solver_name))
 
     rng = check_random_state(rng)
-
-    # Retrieve the dataset
-    domain_sizes, items, w_constraints, x_constraints = get_dataset()
-    assert sum(domain_sizes) == items.shape[1]
-
-    if debug:
-        print "domain_sizes =", domain_sizes, "num_features =", sum(domain_sizes)
-        print "# of items =", len(items)
-        print items
-
-    # Sample the hidden utility function
-    user = User(domain_sizes, sampling_mode=utility_sampling_mode,
-                is_deterministic=deterministic, is_indifferent=not no_indifference,
-                rng=rng)
-
-    if debug:
-        print "user w ="
-        print user.w
 
     # Find the dataset item with the highest score wrt the hidden hyperlpane
     # TODO use the optimizer to find the highest scoring configuration
@@ -184,9 +160,7 @@ def run(get_dataset, num_iterations, set_size, alphas, utility_sampling_mode,
         # Ask the user about the retrieved items
         new_queries, num_queries = \
             update_queries(user, ws, xs, old_best_item, rng,
-                           ranking_mode=ranking_mode,
-                           deterministic=deterministic,
-                           no_indifference=no_indifference)
+                           ranking_mode=ranking_mode)
         assert num_queries > 0
 
         queries.extend(new_queries)
@@ -249,16 +223,16 @@ def main():
                         help="hyperparameter controlling the importance of regularization (default: 0.1)")
     parser.add_argument("-c", "--gamma", type=float, default=0.1,
                         help="hyperparameter controlling the score of the output items (default: 0.1)")
-    parser.add_argument("-u", "--utility_sampling_mode", type=str, default="uniform",
-                        help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
     parser.add_argument("-r", "--ranking-mode", type=str, default="all_pairs",
                         help="ranking mode, any of ('all_pairs', 'sorted_pairs') (default: 'all_pairs')")
-    parser.add_argument("-d", "--deterministic", action="store_true",
-                        help="whether the user answers should be deterministic rather than stochastic (default: False)")
-    parser.add_argument("--no-indifference", action="store_true",
-                        help="whether the user can (not) be indifferent (default: False)")
     parser.add_argument("-M", "--multimargin", action="store_true",
                         help="whether the example and generated object margins should be independent (default: False)")
+    parser.add_argument("-u", "--sampling-mode", type=str, default="uniform",
+                        help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
+    parser.add_argument("-d", "--is-deterministic", action="store_true",
+                        help="whether the user answers should be deterministic rather than stochastic (default: False)")
+    parser.add_argument("--is-indifferent", action="store_true",
+                        help="whether the user can (not) be indifferent (default: False)")
     parser.add_argument("-S", "--solver", type=str, default="gurobi",
                         help="solver to use (default: 'gurobi')")
     parser.add_argument("-s", "--seed", type=int, default=None,
@@ -283,8 +257,8 @@ def main():
 
     hyperparams = [
         "dataset", "num_trials", "num_iterations", "set_size", "alpha", "beta",
-        "gamma", "utility_sampling_mode", "deterministic", "no_indifference",
-        "multimargin", "seed"
+        "gamma", "multimargin", "sampling_mode", "is_deterministic",
+        "is_indifferent", "seed"
     ]
     if args.dataset == "synthetic":
         hyperparams.insert(1, "domain_sizes")
@@ -296,17 +270,32 @@ def main():
 
     rng = np.random.RandomState(args.seed)
 
+    # Retrieve the dataset
+    domain_sizes, items, w_constraints, x_constraints = datasets[args.dataset]()
+    assert sum(domain_sizes) == items.shape[1]
+
+    if args.debug:
+        print "domain_sizes =", domain_sizes, "num_features =", sum(domain_sizes)
+        print "# of items =", len(items)
+        print items
+
+    # Sample the user
+    user = User(domain_sizes, sampling_mode=args.sampling_mode,
+                is_deterministic=args.is_deterministic,
+                is_indifferent=args.is_indifferent,
+                rng=rng)
+    if args.debug:
+        print "user =\n", user
+
     losses, times = [], []
     for i in range(args.num_trials):
         print "==== TRIAL {} ====".format(i)
 
         losses_for_trial, times_for_trial = \
-            run(datasets[args.dataset], args.num_iterations,
-                args.set_size, (args.alpha, args.beta, args.gamma),
-                args.utility_sampling_mode, rng,
+            run(domain_sizes, items, w_constraints, x_constraints,
+                args.num_iterations, args.set_size,
+                (args.alpha, args.beta, args.gamma), user, rng,
                 ranking_mode=args.ranking_mode,
-                deterministic=args.deterministic,
-                no_indifference=args.no_indifference,
                 multimargin=args.multimargin,
                 solver_name=args.solver,
                 debug=args.debug)
