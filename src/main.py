@@ -297,8 +297,8 @@ def main():
 
     hyperparams = [
         "dataset", "num_trials", "num_iterations", "set_size", "alpha", "beta",
-        "gamma", "multimargin", "sampling_mode", "is_deterministic",
-        "is_indifferent", "seed"
+        "gamma", "ranking_mode", "multimargin", "sampling_mode",
+        "is_deterministic", "is_indifferent", "seed"
     ]
     if args.dataset in ("synthetic", "constsynthetic"):
         hyperparams.insert(1, "domain_sizes")
