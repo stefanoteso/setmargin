@@ -136,7 +136,7 @@
 		</item>
 		<item id="014-Compaq-Presario 8000"> 
 			<attribute name="Manufacturer" value="Compaq" />  
-			<attribute name="CPUType" value="ADM Athlon" />       
+			<attribute name="CPUType" value="AMD Athlon" />       
 			<attribute name="CPUSpeed" value="1330" />      
 			<attribute name="Monitor" value="15" />      
 			<attribute name="Type" value="Desktop" />       
@@ -996,7 +996,7 @@
 		</item>
 		<item id="100-Sony-VAIO FXA36"> 
 			<attribute name="Manufacturer" value="Sony" />  
-			<attribute name="CPUType" value="ADM Athlon" />       
+			<attribute name="CPUType" value="AMD Athlon" />       
 			<attribute name="CPUSpeed" value="1000" />      
 			<attribute name="Monitor" value="15" />      
 			<attribute name="Type" value="Laptop" />       
