@@ -176,9 +176,10 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
 
     return losses, times
 
-def dump_performance(basename, num_trials, losses, times):
+def dump_performance(basename, losses, times):
     # Since distinct trials may have incurred a different number of queries
     # each, here we resize the performance data to be uniformly shaped
+    num_trials = len(losses)
     max_queries = max(len(ls) for ls in losses)
 
     loss_matrix = np.zeros((num_trials, max_queries))
@@ -303,7 +304,7 @@ def main():
     if args.dataset in ("synthetic", "constsynthetic"):
         hyperparams.insert(1, "domain_sizes")
     dump_performance("_".join(str(argsdict[h]) for h in hyperparams),
-                     args.num_trials, losses, times)
+                     losses, times)
 
 if __name__ == "__main__":
     main()
