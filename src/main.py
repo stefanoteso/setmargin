@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import os, time
+import itertools as it
 import numpy as np
 from sklearn.utils import check_random_state
 import matplotlib.pyplot as plt
-import itertools as it
-from datasets import *
-from util import *
+
+from solver import Solver
 from user import User
-import solver
+from util import *
+from datasets import *
 
 def print_queries(queries, hidden_w):
     for xi, xj, sign in queries:
@@ -91,18 +92,16 @@ def update_queries(user, ws, xs, old_best_item, rng, ranking_mode="all_pairs"):
         raise ValueError("invalid ranking_mode '{}'".format(ranking_mode))
     return queries, num_queries
 
-def run(dataset, num_iterations, set_size, alphas, user, rng,
+def run(dataset, user, solver, num_iterations, set_size, rng,
         ranking_mode="all_pairs", multimargin=False, threads=1, debug=False):
 
     if not num_iterations > 0:
         raise ValueError("invalid num_iterations '{}'".format(num_iterations))
-    if not len(alphas) == 3 or not all([alpha >= 0 for alpha in alphas]):
-        raise ValueError("invalid hyperparameters '{}'".format(alphas))
 
     rng = check_random_state(rng)
 
     # Find the dataset item with the highest score wrt the hidden hyperlpane
-    best_hidden_score = solver.solve_best_score(dataset, user, debug=debug)
+    best_hidden_score, _ = solver.compute_best_score(dataset, user)
 
     # Iterate
     queries, old_best_item = [], None
@@ -118,8 +117,7 @@ def run(dataset, num_iterations, set_size, alphas, user, rng,
 
         # Solve the utility/item learning problem for the current iteration
         ws, xs, scores, slacks, margin = \
-            solver.solve(dataset, queries, set_size, alphas,
-                         multimargin=multimargin, threads=threads, debug=debug)
+            solver.compute_setmargin(dataset, queries, set_size)
         debug_scores = np.dot(ws, xs.T)
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the m-item case:\n{}".format(ws)
@@ -158,8 +156,7 @@ def run(dataset, num_iterations, set_size, alphas, user, rng,
         # recommend given the queries collected so far and the best
         # recommendation according to the hidden user hyperplane
         ws, xs, scores, slacks, margin = \
-            solver.solve(dataset, queries, 1, alphas,
-                         multimargin=multimargin, threads=threads, debug=debug)
+            solver.compute_setmargin(dataset, queries, 1)
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
 
@@ -275,6 +272,10 @@ def main():
     if args.debug:
         print dataset
 
+    solver = Solver((args.alpha, args.beta, args.gamma),
+                    multimargin=args.multimargin, threads=args.threads,
+                    debug=args.debug)
+
     losses, times = [], []
     for i in range(args.num_trials):
         print "==== TRIAL {} ====".format(i)
@@ -287,8 +288,7 @@ def main():
             print "user =\n", user
 
         losses_for_trial, times_for_trial = \
-            run(dataset, args.num_iterations, args.set_size,
-                (args.alpha, args.beta, args.gamma), user, rng,
+            run(dataset, user, solver, args.num_iterations, args.set_size, rng,
                 ranking_mode=args.ranking_mode,
                 multimargin=args.multimargin,
                 threads=args.threads, debug=args.debug)
