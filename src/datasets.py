@@ -7,10 +7,9 @@ from util import *
 
 class Dataset(object):
     def __str__(self):
-        return "Dataset(domain_sizes={} len(items)={} wc={} xc={} hc={}" \
+        return "Dataset(domain_sizes={} len(items)={} constrs={}" \
                    .format(self.domain_sizes, len(self.items),
-                           self.w_constraints, self.x_constraints,
-                           self.horn_constraints)
+                           self.x_constraints)
 
     def _feat_to_var(domain_sizes, dom_i, feature_i):
         assert 0 <= dom_i < len(domain_sizes)
@@ -31,8 +30,8 @@ class Dataset(object):
         for zs_in_domain in get_zs_in_domains(self.domain_sizes):
             if sum(x[z] for z in zs_in_domain) != 1:
                 return False
-        if self.horn_constraints is not None:
-            for head, body in self.horn_constraints:
+        if self.x_constraints is not None:
+            for head, body in self.x_constraints:
                 if x[self._atom_to_var(self.domain_sizes, head)] and \
                    not any(x[self._atom_to_var(self.domain_sizes, atom)] == 1 for atom in body):
                     return False
@@ -42,9 +41,7 @@ class SyntheticDataset(Dataset):
     def __init__(self, domain_sizes):
         self.domain_sizes = domain_sizes
         self.items = self._ground_onehot(domain_sizes)
-        self.w_constraints = None
         self.x_constraints = None
-        self.horn_constraints = None
 
     def _ground(self, domain_sizes):
         return [item for item in it.product(*map(range, domain_sizes))]
@@ -58,7 +55,7 @@ class SyntheticDataset(Dataset):
 class RandomlyConstrainedSyntheticDataset(SyntheticDataset):
     def __init__(self, domain_sizes, rng=None):
         super(RandomlyConstrainedSyntheticDataset, self).__init__(domain_sizes)
-        self.horn_constraints = self._sample_constraints(domain_sizes,
+        self.x_constraints = self._sample_constraints(domain_sizes,
                                                          check_random_state(rng))
 
     def _sample_constraints(self, domain_sizes, rng):
@@ -157,6 +154,4 @@ class PCDataset(Dataset):
 
         self.domain_sizes = domain_sizes
         self.items = items_onehot
-        self.w_constraints = None
         self.x_constraints = None
-        self.horn_constraints = None

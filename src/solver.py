@@ -37,8 +37,8 @@ def solve_best_score(dataset, user, debug=False):
         model.addConstr(grb.quicksum([xs[z] for z in zs_in_domain]) == 1)
 
     # Horn constraints
-    if dataset.horn_constraints is not None:
-        for head, body in dataset.horn_constraints:
+    if dataset.x_constraints is not None:
+        for head, body in dataset.x_constraints:
             model.addConstr((1 - xs[head]) + grb.quicksum([xs[atom] for atom in body]) >= 1)
 
     # Dump the problem for later inspection
@@ -55,7 +55,7 @@ def solve_best_score(dataset, user, debug=False):
     except:
         raise RuntimeError("optimization failed!")
 
-    if dataset.items is not None and dataset.horn_constraints is None:
+    if dataset.items is not None and dataset.x_constraints is None:
         # We have the grounded items
         scores = np.dot(user.w, dataset.items.T)
         debug_best_score = np.max(scores, axis=1)[0]
@@ -75,8 +75,6 @@ def solve_best_score(dataset, user, debug=False):
 
 def solve(dataset, queries, set_size, alphas,
           multimargin=False, threads=1, debug=False):
-    assert dataset.w_constraints is None
-    assert dataset.x_constraints is None
 
     num_examples = len(queries)
     num_features = sum(dataset.domain_sizes)
@@ -215,9 +213,9 @@ def solve(dataset, queries, set_size, alphas,
             model.addConstr(grb.quicksum([xs[i,z] for z in zs_in_domain]) == 1)
 
     # Horn constraints
-    if dataset.horn_constraints is not None:
+    if dataset.x_constraints is not None:
         for i in range(set_size):
-            for head, body in dataset.horn_constraints:
+            for head, body in dataset.x_constraints:
                 model.addConstr((1 - xs[i,head]) + grb.quicksum([xs[i,atom] for atom in body]) >= 1)
 
     # Dump the problem for later inspection
