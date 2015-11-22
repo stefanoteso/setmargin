@@ -5,21 +5,6 @@ import itertools as it
 from sklearn.utils import check_random_state
 from util import *
 
-def feat_to_var(domain_sizes, dom_i, feature_i):
-    assert 0 <= dom_i < len(domain_sizes)
-    assert 0 <= feature_i < domain_sizes[dom_i]
-    return sum(domain_sizes[:dom_i]) + feature_i
-
-def atom_to_var(domain_sizes, atom_i):
-    assert 0 <= atom_i <= sum(domain_sizes)
-    base = 0
-    for dom_i, domain_size in enumerate(domain_sizes):
-        if base <= atom_i < base + domain_size:
-            break
-        base += domain_size
-    feature_i = atom_i - base
-    return feat_to_var(domain_sizes, dom_i, feature_i)
-
 class Dataset(object):
     def __str__(self):
         return "Dataset(domain_sizes={} len(items)={} wc={} xc={} hc={}" \
@@ -27,14 +12,29 @@ class Dataset(object):
                            self.w_constraints, self.x_constraints,
                            self.horn_constraints)
 
+    def _feat_to_var(domain_sizes, dom_i, feature_i):
+        assert 0 <= dom_i < len(domain_sizes)
+        assert 0 <= feature_i < domain_sizes[dom_i]
+        return sum(domain_sizes[:dom_i]) + feature_i
+
+    def _atom_to_var(domain_sizes, atom_i):
+        assert 0 <= atom_i <= sum(domain_sizes)
+        base = 0
+        for dom_i, domain_size in enumerate(domain_sizes):
+            if base <= atom_i < base + domain_size:
+                break
+            base += domain_size
+        feature_i = atom_i - base
+        return self._feat_to_var(domain_sizes, dom_i, feature_i)
+
     def is_item_valid(self, x):
         for zs_in_domain in get_zs_in_domains(self.domain_sizes):
             if sum(x[z] for z in zs_in_domain) != 1:
                 return False
         if self.horn_constraints is not None:
             for head, body in self.horn_constraints:
-                if x[atom_to_var(self.domain_sizes, head)] and \
-                   not any(x[atom_to_var(self.domain_sizes, atom)] == 1 for atom in body):
+                if x[self._atom_to_var(self.domain_sizes, head)] and \
+                   not any(x[self._atom_to_var(self.domain_sizes, atom)] == 1 for atom in body):
                     return False
         return True
 
@@ -73,8 +73,8 @@ class RandomlyConstrainedSyntheticDataset(SyntheticDataset):
             head = rng.random_integers(0, dsi - 1)
             body = rng.random_integers(0, dsj - 1)
             print "{}:{} -> {}:{}".format(i, head, j, body)
-            index_head = feat_to_var(domain_sizes, i, head)
-            index_body = feat_to_var(domain_sizes, j, body)
+            index_head = self._feat_to_var(domain_sizes, i, head)
+            index_body = self._feat_to_var(domain_sizes, j, body)
             constraints.append((index_head, [index_body]))
         print "constraints =\n", constraints
         print "--------------------"
