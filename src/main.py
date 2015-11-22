@@ -178,10 +178,6 @@ def run(dataset, num_iterations, set_size, alphas, user, rng,
 
         assert dataset.is_item_valid(xs[0])
 
-        # If the user is fully satisfied, we are done
-        if utility_loss < 1e-6:
-            break
-
     return losses, times
 
 def dump_performance(basename, num_trials, losses, times):
