@@ -278,7 +278,7 @@ def main():
     for i in range(args.num_trials):
         print "==== TRIAL {} ====".format(i)
 
-        user = User(domain_sizes, sampling_mode=args.sampling_mode,
+        user = User(dataset.domain_sizes, sampling_mode=args.sampling_mode,
                     is_deterministic=args.is_deterministic,
                     is_indifferent=args.is_indifferent,
                     rng=rng)
