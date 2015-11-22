@@ -92,7 +92,7 @@ def update_queries(user, ws, xs, old_best_item, rng, ranking_mode="all_pairs"):
     return queries, num_queries
 
 def run(dataset, num_iterations, set_size, alphas, user, rng,
-        ranking_mode="all_pairs", multimargin=False, debug=False):
+        ranking_mode="all_pairs", multimargin=False, threads=1, debug=False):
 
     if not num_iterations > 0:
         raise ValueError("invalid num_iterations '{}'".format(num_iterations))
@@ -119,7 +119,7 @@ def run(dataset, num_iterations, set_size, alphas, user, rng,
         # Solve the utility/item learning problem for the current iteration
         ws, xs, scores, slacks, margin = \
             solver.solve(dataset, queries, set_size, alphas,
-                         multimargin=multimargin, debug=debug)
+                         multimargin=multimargin, threads=threads, debug=debug)
         debug_scores = np.dot(ws, xs.T)
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the m-item case:\n{}".format(ws)
@@ -159,7 +159,7 @@ def run(dataset, num_iterations, set_size, alphas, user, rng,
         # recommendation according to the hidden user hyperplane
         ws, xs, scores, slacks, margin = \
             solver.solve(dataset, queries, 1, alphas,
-                         multimargin=multimargin, debug=debug)
+                         multimargin=multimargin, threads=threads, debug=debug)
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
 
@@ -249,6 +249,8 @@ def main():
                         help="RNG seed (default: None)")
     parser.add_argument("--domain-sizes", type=str, default="2,2,5",
                         help="domain sizes for the synthetic dataset only (default: 2,2,5)")
+    parser.add_argument("--threads", type=int, default=1,
+                        help="Max number of threads to user (default: 1)")
     parser.add_argument("--debug", action="store_true",
                         help="Enable debug spew")
     args = parser.parse_args()
@@ -256,9 +258,8 @@ def main():
     argsdict = vars(args)
     argsdict["dataset"] = args.dataset
 
-    print "running {num_trials} trials on {dataset}, " \
-          "{num_iterations} iterations per trial, seed is {seed}" \
-            .format(**argsdict)
+    print "running {num_trials} x {num_iterations} iterations on {dataset}\
+           [threads={threads} seed={seed}]".format(**argsdict)
 
     rng = np.random.RandomState(args.seed)
 
@@ -290,7 +291,7 @@ def main():
                 (args.alpha, args.beta, args.gamma), user, rng,
                 ranking_mode=args.ranking_mode,
                 multimargin=args.multimargin,
-                debug=args.debug)
+                threads=args.threads, debug=args.debug)
 
         losses.append(np.array(losses_for_trial).ravel())
         times.append(np.array(times_for_trial))
