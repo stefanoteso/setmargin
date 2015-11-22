@@ -41,6 +41,14 @@ def solve_best_score(dataset, user, debug=False):
         for head, body in dataset.horn_constraints:
             model.addConstr((1 - xs[head]) + grb.quicksum([xs[atom] for atom in body]) >= 1)
 
+    # Dump the problem for later inspection
+    if debug:
+        fp = tempfile.NamedTemporaryFile(prefix="setmargin_gurobi_dot_", suffix=".lp", delete=False)
+        fp.close()
+        model.update()
+        model.write(fp.name)
+        print "dumped gurobi model to '{}'".format(fp.name)
+
     model.optimize()
     try:
         best_score = model.objVal

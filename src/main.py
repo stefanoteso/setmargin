@@ -102,7 +102,7 @@ def run(dataset, num_iterations, set_size, alphas, user, rng,
     rng = check_random_state(rng)
 
     # Find the dataset item with the highest score wrt the hidden hyperlpane
-    best_hidden_score = solver.solve_best_score(dataset, user)
+    best_hidden_score = solver.solve_best_score(dataset, user, debug=debug)
 
     # Iterate
     queries, old_best_item = [], None
