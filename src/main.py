@@ -23,7 +23,7 @@ def print_queries(queries, hidden_w):
 def quicksort(user, xs, answers={}):
     lt, eq, gt = [], [], []
     if len(xs) > 1:
-        pivot = xs[0], 0
+        pivot = xs[0]
         eq.append(pivot)
         for x in xs[1:]:
             try:
@@ -40,11 +40,11 @@ def quicksort(user, xs, answers={}):
         assert len(lt) < len(xs)
         assert len(gt) < len(xs)
 
-        sorted_lt, _ = quicksort(user, lt, rng, answers=answers)
-        sorted_gt, _ = quicksort(user, gt, rng, answers=answers)
-        return sorted_lt + eq + sorted_gt, answers
+        sorted_lt, _ = quicksort(user, lt, answers=answers)
+        sorted_gt, _ = quicksort(user, gt, answers=answers)
+        return [l for l in sorted_lt + [eq] + sorted_gt if len(l)], answers
     else:
-        return xs, answers
+        return [xs], answers
 
 def update_queries(user, ws, xs, old_best_item, rng, ranking_mode="all_pairs"):
     """Computes the queries to ask the user for the given inputs.
@@ -77,17 +77,16 @@ def update_queries(user, ws, xs, old_best_item, rng, ranking_mode="all_pairs"):
                    for (i, xi), (j, xj) in it.product(enumerate(xs), enumerate(xs)) if i < j]
         num_queries = len(queries)
     elif ranking_mode == "sorted_pairs":
-        # requires n*log(n) queries
-        # XXX note that in the non-deterministic setting we may actually lose
-        # information by only querying for a subset of the pairs!
-        sorted_xs, answers = \
-            quicksort(user, xs, rng, deterministic, no_indifference)
+        sorted_sets, answers = quicksort(user, xs)
         num_queries = len(answers)
-        sorted_xs = np.array(sorted_xs)
-        assert xs.shape == sorted_xs.shape
         assert num_queries > 0
-        queries = [(xi, xj, 1) for (i, xi), (j, xj)
-                   in it.product(enumerate(sorted_xs), enumerate(sorted_xs)) if i < j]
+
+        queries = []
+        for (k, set_k), (l, set_l) in it.product(enumerate(sorted_sets), enumerate(sorted_sets)):
+            if k > l:
+                continue
+            for xi, xj in it.product(set_k, set_l):
+                queries.append((xi, xj, 0 if k == l else -1))
     else:
         raise ValueError("invalid ranking_mode '{}'".format(ranking_mode))
     return queries, num_queries
