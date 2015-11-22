@@ -20,7 +20,7 @@ def print_queries(queries, hidden_w):
         print "  {} ({:6.3f}) {} ({:6.3f}) {} -- diff {:6.3f}".format(xi, score_xi, relation, score_xj, xj, score_xi - score_xj)
     print
 
-def quicksort(user, xs, answers={}):
+def quicksort(user, xs, answers):
     lt, eq, gt = [], [], []
     if len(xs) > 1:
         pivot = xs[0]
@@ -40,11 +40,11 @@ def quicksort(user, xs, answers={}):
         assert len(lt) < len(xs)
         assert len(gt) < len(xs)
 
-        sorted_lt, _ = quicksort(user, lt, answers=answers)
-        sorted_gt, _ = quicksort(user, gt, answers=answers)
-        return [l for l in sorted_lt + [eq] + sorted_gt if len(l)], answers
+        sorted_lt = quicksort(user, lt, answers)
+        sorted_gt = quicksort(user, gt, answers)
+        return [l for l in sorted_lt + [eq] + sorted_gt if len(l)]
     else:
-        return [xs], answers
+        return [xs]
 
 def update_queries(user, ws, xs, old_best_item, rng, ranking_mode="all_pairs"):
     """Computes the queries to ask the user for the given inputs.
@@ -77,7 +77,8 @@ def update_queries(user, ws, xs, old_best_item, rng, ranking_mode="all_pairs"):
                    for (i, xi), (j, xj) in it.product(enumerate(xs), enumerate(xs)) if i < j]
         num_queries = len(queries)
     elif ranking_mode == "sorted_pairs":
-        sorted_sets, answers = quicksort(user, xs)
+        answers = {}
+        sorted_sets = quicksort(user, xs, answers)
         num_queries = len(answers)
         assert num_queries > 0
 
@@ -86,7 +87,8 @@ def update_queries(user, ws, xs, old_best_item, rng, ranking_mode="all_pairs"):
             if k > l:
                 continue
             for xi, xj in it.product(set_k, set_l):
-                queries.append((xi, xj, 0 if k == l else -1))
+                if (xi != xj).any():
+                    queries.append((xi, xj, 0 if k == l else -1))
     else:
         raise ValueError("invalid ranking_mode '{}'".format(ranking_mode))
     return queries, num_queries
