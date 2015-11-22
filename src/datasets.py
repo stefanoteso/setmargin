@@ -6,25 +6,42 @@ from sklearn.utils import check_random_state
 from util import *
 
 class Dataset(object):
+    """A dataset over the Cartesian product of all attribute domains.
+
+    :param domain_sizes: list of domain sizes.
+    :param items: array of items as one-hot row vectors.
+    :param x_constraints: constraints on the item configurations.
+    """
+    def __init__(self, domain_sizes, items, x_constraints):
+        self.domain_sizes = domain_sizes
+        self.items = items
+        self.x_constraints = x_constraints
+
     def __str__(self):
         return "Dataset(domain_sizes={} len(items)={} constrs={}" \
                    .format(self.domain_sizes, len(self.items),
                            self.x_constraints)
 
-    def _feat_to_var(domain_sizes, dom_i, feature_i):
-        assert 0 <= dom_i < len(domain_sizes)
-        assert 0 <= feature_i < domain_sizes[dom_i]
-        return sum(domain_sizes[:dom_i]) + feature_i
+    def _dom_var_to_bit(j, z):
+        assert 0 <= j <= len(self.domain_sizes)
+        assert 0 <= z <= self.domain_sizes[j]
+        return sum(self.domain_sizes[:j]) + z
 
-    def _atom_to_var(domain_sizes, atom_i):
-        assert 0 <= atom_i <= sum(domain_sizes)
+    def _bit_to_dom_var(i):
+        assert 0 <= i <= sum(self.domain_sizes)
         base = 0
-        for dom_i, domain_size in enumerate(domain_sizes):
-            if base <= atom_i < base + domain_size:
+        for j, domain_size in enumerate(self.domain_sizes):
+            if base <= i < base + domain_size:
                 break
             base += domain_size
-        feature_i = atom_i - base
-        return self._feat_to_var(domain_sizes, dom_i, feature_i)
+        return j, i - base
+
+    def _ground(self, domain_sizes, x_constraints):
+        items = np.array([vonehot(domain_sizes, item)
+                          for item in it.product(*map(range, domain_sizes))])
+        assert items.shape == (prod(domain_sizes), sum(domain_sizes))
+        # XXX filter out invalid configurations
+        return items
 
     def is_item_valid(self, x):
         for zs_in_domain in get_zs_in_domains(self.domain_sizes):
@@ -32,37 +49,26 @@ class Dataset(object):
                 return False
         if self.x_constraints is not None:
             for head, body in self.x_constraints:
-                if x[self._atom_to_var(self.domain_sizes, head)] and \
-                   not any(x[self._atom_to_var(self.domain_sizes, atom)] == 1 for atom in body):
+                if x[head] and not any(x[atom] == 1 for atom in body):
                     return False
         return True
 
 class SyntheticDataset(Dataset):
-    def __init__(self, domain_sizes):
-        self.domain_sizes = domain_sizes
-        self.items = self._ground_onehot(domain_sizes)
-        self.x_constraints = None
+    def __init__(self, domain_sizes, x_constraints=None):
+        items = self._ground(domain_sizes, x_constraints)
+        super(SyntheticDataset, self).__init__(domain_sizes, items, x_constraints)
 
-    def _ground(self, domain_sizes):
-        return [item for item in it.product(*map(range, domain_sizes))]
-
-    def _ground_onehot(self, domain_sizes):
-        items = np.array([vonehot(domain_sizes, item)
-                          for item in self._ground(domain_sizes)])
-        assert items.shape == (prod(domain_sizes), sum(domain_sizes))
-        return items
-
-class RandomlyConstrainedSyntheticDataset(SyntheticDataset):
+class RandomDataset(Dataset):
     def __init__(self, domain_sizes, rng=None):
-        super(RandomlyConstrainedSyntheticDataset, self).__init__(domain_sizes)
-        self.x_constraints = self._sample_constraints(domain_sizes,
-                                                         check_random_state(rng))
+        x_constraints = self._sample_constraints(domain_sizes,
+                                                 check_random_state(rng))
+        super(RandomDataset, self).__init__(domain_sizes, x_constraints)
 
     def _sample_constraints(self, domain_sizes, rng):
-        constraints = []
         print "sampling constraints"
         print "--------------------"
         print "domain_sizes =", domain_sizes
+        constraints = []
         for (i, dsi), (j, dsj) in it.product(enumerate(domain_sizes), enumerate(domain_sizes)):
             if i >= j:
                 continue
@@ -152,6 +158,4 @@ class PCDataset(Dataset):
                 items_onehot = np.vstack((items_onehot, item_onehot))
         assert items_onehot.shape == (120, sum(domain_sizes))
 
-        self.domain_sizes = domain_sizes
-        self.items = items_onehot
-        self.x_constraints = None
+        super(PCDataset, self).__init__(domain_sizes, items_onehot, None)

@@ -263,7 +263,7 @@ def main():
     if args.dataset == "synthetic":
         dataset = SyntheticDataset(domain_sizes)
     elif args.dataset == "constsynthetic":
-        dataset = RandomlyConstrainedSyntheticDataset(domain_sizes, rng=rng)
+        dataset = RandomDataset(domain_sizes, rng=rng)
     elif args.dataset == "pc":
         dataset = PCDataset()
     else:
