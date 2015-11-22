@@ -239,7 +239,7 @@ def main():
                         help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
     parser.add_argument("-d", "--is-deterministic", action="store_true",
                         help="whether the user answers should be deterministic rather than stochastic (default: False)")
-    parser.add_argument("--is-indifferent", action="store_true",
+    parser.add_argument("-i", "--is-indifferent", action="store_true",
                         help="whether the user can (not) be indifferent (default: False)")
     parser.add_argument("-s", "--seed", type=int, default=None,
                         help="RNG seed (default: None)")
