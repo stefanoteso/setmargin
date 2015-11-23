@@ -6,6 +6,7 @@ import itertools as it
 import numpy as np
 from sklearn.utils import check_random_state
 import matplotlib.pyplot as plt
+from textwrap import dedent
 
 from solver import Solver
 from user import User
@@ -110,9 +111,14 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
     for t in range(num_iterations):
 
         if debug:
-            print "\n\n\n==== ITERATION {} ====\n".format(t)
-            print "input queries ="
-            print_queries(queries, user.w)
+            print dedent("""\
+            ===============
+            ITERATION {}/{}
+            ===============
+            answers =
+            {}
+
+            """).format(t, num_iterations, queries)
 
         old_time = time.time()
 
@@ -124,11 +130,19 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
             print "Warning: null weight vector found in the m-item case:\n{}".format(ws)
 
         if debug:
-            print "set_size=n ws =\n", ws
-            print "set_size=n xs =\n", xs
-            print "set_size=n scores =\n", scores
-            print "set_size=n slacks =\n", slacks
-            print "set_size=n margin =", margin
+            print dedent("""\
+            set-margin solution
+            -------------------
+            ws =
+            {}
+            xs =
+            {}
+            scores =
+            {}
+            slacks =
+            {}
+            margin = {}
+            """).format(ws, xs, scores, slacks, margin)
 
         assert all(dataset.is_item_valid(x) for x in xs)
 
@@ -165,14 +179,23 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
         losses.extend([utility_loss / np.linalg.norm(user.w)] * num_queries)
 
         if debug:
-            print "set_size=1 ws =", ws, "user's w =", user.w
-            print "set_size=1 xs =", xs
-            print "set_size=1 scores =", scores
-            print "set_size=1 slacks =", slacks
-            print "set_size=1 margin =", margin
+            real_score = np.dot(user.w, xs[0])
+            print dedent("""\
+            one-margin solution
+            -------------------
+            ws =
+            {}
+            xs =
+            {}
+            scores =
+            {}
+            slacks =
+            {}
+            margin = {}
 
-            print "u(x) =", np.dot(user.w, xs[0])
-            print "utility_loss =", utility_loss
+            real score = {}
+            utility_loss = {}
+            """).format(ws, xs, scores, slacks, margin, real_score, utility_loss)
 
         assert dataset.is_item_valid(xs[0])
 
