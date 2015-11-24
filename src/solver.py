@@ -31,20 +31,36 @@ class Solver(object):
         fp.close()
         model.write(fp.name)
 
-    def _check_score(self, dataset, user, best_score, best_item):
-        if dataset.items is not None and dataset.x_constraints is None:
-            scores = np.dot(user.w, dataset.items.T)
-            debug_best_score = np.max(scores, axis=1)[0]
-            if np.abs(best_score - debug_best_score) > 1e-10:
-                debug_best_item = dataset.items[np.argmax(scores, axis=1)].ravel()
-                raise RuntimeError(dedent("""\
-                    best_score sanity check failed!
-                    best_score = {}
-                    best_item = {}
-                    debug best_score = {}
-                    debug best_item = {}
-                    """).format(best_score, best_item, debug_best_score,
-                                debug_best_item))
+    def _check_best_score(self, dataset, user, best_score, best_item):
+        if dataset.items is None:
+            return
+        if dataset.x_constraints is not None:
+            return
+
+        in_dataset = False
+        for item in dataset.items:
+            in_dataset = in_dataset or (item == best_item).all()
+        assert in_dataset, "best_item not in dataset.items"
+
+        scores = np.dot(user.w.ravel(), dataset.items.T)
+        debug_best_score = np.max(scores)
+        if np.abs(best_score - debug_best_score) > 1e-10:
+            debug_best_item = dataset.items[np.argmax(scores)].ravel()
+            raise RuntimeError(dedent("""\
+                best_score sanity check failed!
+
+                best_score = {}
+                best_item =
+                {}
+
+                debug best_score = {}
+                debug best_item =
+                {}
+
+                all scores =
+                {}
+                """).format(best_score, best_item, debug_best_score,
+                            debug_best_item, scores))
 
     def compute_best_score(self, dataset, user):
         """Returns the highest score for all items the dataset.
@@ -87,7 +103,7 @@ class Solver(object):
             raise RuntimeError("optimization failed!")
         best_item = np.array([x.x for x in xs])
 
-        self._check_score(dataset, user, best_score, xs)
+        self._check_best_score(dataset, user, best_score, best_item)
         return best_score, best_item
 
     def compute_setmargin(self, dataset, answers, set_size):
