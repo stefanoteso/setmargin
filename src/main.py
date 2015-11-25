@@ -7,6 +7,7 @@ import numpy as np
 from sklearn.utils import check_random_state
 import matplotlib.pyplot as plt
 from textwrap import dedent
+from pprint import pformat
 
 from solver import Solver
 from user import User
@@ -118,7 +119,7 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
             answers =
             {}
 
-            """).format(t, num_iterations, queries)
+            """).format(t, num_iterations, pformat(queries))
 
         old_time = time.time()
 
