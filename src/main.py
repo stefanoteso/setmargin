@@ -155,6 +155,7 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
         new_queries, num_queries = \
             update_queries(user, ws, xs, old_best_item, rng,
                            ranking_mode=ranking_mode)
+        assert len(new_queries) > 0
         assert num_queries > 0
 
         queries.extend(new_queries)
