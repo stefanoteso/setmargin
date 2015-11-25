@@ -67,6 +67,16 @@ class Solver(object):
                 """).format(best_score, best_item, debug_best_score,
                             debug_best_item, scores))
 
+    def _add_item_constraints(self, model, dataset, x):
+        """Add one-hot and other item constraints."""
+        zs_in_domains = get_zs_in_domains(dataset.domain_sizes)
+        for zs_in_domain in zs_in_domains:
+            model.addConstr(grb.quicksum([x[z] for z in zs_in_domain]) == 1)
+
+        if dataset.x_constraints is not None:
+            for head, body in dataset.x_constraints:
+                model.addConstr((1 - x[head]) + grb.quicksum([x[atom] for atom in body]) >= 1)
+
     def compute_best_score(self, dataset, user):
         """Returns the highest score for all items the dataset.
 
@@ -79,24 +89,17 @@ class Solver(object):
         model = grb.Model("setmargin_dot")
         model.params.OutputFlag = 0
 
-        xs = [model.addVar(vtype=GRB.BINARY, name="x_{}".format(z))
-              for z in range(num_features)]
+        x = [model.addVar(vtype=GRB.BINARY, name="x_{}".format(z))
+             for z in range(num_features)]
 
         model.modelSense = GRB.MAXIMIZE
         model.update()
 
         w = user.w.ravel()
-        model.setObjective(grb.quicksum([w[i] * xs[i]
-                                        for i in range(num_features)]))
+        model.setObjective(grb.quicksum([w[z] * x[z]
+                                        for z in range(num_features)]))
 
-        zs_in_domains = get_zs_in_domains(dataset.domain_sizes)
-        for zs_in_domain in zs_in_domains:
-            model.addConstr(grb.quicksum([xs[z] for z in zs_in_domain]) == 1)
-
-        if dataset.x_constraints is not None:
-            for head, body in dataset.x_constraints:
-                model.addConstr((1 - xs[head]) + \
-                                grb.quicksum([xs[atom] for atom in body]) >= 1)
+        self._add_item_constraints(model, dataset, x)
 
         model.update()
         self._dump_model(model, "setmargin_dot")
@@ -106,7 +109,7 @@ class Solver(object):
             best_score = model.objVal
         except:
             raise RuntimeError("optimization failed!")
-        best_item = np.array([x.x for x in xs])
+        best_item = np.array([var.x for var in x])
 
         self._check_best_score(dataset, user, best_score, best_item)
         return best_score, best_item
@@ -250,15 +253,8 @@ class Solver(object):
             if set_size == 1:
                 model.addConstr(margins[1] == 0)
 
-        zs_in_domains = get_zs_in_domains(dataset.domain_sizes)
         for i in range(set_size):
-            for zs_in_domain in zs_in_domains:
-                model.addConstr(grb.quicksum([xs[i,z] for z in zs_in_domain]) == 1)
-
-        if dataset.x_constraints is not None:
-            for i in range(set_size):
-                for head, body in dataset.x_constraints:
-                    model.addConstr((1 - xs[i,head]) + grb.quicksum([xs[i,atom] for atom in body]) >= 1)
+            self._add_item_constraints(model, dataset, xs[i,:])
 
         self._dump_model(model, "setmargin_gurobi")
         try:
