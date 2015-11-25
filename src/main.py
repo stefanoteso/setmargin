@@ -151,6 +151,7 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
             print "Warning: solver and debug scores mismatch:\n" \
                   "scores =\n{}\n" \
                   "debug scores =\n{}\n".format(scores, debug_scores)
+            assert (np.diag(scores) - np.diag(debug_scores) < 1e-10).all()
 
         # Ask the user about the retrieved items
         new_queries, num_queries = \
