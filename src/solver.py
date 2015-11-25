@@ -12,6 +12,11 @@ MAX_W_Z = 1
 class Solver(object):
     """Set-margin solver based on the Gurobi MILP solver.
 
+    .. todo::
+
+        Cache the model and update the constraints on demand before solving
+        again.
+
     :param alphas: hyperparameters.
     :param multimargin: whether to use two distinct margins. (default: ``False``)
     :param threads: how many threads Gurobi is allowed to use. (default: 1)
