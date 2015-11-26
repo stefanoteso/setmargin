@@ -22,19 +22,10 @@ class Dataset(object):
                    .format(self.domain_sizes, len(self.items),
                            self.x_constraints)
 
-    def _dom_var_to_bit(j, z):
+    def _dom_var_to_bit(self, j, z):
         assert 0 <= j <= len(self.domain_sizes)
         assert 0 <= z <= self.domain_sizes[j]
         return sum(self.domain_sizes[:j]) + z
-
-    def _bit_to_dom_var(i):
-        assert 0 <= i <= sum(self.domain_sizes)
-        base = 0
-        for j, domain_size in enumerate(self.domain_sizes):
-            if base <= i < base + domain_size:
-                break
-            base += domain_size
-        return j, i - base
 
     def _ground(self, domain_sizes, x_constraints):
         items = np.array([vonehot(domain_sizes, item)
