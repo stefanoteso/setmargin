@@ -297,6 +297,8 @@ def main():
         dataset = RandomDataset(domain_sizes, rng=rng)
     elif args.dataset == "pc":
         dataset = PCDataset()
+    elif args.dataset == "liftedpc":
+        dataset = LiftedPCDataset()
     else:
         raise ValueError("invalid dataset.")
     if args.debug:
