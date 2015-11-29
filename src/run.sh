@@ -12,7 +12,7 @@ make_pngs() {
 test_constraints() {
     for set_size in 1 2 3 4; do
         for sampling_mode in uniform normal; do
-            command="./main.py constsynthetic -N 10 -m $set_size -a 10 --is-indifferent -u $sampling_mode -s 0 --debug"
+            command="./main.py constsynthetic -N 10 -m $set_size -a 10 -i -u $sampling_mode -s 0 --debug"
             $command
             if [ $? -ne 0 ]; then
                 echo "failed: '$command'"
@@ -26,7 +26,7 @@ compare_to_self() {
     for domain_sizes in "2,2" "3,3,3" "4,4,4,4" "5,5,5,5" "6,6,6,6,6,6" "7,7,7,7,7,7,7" "8,8,8,8,8,8,8,8" "9,9,9,9,9,9,9,9,9", "10,10,10,10,10,10,10,10,10,10"; do
         for set_size in 1 2 3 4; do
             for sampling_mode in uniform normal; do
-                command="./main.py synthetic --domain-sizes $domain_sizes -N 10 -m $set_size -a 10 --is-indifferent -u $sampling_mode -s 0 --debug"
+                command="./main.py synthetic --domain-sizes $domain_sizes -N 10 -m $set_size -a 10 -i -u $sampling_mode -s 0 --threads 1 --debug"
                 $command
                 if [ $? -ne 0 ]; then
                     echo "failed: '$command'"
@@ -40,12 +40,20 @@ compare_to_self() {
 test_pc() {
     for set_size in 1 2 3 4; do
         for sampling_mode in uniform normal; do
-            command="./main.py pc -N 10 -m $set_size -a 10 --is-indifferent -u $sampling_mode -s 0 --debug"
+            command="./main.py pc -N 10 -m $set_size -a 10 -i -u $sampling_mode -s 0 --debug"
             $command
             if [ $? -ne 0 ]; then
                 echo "failed: '$command'"
                 exit 1
             fi
+        done
+    done
+}
+
+test_liftedpc() {
+    for m in 1 2 3 4; do
+        for u in uniform normal; do
+            command="./main liftedpc -N 10 -m $m -a 10 -u $u -i -s 0 --debug"
         done
     done
 }
