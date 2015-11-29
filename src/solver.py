@@ -74,8 +74,8 @@ class Solver(object):
             model.addConstr(grb.quicksum([x[z] for z in zs_in_domain]) == 1)
 
         if dataset.x_constraints is not None:
-            for head, body in dataset.x_constraints:
-                model.addConstr((1 - x[head]) + grb.quicksum([x[atom] for atom in body]) >= 1)
+            for body, head in dataset.x_constraints:
+                model.addConstr((1 - x[body]) + grb.quicksum([x[atom] for atom in head]) >= 1)
 
     def compute_best_score(self, dataset, user):
         """Returns the highest score for all items the dataset.
@@ -219,9 +219,6 @@ class Solver(object):
             for z in range(num_features):
                 model.addConstr(ws[i,z] <= MAX_W_Z)
 
-        # Eq. 16
-        # TODO constraints on x
-
         # Eq. 18a
         for i in range(set_size):
             for j in range(set_size):
@@ -254,7 +251,8 @@ class Solver(object):
                 model.addConstr(margins[1] == 0)
 
         for i in range(set_size):
-            self._add_item_constraints(model, dataset, xs[i,:])
+            x = [xs[(i,z)] for z in range(num_features)]
+            self._add_item_constraints(model, dataset, x)
 
         self._dump_model(model, "setmargin_gurobi")
         try:
