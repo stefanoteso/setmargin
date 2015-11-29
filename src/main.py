@@ -264,6 +264,8 @@ def main():
                         help="ranking mode, any of ('all_pairs', 'sorted_pairs') (default: 'all_pairs')")
     parser.add_argument("-M", "--multimargin", action="store_true",
                         help="whether the example and generated object margins should be independent (default: False)")
+    parser.add_argument("-w", "--user-w", type=str, default=None,
+                        help="user weight vector (default: None).")
     parser.add_argument("-u", "--sampling-mode", type=str, default="uniform",
                         help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
     parser.add_argument("-d", "--is-deterministic", action="store_true",
@@ -304,6 +306,14 @@ def main():
                     multimargin=args.multimargin, threads=args.threads,
                     debug=args.debug)
 
+    w = None
+    if args.user_w is not None:
+        try:
+            w = np.load(args.user_w)
+            print "loaded user's w from '{}'".format(args.user_w)
+        except:
+            raise IOError("can not load user's w '{}'".format(args.user_w))
+
     losses, times = [], []
     for i in range(args.num_trials):
         print "==== TRIAL {} ====".format(i)
@@ -311,7 +321,7 @@ def main():
         user = User(dataset.domain_sizes, sampling_mode=args.sampling_mode,
                     is_deterministic=args.is_deterministic,
                     is_indifferent=args.is_indifferent,
-                    rng=rng)
+                    w=w, rng=rng)
         if args.debug:
             print "user =\n", user
 
