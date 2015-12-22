@@ -96,7 +96,7 @@ def update_queries(user, ws, xs, old_best_item, rng, ranking_mode="all_pairs"):
     return queries, num_queries
 
 def run(dataset, user, solver, num_iterations, set_size, rng,
-        ranking_mode="all_pairs", multimargin=False, threads=1, debug=False):
+        ranking_mode="all_pairs", debug=False):
 
     if not num_iterations > 0:
         raise ValueError("invalid num_iterations '{}'".format(num_iterations))
@@ -329,9 +329,7 @@ def main():
 
         losses_for_trial, times_for_trial = \
             run(dataset, user, solver, args.num_iterations, args.set_size, rng,
-                ranking_mode=args.ranking_mode,
-                multimargin=args.multimargin,
-                threads=args.threads, debug=args.debug)
+                ranking_mode=args.ranking_mode, debug=args.debug)
 
         losses.append(np.array(losses_for_trial).ravel())
         times.append(np.array(times_for_trial))
