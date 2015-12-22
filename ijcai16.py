@@ -42,9 +42,9 @@ def run_synthetic():
         "is_deterministic": False,
         "is_indifferent": True,
         "set_size": range(1, 4+1),
-        "alpha": (0.1, 1.0, 10.0),
-        "beta": (0.1, 1.0, 10.0),
-        "gamma": (0.1, 1.0, 10.0),
+        "alpha": 10.0,
+        "beta": 0.1,
+        "gamma": 0.1,
         "multimargin": False,
         "threads": cpu_count(),
     })
@@ -86,7 +86,8 @@ def run_synthetic():
                                       sampling_mode=config.sampling_mode,
                                       is_deterministic=config.is_deterministic,
                                       is_indifferent=config.is_indifferent,
-                                      w=utilities[trial], rng=rng)
+                                      w=utilities[trial].reshape(1,-1),
+                                      rng=rng)
 
                 losses_for_trial, times_for_trial = \
                     setmargin.run(dataset, user, solver, config.num_iterations,
