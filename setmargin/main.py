@@ -1,18 +1,13 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-import os, time
+import time
 import itertools as it
 import numpy as np
 from sklearn.utils import check_random_state
-import matplotlib.pyplot as plt
 from textwrap import dedent
 from pprint import pformat
 
-from solver import Solver
-from user import User
 from util import *
-from datasets import *
 
 def print_queries(queries, hidden_w):
     for xi, xj, sign in queries:
@@ -203,146 +198,3 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
         assert dataset.is_item_valid(xs[0])
 
     return losses, times
-
-def dump_performance(basename, losses, times):
-    # Since distinct trials may have incurred a different number of queries
-    # each, here we resize the performance data to be uniformly shaped
-    num_trials = len(losses)
-    max_queries = max(len(ls) for ls in losses)
-
-    loss_matrix = np.zeros((num_trials, max_queries))
-    time_matrix = np.zeros((num_trials, max_queries))
-    for i, (ls, ts) in enumerate(zip(losses, times)):
-        assert ls.shape == ts.shape
-        loss_matrix[i,:ls.shape[0]] = ls
-        time_matrix[i,:ts.shape[0]] = ts
-
-    np.savetxt("results_{}_time_matrix.txt".format(basename), time_matrix)
-    np.savetxt("results_{}_loss_matrix.txt".format(basename), loss_matrix)
-
-    loss_means = np.mean(loss_matrix, axis=0)
-    loss_stddevs = np.std(loss_matrix, ddof=1, axis=0).reshape(-1, 1)
-
-    fig, ax = plt.subplots(1, 1)
-    ax.set_title("Avgerage loss over {} trials".format(num_trials))
-    ax.set_xlabel("Number of queries")
-    ax.set_ylabel("Average loss")
-    ax.set_ylim([0.0, max(0.5, max(loss_means) + max(loss_stddevs) + 0.1)])
-    ax.errorbar(np.arange(1, max_queries + 1), loss_means, yerr=loss_stddevs)
-    fig.savefig("results_{}_avgloss.svg".format(basename), bbox_inches="tight")
-
-    time_means = np.mean(time_matrix, axis=0)
-    time_stddevs = np.std(time_matrix, ddof=1, axis=0).reshape(-1, 1)
-
-    fig, ax = plt.subplots(1, 1)
-    ax.set_title("Average time over {} trials".format(num_trials))
-    ax.set_xlabel("Number of queries")
-    ax.set_ylabel("Average time")
-    ax.set_ylim([0.0, max(1.0, max(time_means) + max(time_stddevs) + 0.1)])
-    ax.errorbar(np.arange(1, max_queries + 1), time_means, yerr=time_stddevs)
-    fig.savefig("results_{}_avgtime.svg".format(basename), bbox_inches="tight")
-
-def main():
-    import argparse as ap
-
-    parser = ap.ArgumentParser(description="setmargin experiment")
-    parser.add_argument("dataset", type=str,
-                        help="dataset")
-    parser.add_argument("-N", "--num_trials", type=int, default=20,
-                        help="number of trials (default: 20)")
-    parser.add_argument("-n", "--num_iterations", type=int, default=20,
-                        help="number of iterations (default: 20)")
-    parser.add_argument("-m", "--set-size", type=int, default=3,
-                        help="number of hyperplanes/items to solve for (default: 3)")
-    parser.add_argument("-a", "--alpha", type=float, default=0.1,
-                        help="hyperparameter controlling the importance of slacks (default: 0.1)")
-    parser.add_argument("-b", "--beta", type=float, default=0.1,
-                        help="hyperparameter controlling the importance of regularization (default: 0.1)")
-    parser.add_argument("-c", "--gamma", type=float, default=0.1,
-                        help="hyperparameter controlling the score of the output items (default: 0.1)")
-    parser.add_argument("-r", "--ranking-mode", type=str, default="all_pairs",
-                        help="ranking mode, any of ('all_pairs', 'sorted_pairs') (default: 'all_pairs')")
-    parser.add_argument("-M", "--multimargin", action="store_true",
-                        help="whether the example and generated object margins should be independent (default: False)")
-    parser.add_argument("-w", "--user-w", type=str, default=None,
-                        help="user weight vector (default: None).")
-    parser.add_argument("-u", "--sampling-mode", type=str, default="uniform",
-                        help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
-    parser.add_argument("-d", "--is-deterministic", action="store_true",
-                        help="whether the user answers should be deterministic rather than stochastic (default: False)")
-    parser.add_argument("-i", "--is-indifferent", action="store_true",
-                        help="whether the user can (not) be indifferent (default: False)")
-    parser.add_argument("-s", "--seed", type=int, default=None,
-                        help="RNG seed (default: None)")
-    parser.add_argument("--domain-sizes", type=str, default="2,2,5",
-                        help="domain sizes for the synthetic dataset only (default: 2,2,5)")
-    parser.add_argument("--threads", type=int, default=1,
-                        help="Max number of threads to user (default: 1)")
-    parser.add_argument("--debug", action="store_true",
-                        help="Enable debug spew")
-    args = parser.parse_args()
-
-    argsdict = vars(args)
-    argsdict["dataset"] = args.dataset
-
-    print "running {num_trials} x {num_iterations} iterations on {dataset}\
-           [threads={threads} seed={seed}]".format(**argsdict)
-
-    rng = np.random.RandomState(args.seed)
-
-    domain_sizes = map(int, [ds for ds in args.domain_sizes.split(",") if len(ds)])
-    if args.dataset == "synthetic":
-        dataset = SyntheticDataset(domain_sizes)
-    elif args.dataset == "constsynthetic":
-        dataset = RandomDataset(domain_sizes, rng=rng)
-    elif args.dataset == "pc":
-        dataset = PCDataset()
-    elif args.dataset == "liftedpc":
-        dataset = LiftedPCDataset()
-    else:
-        raise ValueError("invalid dataset.")
-    if args.debug:
-        print dataset
-
-    solver = Solver((args.alpha, args.beta, args.gamma),
-                    multimargin=args.multimargin, threads=args.threads,
-                    debug=args.debug)
-
-    w = None
-    if args.user_w is not None:
-        try:
-            w = np.load(args.user_w)
-            print "loaded user's w from '{}'".format(args.user_w)
-        except:
-            raise IOError("can not load user's w '{}'".format(args.user_w))
-
-    losses, times = [], []
-    for i in range(args.num_trials):
-        print "==== TRIAL {} ====".format(i)
-
-        user = User(dataset.domain_sizes, sampling_mode=args.sampling_mode,
-                    is_deterministic=args.is_deterministic,
-                    is_indifferent=args.is_indifferent,
-                    w=w, rng=rng)
-        if args.debug:
-            print "user =\n", user
-
-        losses_for_trial, times_for_trial = \
-            run(dataset, user, solver, args.num_iterations, args.set_size, rng,
-                ranking_mode=args.ranking_mode, debug=args.debug)
-
-        losses.append(np.array(losses_for_trial).ravel())
-        times.append(np.array(times_for_trial))
-
-    hyperparams = [
-        "dataset", "num_trials", "num_iterations", "set_size", "alpha", "beta",
-        "gamma", "ranking_mode", "multimargin", "sampling_mode",
-        "is_deterministic", "is_indifferent", "seed"
-    ]
-    if args.dataset in ("synthetic", "constsynthetic"):
-        hyperparams.insert(1, "domain_sizes")
-    dump_performance("_".join(str(argsdict[h]) for h in hyperparams),
-                     losses, times)
-
-if __name__ == "__main__":
-    main()
