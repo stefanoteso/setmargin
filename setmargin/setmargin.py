@@ -99,11 +99,10 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
     rng = check_random_state(rng)
 
     # Find the dataset item with the highest score wrt the hidden hyperlpane
-    best_hidden_score, _ = solver.compute_best_score(dataset, user)
+    _, best_item = solver.compute_best_score(dataset, user)
 
     # Iterate
-    queries, old_best_item = [], None
-    losses, times = [], []
+    queries, info, old_best_item = [], [], None
     for t in range(num_iterations):
 
         if debug:
@@ -163,7 +162,6 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
             print_queries(queries, user.w)
 
         elapsed = time.time() - old_time
-        times.extend([elapsed / num_queries] * num_queries)
 
         # Compute the utility loss between the best item that we would
         # recommend given the queries collected so far and the best
@@ -173,8 +171,10 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
         if any(np.linalg.norm(w) == 0 for w in ws):
             print "Warning: null weight vector found in the 1-item case:\n{}".format(ws)
 
-        utility_loss = best_hidden_score - np.dot(user.w, xs[0])
-        losses.extend([utility_loss / np.linalg.norm(user.w)] * num_queries)
+        normal_w = user.w.ravel() / np.linalg.norm(user.w.ravel())
+        utility_loss = np.dot(normal_w, best_item - xs[0])
+
+        info.append((num_queries, utility_loss, elapsed))
 
         if debug:
             real_score = np.dot(user.w, xs[0])
@@ -197,4 +197,4 @@ def run(dataset, user, solver, num_iterations, set_size, rng,
 
         assert dataset.is_item_valid(xs[0])
 
-    return losses, times
+    return info
