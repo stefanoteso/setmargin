@@ -105,6 +105,7 @@
 \newcommand{\vy}{\vecvar{y}}
 \newcommand{\vz}{\vecvar{z}}
 \newcommand{\valpha}{\vecvar{\alpha}}
+\newcommand{\veps}{\vecvar{\varepsilon}}
 \newcommand{\vphi}{\vecvar{\varphi}}
 \newcommand{\vpsi}{\vecvar{\psi}}
 
@@ -134,6 +135,48 @@ WRITEME
 WRITEME
 
 \section{Setwise Max-margin Learning}
+
+\paragraph{Notation.} We use boldface letters $\vx$ to indicate vectors,
+capital letters $X$ for matrices, and $[n]$ as a shorthand for the set $\{1, \ldots, n\}$.
+
+\paragraph{Non-linear Formulation.}
+
+Let $k$ be set size and $n$ be the number of examples (answers).
+
+{\footnotesize
+
+\begin{align}
+    \max_{M, W, X}
+        & \;\; M - \frac{\alpha}{k |\calD|} \sum_{i=1}^k \| \veps^{(i)} \|_1 - \frac{\beta}{k} \sum_{i=1}^k \| \vw^{(i)} \|_1 + \frac{\gamma}{k} \sum_{i=1}^k \langle \vw^{(i)}, \vx^{(i)} \rangle
+        \nonumber
+    \\
+    \text{s.t.}
+        & \;\; \forall \; i \in [k] \nonumber, \forall \; h \in [n]
+    \\
+        & \;\; \qquad \langle \vw^{(i)}, \vy^{(h)}_+ - \vy^{(h)}_- \rangle \geq M - \varepsilon^{(i)}_h \nonumber
+    \\
+        & \;\; \forall \; i, j \in [k], i \neq j \nonumber
+    \\
+        & \;\; \qquad \langle \vw^{(i)}, \vx^{(i)} - \vx^{(j)} \rangle \geq M \label{cnst-ws-m}
+    \\
+        & \;\; \forall \; i \in [k] \nonumber
+    \\
+        & \;\; \qquad \vw^\bot \leq \vw^{(i)} \leq \vw^\top \nonumber
+    \\
+        & \;\; \forall \; i \in [k] \nonumber
+    \\
+        & \;\; \qquad \vx^i \in \calX_{\text{feasible}} \nonumber
+    \\
+        & \;\; \forall \; h \in 1, \ldots, n, \forall \; i \in [k] \nonumber
+    \\
+        & \;\; \qquad \varepsilon^{(i)}_h \geq 0 \nonumber
+    \\
+        & \;\; M \geq 0 \nonumber
+\end{align}
+
+}
+
+\paragraph{MILP Formulation.}
 
 WRITEME
 
