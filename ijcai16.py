@@ -88,6 +88,8 @@ def dump_and_draw(dataset_name, config, infos):
     ax.set_ylim([0.0, max(0.5, max(loss_means) + max(loss_stddevs) + 0.1)])
     ax.errorbar(np.arange(1, max_queries + 1), loss_means, yerr=loss_stddevs)
     fig.savefig("results_{}_avgloss.svg".format(basename), bbox_inches="tight")
+    del fig
+    del ax
 
     fig, ax = plt.subplots(1, 1)
     ax.set_title("Average time over {} trials".format(num_trials))
@@ -96,6 +98,8 @@ def dump_and_draw(dataset_name, config, infos):
     ax.set_ylim([0.0, max(0.5, max(time_means) + max(time_stddevs) + 0.1)])
     ax.errorbar(np.arange(1, max_queries + 1), time_means, yerr=time_stddevs)
     fig.savefig("results_{}_avgtime.svg".format(basename), bbox_inches="tight")
+    del fig
+    del ax
 
 def solve(dataset, config, ws=None):
     rng = np.random.RandomState(config.seed)
