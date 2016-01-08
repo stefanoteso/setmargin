@@ -122,7 +122,8 @@ def solve(dataset, config, ws=None):
 
         info = setmargin.run(dataset, user, solver, config.num_iterations,
                              config.set_size, rng,
-                             ranking_mode=config.ranking_mode)
+                             ranking_mode=config.ranking_mode,
+                             debug=config.debug)
         infos.append(info)
     return infos
 
@@ -131,7 +132,7 @@ def run_synthetic():
         "num_trials": 10,
         "num_iterations": 10,
         "sampling_mode": ("uniform", "uniform_sparse", "normal", "normal_sparse"),
-        "ranking_mode": ("all_pairs", "sorted_pairs"),
+        "ranking_mode": ("all_pairs"),
         "is_deterministic": False,
         "is_indifferent": True,
         "set_size": range(1, 4+1),
