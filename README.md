@@ -13,17 +13,22 @@ This package requires the following packages:
 
 ## Usage
 
-The experiments and source code can be found in the `src/` directory.
-
-From a shell, you can run an experiment with the following command:
+To run the IJCAI-16 experiments, simply type:
 ```
-$ ./main.py $dataset
+    python ijcai16.py
 ```
-To get a full description of the arguments accepted by the script, run:
+To perform preference elicitation on a specific dataset with given parameters,
+type:
 ```
-$ ./main.py --help
+    python ijcai16.py $dataset $parameters
 ```
-A more complex usage example:
+For instance, to run 20 trials of length 10 with set size 3 on the synthetic
+dataset, write:
 ```
-$ ./main.py synthetic -N 2 -n 10 -m 2 -d --seed 0 --debug
+    python ijcai16.py synthetic -N 20 -n 10 -m 3
 ```
+See:
+```
+    python ijcai16.py --help
+```
+for a full list of the accepted arguments.
