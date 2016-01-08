@@ -97,7 +97,7 @@ def dump_and_draw(dataset_name, config, infos):
     ax.errorbar(np.arange(1, max_queries + 1), time_means, yerr=time_stddevs)
     fig.savefig("results_{}_avgtime.svg".format(basename), bbox_inches="tight")
 
-def solve(dataset, config, utilities=None):
+def solve(dataset, config, ws=None):
     rng = np.random.RandomState(config.seed)
 
     solver = setmargin.Solver((config.alpha, config.beta, config.gamma),
@@ -111,13 +111,13 @@ def solve(dataset, config, utilities=None):
             ===========
             """).format(trial, config.num_trials)
 
-        utility = None if utilities is None else utilities[trial].reshape(1,-1)
+        w = None if ws is None else ws[trial].reshape(1,-1)
 
         user = setmargin.User(dataset.domain_sizes,
                               sampling_mode=config.sampling_mode,
                               is_deterministic=config.is_deterministic,
                               is_indifferent=config.is_indifferent,
-                              w=utility,
+                              w=w,
                               rng=rng)
 
         info = setmargin.run(dataset, user, solver, config.num_iterations,
@@ -159,9 +159,9 @@ def run_synthetic():
             key = (num_attrs, config.sampling_mode)
             if not key in utilities:
                 utilities[key] = _load_utilities(*key)
-            utilities = utilities[key]
+            ws = utilities[key]
 
-            infos = solve(dataset, config, utilities=utilities)
+            infos = solve(dataset, config, ws=ws)
             dump_and_draw("synthetic_{}".format(num_attrs), config, infos)
 
 def run_pc_nocost():
