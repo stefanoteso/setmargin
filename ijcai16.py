@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import product
@@ -96,8 +97,36 @@ def dump_and_draw(dataset_name, config, infos):
     ax.errorbar(np.arange(1, max_queries + 1), time_means, yerr=time_stddevs)
     fig.savefig("results_{}_avgtime.svg".format(basename), bbox_inches="tight")
 
-def run_synthetic():
+def solve(dataset, config, utilities=None):
+    rng = np.random.RandomState(config.seed)
 
+    solver = setmargin.Solver((config.alpha, config.beta, config.gamma),
+                              multimargin=config.multimargin,
+                              threads=config.threads)
+    infos = []
+    for trial in range(config.num_trials):
+        print dedent("""\
+            ===========
+            TRIAL {}/{}
+            ===========
+            """).format(trial, config.num_trials)
+
+        utility = None if utilities is None else utilities[trial].reshape(1,-1)
+
+        user = setmargin.User(dataset.domain_sizes,
+                              sampling_mode=config.sampling_mode,
+                              is_deterministic=config.is_deterministic,
+                              is_indifferent=config.is_indifferent,
+                              w=utility,
+                              rng=rng)
+
+        info = setmargin.run(dataset, user, solver, config.num_iterations,
+                             config.set_size, rng,
+                             ranking_mode=config.ranking_mode)
+        infos.append(info)
+    return infos
+
+def run_synthetic():
     GRID = Grid({
         "num_trials": 10,
         "num_iterations": 10,
@@ -111,10 +140,10 @@ def run_synthetic():
         "gamma": 0.1,
         "multimargin": False,
         "threads": cpu_count(),
+        "seed": 0,
     })
 
-    utilities_for = {}
-
+    utilities = {}
     for num_attrs in range(2, 8):
         domain_sizes = [num_attrs] * num_attrs
         dataset = setmargin.SyntheticDataset(domain_sizes)
@@ -128,37 +157,84 @@ def run_synthetic():
                 """).format(pformat(config.asdict()))
 
             key = (num_attrs, config.sampling_mode)
-            if not key in utilities_for:
-                utilities_for[key] = _load_utilities(*key)
-            utilities = utilities_for[key]
+            if not key in utilities:
+                utilities[key] = _load_utilities(*key)
+            utilities = utilities[key]
 
-            solver = setmargin.Solver((config.alpha, config.beta, config.gamma),
-                                      multimargin=config.multimargin,
-                                      threads=config.threads)
-
-            rng = np.random.RandomState(0)
-
-            infos = []
-            for trial in range(config.num_trials):
-                print dedent("""\
-                    ===========
-                    TRIAL {}/{}
-                    ===========
-                    """).format(trial, config.num_trials)
-
-                user = setmargin.User(domain_sizes,
-                                      sampling_mode=config.sampling_mode,
-                                      is_deterministic=config.is_deterministic,
-                                      is_indifferent=config.is_indifferent,
-                                      w=utilities[trial].reshape(1,-1),
-                                      rng=rng)
-
-                info = setmargin.run(dataset, user, solver, config.num_iterations,
-                                     config.set_size, rng,
-                                     ranking_mode=config.ranking_mode)
-                infos.append(info)
-
+            infos = solve(dataset, config, utilities=utilities)
             dump_and_draw("synthetic_{}".format(num_attrs), config, infos)
 
+def run_pc_nocost():
+    pass
+
+def run_pc():
+    pass
+
+def run_from_command_line():
+    import argparse as ap
+
+    parser = ap.ArgumentParser(description="setmargin experiment")
+    parser.add_argument("dataset", type=str,
+                        help="dataset")
+    parser.add_argument("-N", "--num_trials", type=int, default=20,
+                        help="number of trials (default: 20)")
+    parser.add_argument("-n", "--num_iterations", type=int, default=20,
+                        help="number of iterations (default: 20)")
+    parser.add_argument("-m", "--set-size", type=int, default=3,
+                        help="number of hyperplanes/items to solve for (default: 3)")
+    parser.add_argument("-a", "--alpha", type=float, default=0.1,
+                        help="hyperparameter controlling the importance of slacks (default: 0.1)")
+    parser.add_argument("-b", "--beta", type=float, default=0.1,
+                        help="hyperparameter controlling the importance of regularization (default: 0.1)")
+    parser.add_argument("-c", "--gamma", type=float, default=0.1,
+                        help="hyperparameter controlling the score of the output items (default: 0.1)")
+    parser.add_argument("-r", "--ranking-mode", type=str, default="all_pairs",
+                        help="ranking mode, any of ('all_pairs', 'sorted_pairs') (default: 'all_pairs')")
+    parser.add_argument("-M", "--multimargin", action="store_true",
+                        help="whether the example and generated object margins should be independent (default: False)")
+    parser.add_argument("-u", "--sampling-mode", type=str, default="uniform",
+                        help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
+    parser.add_argument("-d", "--is-deterministic", action="store_true",
+                        help="whether the user answers should be deterministic rather than stochastic (default: False)")
+    parser.add_argument("-i", "--is-indifferent", action="store_true",
+                        help="whether the user can (not) be indifferent (default: False)")
+    parser.add_argument("-s", "--seed", type=int, default=None,
+                        help="RNG seed (default: None)")
+    parser.add_argument("--domain-sizes", type=str, default="2,2,5",
+                        help="domain sizes for the synthetic dataset only (default: 2,2,5)")
+    parser.add_argument("--threads", type=int, default=1,
+                        help="Max number of threads to user (default: 1)")
+    parser.add_argument("--debug", action="store_true",
+                        help="Enable debug spew")
+    args = parser.parse_args()
+
+    argsdict = vars(args)
+    argsdict["dataset"] = args.dataset
+
+    config = Grid(argsdict)
+
+    domain_sizes = map(int, [ds for ds in args.domain_sizes.split(",") if len(ds)])
+    if args.dataset == "synthetic":
+        dataset = setmargin.SyntheticDataset(domain_sizes)
+    elif args.dataset == "random_constraints":
+        dataset = setmargin.RandomDataset(domain_sizes, rng=rng)
+    elif args.dataset == "pc":
+        dataset = setmargin.PCDataset()
+    elif args.dataset == "liftedpc":
+        dataset = setmargin.LiftedPCDataset()
+    else:
+        raise ValueError("invalid dataset.")
+    if args.debug:
+        print dataset
+
+    infos = solve(dataset, config)
+    dump_and_draw("{}_{}".format(args.dataset, ",".join(map(str, args.domain_sizes))),
+                  config, infos)
+
 if __name__ == "__main__":
-    run_synthetic()
+    if len(sys.argv) == 1:
+        run_synthetic()
+        run_pc_nocost()
+        run_pc()
+    else:
+        run_from_command_line()
