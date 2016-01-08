@@ -132,11 +132,11 @@ def solve(dataset, config, ws=None):
     return infos
 
 def run_synthetic():
-    GRID = Grid({
+    CONFIGS = Grid({
         "num_trials": 10,
         "num_iterations": 10,
         "sampling_mode": ("uniform", "uniform_sparse", "normal", "normal_sparse"),
-        "ranking_mode": ("all_pairs"),
+        "ranking_mode": ("all_pairs",),
         "is_deterministic": False,
         "is_indifferent": True,
         "set_size": range(1, 4+1),
@@ -145,6 +145,7 @@ def run_synthetic():
         "gamma": 0.1,
         "multimargin": False,
         "threads": cpu_count(),
+        "debug": False,
         "seed": 0,
     })
 
@@ -153,7 +154,7 @@ def run_synthetic():
         domain_sizes = [num_attrs] * num_attrs
         dataset = setmargin.SyntheticDataset(domain_sizes)
 
-        for config in GRID.iterate():
+        for config in CONFIGS.iterate():
 
             print dedent("""\
                 =====================
