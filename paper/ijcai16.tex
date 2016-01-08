@@ -108,6 +108,7 @@
 \newcommand{\veps}{\vecvar{\varepsilon}}
 \newcommand{\vphi}{\vecvar{\varphi}}
 \newcommand{\vpsi}{\vecvar{\psi}}
+\newcommand{\vtheta}{\vecvar{\theta}}
 
 % Operators
 \DeclareMathOperator*{\argmax}{argmax}
@@ -223,19 +224,24 @@ Let $k$ be the set size and $n$ be the number of examples (answers).
 WRITEME
 
 \begin{algorithm}
+{\footnotesize
 \begin{algorithmic}[1]
-    \Procedure{PESetMargin}{$Y, m; \calW, \calX, \valpha, T$}
-        \State $\calA \gets \emptyset$
+    \Procedure{SetMargin}{$k, \vtheta, T$}
+        \State $\calQ \gets \emptyset$
         \For{$t = 1, \ldots, T$}
-            \State $\vw^*_1, \ldots, \vw^*_m, \vx^*_1, \ldots, \vx^*_m \gets \text{{\sc Solve}}(Y, \calA, m; \calW, \calX, \valpha)$
-            \For{$\vx^*_i,\vx^*_j \in \{ \vx^*_1, \ldots, \vx^*_m \} \; \text{{\bf s.t.}} \; i < j$}
-                \State $\calA \gets \calA \cup \text{{\sc QueryUser}}(\vx^*_i,\vx^*_j)$
+            \State $\vw^{(1)}, \ldots, \vw^{(k)}, \vx^{(1)}, \ldots, \vx^{(k)} \gets \text{{\sc Solve}}(\calQ, k, \vtheta)$
+            \For{$\vx^{(i)},\vx^{(j)} \in \{ \vx^{(1)}, \ldots, \vx^{(k)} \} \; \text{{\bf s.t.}} \; i < j$}
+                \State $\calQ \gets \calQ \cup \text{{\sc QueryUser}}(\vx^{(i)},\vx^{(j)})$
             \EndFor
         \EndFor
-        \State $\vw^*, \vx^* \gets \text{{\sc Solve}}(Y, \calA, 1; \calW, \calX, \valpha)$
+        \State $\vw^*, \vx^* \gets \text{{\sc Solve}}(\calQ, 1, \vtheta)$
         \State ${\bf return}\; \vw^*, \vx^*$
     \EndProcedure
 \end{algorithmic}
+}
+\caption{The {\sc SetMargin} algorithm. Here $k$ is the set size, $\vtheta$ are
+the $\alpha,\beta,\gamma$ hyperparameters, and $T$ is the maximum number of
+iterations.}
 \end{algorithm}
 
 \section{Experiments}
