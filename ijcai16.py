@@ -136,7 +136,7 @@ def run_synthetic():
         "num_trials": 10,
         "num_iterations": 10,
         "sampling_mode": ("uniform", "uniform_sparse", "normal", "normal_sparse"),
-        "ranking_mode": ("all_pairs"),
+        "ranking_mode": ("all_pairs",),
         "is_deterministic": False,
         "is_indifferent": True,
         "set_size": range(1, 4+1),
