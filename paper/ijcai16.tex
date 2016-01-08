@@ -191,37 +191,29 @@ capital letters $X$ for matrices, and $[n]$ as a shorthand for the set $\{1, \ld
 
 \paragraph{Non-linear Formulation.}
 
-Let $k$ be set size and $n$ be the number of examples (answers).
+Let $k$ be the set size and $n$ be the number of examples (answers).
 
 {\footnotesize
 
 \begin{align}
     \max_{M, W, X}
-        & \;\; M - \frac{\alpha}{k |\calD|} \sum_{i=1}^k \| \veps^{(i)} \|_1 - \frac{\beta}{k} \sum_{i=1}^k \| \vw^{(i)} \|_1 + \frac{\gamma}{k} \sum_{i=1}^k \langle \vw^{(i)}, \vx^{(i)} \rangle
+        & \;\; M - \frac{\alpha}{k n} \sum_{i=1}^k \| \veps^{(i)} \|_1 - \frac{\beta}{k} \sum_{i=1}^k \| \vw^{(i)} \|_1 + \frac{\gamma}{k} \sum_{i=1}^k \langle \vw^{(i)}, \vx^{(i)} \rangle
         \nonumber
     \\
     \text{s.t.}
-        & \;\; \forall \; i \in [k] \nonumber, \forall \; h \in [n]
+        & \;\; \forall \; i \in [k], \forall \; h \in [n] \nonumber
     \\
-        & \;\; \qquad \langle \vw^{(i)}, \vy^{(h)}_+ - \vy^{(h)}_- \rangle \geq M - \varepsilon^{(i)}_h \nonumber
+        & \;\; \qquad \langle \vw^{(i)}, \vy^{(h)}_+ - \vy^{(h)}_- \rangle \geq M - \varepsilon^{(i)}_h
     \\
-        & \;\; \forall \; i, j \in [k], i \neq j \nonumber
+        & \;\; \forall \; i, j \in [k], i \neq j \;.\; \langle \vw^{(i)}, \vx^{(i)} - \vx^{(j)} \rangle \geq M \label{cnst-ws-m}
     \\
-        & \;\; \qquad \langle \vw^{(i)}, \vx^{(i)} - \vx^{(j)} \rangle \geq M \label{cnst-ws-m}
+        & \;\; \forall \; i \in [k] \;.\; \vw^\bot \leq \vw^{(i)} \leq \vw^\top
     \\
-        & \;\; \forall \; i \in [k] \nonumber
+        & \;\; \forall \; i \in [k] \;.\; \vx^{(i)} \in \calX_{\text{feasible}}
     \\
-        & \;\; \qquad \vw^\bot \leq \vw^{(i)} \leq \vw^\top \nonumber
+        & \;\; \forall \; i \in [k] \;.\; \veps^{(i)}_h \geq 0
     \\
-        & \;\; \forall \; i \in [k] \nonumber
-    \\
-        & \;\; \qquad \vx^i \in \calX_{\text{feasible}} \nonumber
-    \\
-        & \;\; \forall \; h \in 1, \ldots, n, \forall \; i \in [k] \nonumber
-    \\
-        & \;\; \qquad \varepsilon^{(i)}_h \geq 0 \nonumber
-    \\
-        & \;\; M \geq 0 \nonumber
+        & \;\; M \geq 0
 \end{align}
 
 }
