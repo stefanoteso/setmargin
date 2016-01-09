@@ -184,9 +184,9 @@ class Solver(object):
         obj_weights = alpha * grb.quicksum(ws.values())
 
         alpha = self._alphas[2] / set_size
-        obj_scores = grb.quicksum([ps[i,i,z]
-                                   for i in range(set_size)
-                                   for z in range(num_features)])
+        obj_scores = alpha * grb.quicksum([ps[i,i,z]
+                                           for i in range(set_size)
+                                           for z in range(num_features)])
 
         model.setObjective(obj_margins - obj_slacks - obj_weights + obj_scores)
 
