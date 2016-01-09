@@ -9,6 +9,22 @@ from util import *
 
 MAX_W_Z = 1
 
+status_to_reason = {
+    1: "LOADED",
+    2: "OPTIMAL",
+    3: "INFEASIBLE",
+    4: "INF_OR_UNBD",
+    5: "UNBOUNDED",
+    6: "CUTOFF",
+    7: "ITERATION_LIMIT",
+    8: "NODE_LIMIT",
+    9: "TIME_LIMIT",
+    10: "SOLUTION_LIMIT",
+    11: "INTERRUPTED",
+    12: "NUMERIC",
+    13: "SUBOPTIMAL",
+}
+
 class Solver(object):
     """Set-margin solver based on the Gurobi MILP solver.
 
@@ -31,10 +47,12 @@ class Solver(object):
         self._debug = debug
 
     def _dump_model(self, model, prefix):
-        fp = tempfile.NamedTemporaryFile(prefix=prefix, suffix=".lp",
-                                         delete=False)
-        fp.close()
-        model.write(fp.name)
+        if self._debug:
+            fp = tempfile.NamedTemporaryFile(prefix=prefix, suffix=".lp",
+                                             delete=False)
+            fp.close()
+            print "dumping model to", fp.name
+            model.write(fp.name)
 
     def _check_best_score(self, dataset, user, best_score, best_item):
         if dataset.items is None:
@@ -108,7 +126,7 @@ class Solver(object):
             model.optimize()
             best_score = model.objVal
         except:
-            raise RuntimeError("optimization failed!")
+            raise RuntimeError("optimization failed! {}".format(status_to_reason[model.status]))
         best_item = np.array([var.x for var in x])
 
         self._check_best_score(dataset, user, best_score, best_item)
@@ -254,12 +272,12 @@ class Solver(object):
             x = [xs[(i,z)] for z in range(num_features)]
             self._add_item_constraints(model, dataset, x)
 
-        self._dump_model(model, "setmargin_gurobi")
+        self._dump_model(model, "setmargin_full")
         try:
             model.optimize()
             _ = model.objVal
         except:
-            raise RuntimeError("optimization failed!")
+            raise RuntimeError("optimization failed! {}".format(status_to_reason[model.status]))
 
         output_ws = np.zeros((set_size, num_features))
         output_xs = np.zeros((set_size, num_features))
