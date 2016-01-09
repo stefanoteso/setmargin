@@ -90,7 +90,7 @@ def dump_and_draw(dataset_name, config, infos):
     np.savetxt(time_matrix_path, time_matrix)
 
     def ms(x):
-        return np.mean(x, axis=0), np.std(x, ddof=1, axis=0).reshape(-1, 1)
+        return np.mean(x, axis=0), np.std(x, axis=0).reshape(-1, 1)
 
     loss_means, loss_stddevs = ms(loss_matrix)
     time_means, time_stddevs = ms(time_matrix)
