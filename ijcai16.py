@@ -139,7 +139,9 @@ def solve(dataset, config, ws=None):
                               rng=rng)
 
         info = setmargin.run(dataset, user, solver, config.num_iterations,
-                             config.set_size, alphas, debug=config.debug)
+                             config.set_size, alphas,
+                             crossval_set_size=config.crossval_set_size,
+                             debug=config.debug)
         infos.append(info)
     return infos
 
@@ -153,6 +155,7 @@ def run_synthetic():
         "is_indifferent": True,
         "set_size": range(1, 4+1),
         "crossval": True,
+        "crossval_set_size": 1,
         "multimargin": False,
         "threads": cpu_count(),
         "debug": False,
@@ -200,6 +203,8 @@ def run_from_command_line():
                         help="number of hyperplanes/items to solve for")
     parser.add_argument("-x", "--crossval", action="store_true",
                         help="whether to perform automatic hyperparameter crossvalidation. If enabled, -a -b -c are ignored.")
+    parser.add_argument("-X", "--crossval-set-size", type=int, default=None,
+                        help="set_size for the hyperparameter crossvalidation.")
     parser.add_argument("-a", "--alpha", type=float, default=0.1,
                         help="hyperparameter controlling the importance of slacks")
     parser.add_argument("-b", "--beta", type=float, default=0.1,
