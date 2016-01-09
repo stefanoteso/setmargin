@@ -316,4 +316,38 @@ class Solver(object):
             for k in range(num_examples):
                 output_slacks[i,k] = slacks[i,k].x
 
-        return output_ws, output_xs, output_scores, output_slacks, margin.x
+        output_margins = [margin.x for margin in margins]
+
+        if self._debug:
+            print dedent("""\
+            set-margin solution (set_size = {})
+            -----------------------------------
+            ws =
+            {}
+            xs =
+            {}
+            scores =
+            {}
+            slacks =
+            {}
+            margins = {}
+            """).format(set_size, output_ws, output_xs, output_scores,
+                        output_slacks, output_margins)
+
+        if any(np.linalg.norm(w) == 0 for w in ws):
+            print "Warning: null weight vector found:\n{}".format(ws)
+
+        assert all(dataset.is_item_valid(x) for x in output_xs)
+
+        debug_scores = np.dot(output_ws, output_xs.T)
+        if (np.abs(output_scores - debug_scores) >= 1e-10).any():
+            print dedent("""\
+                Warning: solver and debug scores mismatch:
+                scores =
+                {}
+                debug scores =
+                {}
+                """).format(output_scores, debug_scores)
+            assert (np.diag(output_scores) - np.diag(debug_scores) < 1e-10).all()
+
+        return output_ws, output_xs
