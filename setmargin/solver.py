@@ -105,6 +105,7 @@ class Solver(object):
         num_features = sum(dataset.domain_sizes)
 
         model = grb.Model("setmargin_dot")
+        model.params.Seed = 0
         model.params.OutputFlag = 0
 
         x = [model.addVar(vtype=GRB.BINARY, name="x_{}".format(z))
@@ -144,6 +145,7 @@ class Solver(object):
         num_features = sum(dataset.domain_sizes)
 
         model = grb.Model("facility")
+        model.params.Seed = 0
         model.params.Threads = self._threads
         model.params.OutputFlag = 0
 
