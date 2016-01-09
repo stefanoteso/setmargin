@@ -175,11 +175,17 @@ class Solver(object):
         model.update()
 
         # Define the objective function
-        temp = (
-            0.0 if len(slacks) == 0 else alphas[0] / (set_size * num_examples),
-            alphas[1] / set_size,
-            alphas[2] / set_size,
-        )
+        if False:
+            # XXX getting temp[0] below 1 makes the set_size=1 problem
+            # become unbounded; avoid normalizing the hyperparameters
+            # for now
+            temp = (
+                0.0 if len(slacks) == 0 else alphas[0] / (set_size * num_examples),
+                alphas[1] / set_size,
+                alphas[2] / set_size,
+            )
+        else:
+            temp = alphas
 
         obj_margins = grb.quicksum(margins)
 
