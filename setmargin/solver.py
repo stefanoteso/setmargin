@@ -340,7 +340,7 @@ class Solver(object):
             """).format(set_size, output_ws, output_xs, output_scores,
                         output_slacks, output_margins)
 
-        if any(np.linalg.norm(w) == 0 for w in ws):
+        if any(np.linalg.norm(w) == 0 for w in output_ws):
             print "Warning: null weight vector found:\n{}".format(output_ws)
 
         assert all(dataset.is_item_valid(x) for x in output_xs)
