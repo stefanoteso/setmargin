@@ -152,8 +152,8 @@ def solve(dataset, config, ws=None):
 
 def run_synthetic():
     CONFIGS = Grid({
-        "num_trials": 10,
-        "num_iterations": 10,
+        "num_trials": 20,
+        "num_iterations": 100,
         "sampling_mode": ("uniform", "uniform_sparse", "normal", "normal_sparse"),
         "ranking_mode": ("all_pairs",),
         "is_deterministic": False,
