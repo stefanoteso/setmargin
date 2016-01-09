@@ -173,20 +173,23 @@ class Solver(object):
         model.update()
 
         # Define the objective function
+        alphas = (
+            0.0 if len(slacks) == 0 else self._alphas[0] / (set_size * num_examples),
+            self._alphas[1] / set_size,
+            self._alphas[2] / set_size,
+        )
+
         obj_margins = grb.quicksum(margins)
 
         obj_slacks = 0
         if len(slacks) > 0:
-            alpha = self._alphas[0] / (set_size * num_examples)
-            obj_slacks = alpha * grb.quicksum(slacks.values())
+            obj_slacks = alphas[0] * grb.quicksum(slacks.values())
 
-        alpha = self._alphas[1] / set_size
-        obj_weights = alpha * grb.quicksum(ws.values())
+        obj_weights = alphas[1] * grb.quicksum(ws.values())
 
-        alpha = self._alphas[2] / set_size
-        obj_scores = alpha * grb.quicksum([ps[i,i,z]
-                                           for i in range(set_size)
-                                           for z in range(num_features)])
+        obj_scores = alphas[2] * grb.quicksum([ps[i,i,z]
+                                               for i in range(set_size)
+                                               for z in range(num_features)])
 
         model.setObjective(obj_margins - obj_slacks - obj_weights + obj_scores)
 
@@ -277,7 +280,17 @@ class Solver(object):
             model.optimize()
             _ = model.objVal
         except:
-            raise RuntimeError("optimization failed! {}".format(status_to_reason[model.status]))
+            message = dedent("""\
+                optimization failed!
+
+                answers =
+                {}
+
+                set_size = {}
+                status = {}
+                alphas = {}
+                """).format(answers, set_size, status_to_reason[model.status], alphas)
+            raise RuntimeError(message)
 
         output_ws = np.zeros((set_size, num_features))
         output_xs = np.zeros((set_size, num_features))
