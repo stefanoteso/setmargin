@@ -41,6 +41,10 @@ def _load_utilities(num_attrs, sampling_mode):
     return utilities
 
 def get_result_paths(dataset_name, config):
+    if config.crossval:
+        alphas = "auto"
+    else:
+        alphas = ",".join(map(str, [config.alpha, config.beta, config.gamma]))
     basename = "__".join(map(str, [
         dataset_name,
         "k={}".format(config.set_size),
@@ -48,7 +52,8 @@ def get_result_paths(dataset_name, config):
         config.ranking_mode,
         "deterministic={}".format(config.is_deterministic),
         "indifferent={}".format(config.is_indifferent),
-        "theta={},{},{}".format(config.alpha, config.beta, config.gamma),
+        "alphas={}".format(alphas),
+        "crossval_set_size={}".format(config.crossval_set_size),
         "multimargin={}".format(config.multimargin),
         "threads={}".format(config.threads),
         config.num_trials,
