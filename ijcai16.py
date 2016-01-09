@@ -40,7 +40,7 @@ def _load_utilities(num_attrs, sampling_mode):
     utilities[utilities < 0] = 0
     return utilities
 
-def dump_and_draw(dataset_name, config, infos):
+def get_result_paths(dataset_name, config):
     basename = "__".join(map(str, [
         dataset_name,
         "k={}".format(config.set_size),
@@ -54,6 +54,15 @@ def dump_and_draw(dataset_name, config, infos):
         config.num_trials,
         config.num_iterations,
     ]))
+    path1 = "results_{}_loss_matrix.txt".format(basename)
+    path2 = "results_{}_time_matrix.txt".format(basename)
+    path3 = "results_{}_avgloss.svg".format(basename)
+    path4 = "results_{}_avgtime.svg".format(basename)
+    return path1, path2, path3, path4
+
+def dump_and_draw(dataset_name, config, infos):
+    loss_matrix_path, time_matrix_path, loss_svg_path, time_svg_path = \
+        get_result_paths(dataset_name, config)
 
     num_trials = len(infos)
     max_queries = max([sum(n for n, _, _ in info) for info in infos])
@@ -72,8 +81,8 @@ def dump_and_draw(dataset_name, config, infos):
             base += num_queries
             prev_loss = loss
 
-    np.savetxt("results_{}_loss_matrix.txt".format(basename), loss_matrix)
-    np.savetxt("results_{}_time_matrix.txt".format(basename), time_matrix)
+    np.savetxt(loss_matrix_path, loss_matrix)
+    np.savetxt(time_matrix_path, time_matrix)
 
     def ms(x):
         return np.mean(x, axis=0), np.std(x, ddof=1, axis=0).reshape(-1, 1)
@@ -87,7 +96,7 @@ def dump_and_draw(dataset_name, config, infos):
     ax.set_ylabel("Average loss over trials")
     ax.set_ylim([0.0, max(0.5, max(loss_means) + max(loss_stddevs) + 0.1)])
     ax.errorbar(np.arange(1, max_queries + 1), loss_means, yerr=loss_stddevs)
-    fig.savefig("results_{}_avgloss.svg".format(basename), bbox_inches="tight")
+    fig.savefig(loss_svg_path, bbox_inches="tight")
     del fig
     del ax
 
@@ -97,7 +106,7 @@ def dump_and_draw(dataset_name, config, infos):
     ax.set_ylabel("Average time over trials")
     ax.set_ylim([0.0, max(0.5, max(time_means) + max(time_stddevs) + 0.1)])
     ax.errorbar(np.arange(1, max_queries + 1), time_means, yerr=time_stddevs)
-    fig.savefig("results_{}_avgtime.svg".format(basename), bbox_inches="tight")
+    fig.savefig(time_svg_path, bbox_inches="tight")
     del fig
     del ax
 
