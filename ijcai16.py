@@ -59,15 +59,19 @@ def get_result_paths(dataset_name, config):
         config.num_trials,
         config.num_iterations,
     ]))
+    path0 = "results_{}_infos.pickle".format(basename)
     path1 = "results_{}_loss_matrix.txt".format(basename)
     path2 = "results_{}_time_matrix.txt".format(basename)
     path3 = "results_{}_avgloss.svg".format(basename)
     path4 = "results_{}_avgtime.svg".format(basename)
-    return path1, path2, path3, path4
+    return path0, path1, path2, path3, path4
 
 def dump_and_draw(dataset_name, config, infos):
-    loss_matrix_path, time_matrix_path, loss_svg_path, time_svg_path = \
+    infos_path, loss_matrix_path, time_matrix_path, loss_svg_path, time_svg_path = \
         get_result_paths(dataset_name, config)
+
+    with open(infos_path, "wb") as fp:
+        pickle.dump(infos, fp)
 
     num_trials = len(infos)
     max_queries = max([sum(n for n, _, _ in info) for info in infos])
