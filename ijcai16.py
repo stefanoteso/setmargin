@@ -187,41 +187,41 @@ def run_pc():
     pass
 
 def run_from_command_line():
-    import argparse as ap
+    import argparse
 
-    parser = ap.ArgumentParser(description="setmargin experiment")
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("dataset", type=str,
                         help="dataset")
     parser.add_argument("-N", "--num_trials", type=int, default=20,
-                        help="number of trials (default: 20)")
+                        help="number of trials")
     parser.add_argument("-n", "--num_iterations", type=int, default=20,
-                        help="number of iterations (default: 20)")
+                        help="number of iterations")
     parser.add_argument("-m", "--set-size", type=int, default=3,
-                        help="number of hyperplanes/items to solve for (default: 3)")
+                        help="number of hyperplanes/items to solve for")
     parser.add_argument("-x", "--crossval", action="store_true",
-                        help="whether to perform automatic hyperparameter crossvalidation")
+                        help="whether to perform automatic hyperparameter crossvalidation. If enabled, -a -b -c are ignored.")
     parser.add_argument("-a", "--alpha", type=float, default=0.1,
-                        help="hyperparameter controlling the importance of slacks (default: 0.1)")
+                        help="hyperparameter controlling the importance of slacks")
     parser.add_argument("-b", "--beta", type=float, default=0.1,
-                        help="hyperparameter controlling the importance of regularization (default: 0.1)")
+                        help="hyperparameter controlling the importance of regularization")
     parser.add_argument("-c", "--gamma", type=float, default=0.1,
-                        help="hyperparameter controlling the score of the output items (default: 0.1)")
+                        help="hyperparameter controlling the score of the output items")
     parser.add_argument("-r", "--ranking-mode", type=str, default="all_pairs",
-                        help="ranking mode, any of ('all_pairs', 'sorted_pairs') (default: 'all_pairs')")
+                        help="ranking mode for set-wide queries, any of ('all_pairs', 'sorted_pairs')")
     parser.add_argument("-M", "--multimargin", action="store_true",
-                        help="whether the example and generated object margins should be independent (default: False)")
+                        help="whether the example and generated object margins should be independent")
     parser.add_argument("-u", "--sampling-mode", type=str, default="uniform",
-                        help="utility sampling mode, any of ('uniform', 'normal') (default: 'uniform')")
+                        help="utility sampling mode, any of ('uniform', 'normal')")
     parser.add_argument("-d", "--is-deterministic", action="store_true",
-                        help="whether the user answers should be deterministic rather than stochastic (default: False)")
+                        help="whether the user answers should be deterministic rather than stochastic")
     parser.add_argument("-i", "--is-indifferent", action="store_true",
-                        help="whether the user can (not) be indifferent (default: False)")
+                        help="whether the user can (not) be indifferent")
     parser.add_argument("-s", "--seed", type=int, default=None,
-                        help="RNG seed (default: None)")
+                        help="RNG seed")
     parser.add_argument("--domain-sizes", type=str, default="2,2,5",
-                        help="domain sizes for the synthetic dataset only (default: 2,2,5)")
+                        help="domain sizes for the synthetic dataset only")
     parser.add_argument("--threads", type=int, default=1,
-                        help="Max number of threads to user (default: 1)")
+                        help="Max number of threads to user")
     parser.add_argument("--debug", action="store_true",
                         help="Enable debug spew")
     args = parser.parse_args()
