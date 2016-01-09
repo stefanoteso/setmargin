@@ -192,7 +192,9 @@ capital letters $X$ for matrices, and $[n]$ as a shorthand for the set $\{1, \ld
 
 \paragraph{Non-linear Formulation.}
 
-Let $k$ be the set size and $n$ be the number of examples (answers).
+Let $k$ be the set size and $n$ be the number of examples (answers). Here
+the $\vw$'s are non-negative real vectors, while the $\vx$'s are 0-1
+vectors.
 
 {\footnotesize
 
@@ -206,9 +208,9 @@ Let $k$ be the set size and $n$ be the number of examples (answers).
     \\
         & \;\; \qquad \langle \vw^{(i)}, \vy^{(h)}_+ - \vy^{(h)}_- \rangle \geq M - \varepsilon^{(i)}_h
     \\
-        & \;\; \forall \; i, j \in [k], i \neq j \;.\; \langle \vw^{(i)}, \vx^{(i)} - \vx^{(j)} \rangle \geq M \label{cnst-ws-m}
+        & \;\; \forall \; i, j \in [k], i \neq j \;.\; \langle \vw^{(i)}, \vx^{(i)} - \vx^{(j)} \rangle \geq M \label{eq:wxconstr}
     \\
-        & \;\; \forall \; i \in [k] \;.\; \vw^\bot \leq \vw^{(i)} \leq \vw^\top
+        & \;\; \forall \; i \in [k] \;.\; \vw^\bot \leq \vw^{(i)} \leq \vw^\top \label{eq:wbounds}
     \\
         & \;\; \forall \; i \in [k] \;.\; \vx^{(i)} \in \calX_{\text{feasible}}
     \\
@@ -218,6 +220,12 @@ Let $k$ be the set size and $n$ be the number of examples (answers).
 \end{align}
 
 }
+
+Note that due to the non-negativity of $\vw^\bot$, Eq.~\ref{eq:wbounds}
+subsumes the non-negativity constraint $\forall \; i \in [k] \;.\; \vw^{(i)}$.
+
+\stefano{for $k=1$, setting $\alpha < 1$  renders the problem unbounded, as
+Eq.~\ref{eq:wxconstr} vanishes.}
 
 \paragraph{MILP Formulation.}
 
