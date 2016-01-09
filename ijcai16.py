@@ -128,15 +128,14 @@ def solve(dataset, config, ws=None):
 
         user = setmargin.User(dataset.domain_sizes,
                               sampling_mode=config.sampling_mode,
+                              ranking_mode=config.ranking_mode,
                               is_deterministic=config.is_deterministic,
                               is_indifferent=config.is_indifferent,
                               w=w,
                               rng=rng)
 
         info = setmargin.run(dataset, user, solver, config.num_iterations,
-                             config.set_size, rng,
-                             ranking_mode=config.ranking_mode,
-                             debug=config.debug)
+                             config.set_size, debug=config.debug)
         infos.append(info)
     return infos
 

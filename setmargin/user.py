@@ -1,4 +1,5 @@
 import numpy as np
+import itertools as it
 from sklearn.utils import check_random_state
 
 class User(object):
@@ -11,6 +12,7 @@ class User(object):
 
     :param domain_sizes: list of domain sizes.
     :param sampling_mode: sampling mode. (default: ``"uniform"``)
+    :param ranking_mode: ranking mode for set queries. (default: ``"all_pairs"``)
     :param is_deterministic: whether the user is deterministic. (default: ``False``)
     :param is_indifferent: whether the user can be indifferent. (default: ``False``)
     :param w: user-provided preference vector. (default: ``None``)
@@ -20,10 +22,11 @@ class User(object):
            Preference Elicitation with Pairwise Comparison Queries*, AISTATS
            2010.
     """
-    def __init__(self, domain_sizes, sampling_mode="uniform",
+    def __init__(self, domain_sizes, sampling_mode="uniform", ranking_mode="all_pairs",
                  is_deterministic=False, is_indifferent=False, w=None,
                  rng=None):
         self._domain_sizes = domain_sizes
+        self.ranking_mode = ranking_mode
         self.is_deterministic = is_deterministic
         self.is_indifferent = is_indifferent
         self._rng = check_random_state(rng)
@@ -68,3 +71,75 @@ class User(object):
         elif z < (eq + gt):
             return 1
         return -1
+
+    def query_set(self, ws, xs, old_best_item):
+        """Queries the user about the provided set of items.
+
+        :param user: the user.
+        :param ws: the estimated user preference(s) at the current iteration.
+        :param xs: the estimated best item(s) at the current iteration.
+        :param old_best_item: the estimated best item at the previous iteration.
+        :returns: WRITEME
+        """
+        num_items, num_features = xs.shape
+
+        if num_items == 1:
+            if old_best_item is None:
+                old_best_item = self._rng.random_integers(0, 1, size=(num_features,))
+            answers = [(xs[0], old_best_item, self.query(xs[0], old_best_item))]
+            num_queries = 1
+
+        elif self.ranking_mode == "all_pairs":
+            # requires 1/2 * n * (n - 1) queries
+            # XXX note that in the non-deterministic setting we may actually lose
+            # information by only querying for ~half the pairs!
+            answers = [(xi, xj, self.query(xi, xj))
+                       for (i, xi), (j, xj) in it.product(enumerate(xs), enumerate(xs)) if i < j]
+            num_queries = len(answers)
+
+        elif self.ranking_mode == "sorted_pairs":
+            answers = {}
+            sorted_sets = self.quicksort(xs, answers)
+            num_queries = len(answers)
+            assert num_queries > 0
+
+            answers = []
+            for (k, set_k), (l, set_l) in it.product(enumerate(sorted_sets), enumerate(sorted_sets)):
+                if k > l:
+                    continue
+                for xi, xj in it.product(set_k, set_l):
+                    if (xi != xj).any():
+                        answers.append((xi, xj, 0 if k == l else -1))
+        else:
+            raise ValueError("invalid ranking_mode {}".format(self.ranking_mode))
+
+        assert len(answers) > 0
+        assert num_queries > 0
+        return answers, num_queries
+
+    def quicksort(self, xs, answers):
+        raise NotImplementedError("very roughly tested")
+        lt, eq, gt = [], [], []
+        if len(xs) > 1:
+            pivot = xs[0]
+            eq.append(pivot)
+            for x in xs[1:]:
+                try:
+                    ans = answers[(tuple(x), tuple(pivot))]
+                except KeyError:
+                    ans = self.query(x, pivot)
+                    answers[(tuple(x), tuple(pivot))] = ans
+                if ans < 0:
+                    lt.append(x)
+                elif ans == 0:
+                    eq.append(x)
+                else:
+                    gt.append(x)
+            assert len(lt) < len(xs)
+            assert len(gt) < len(xs)
+
+            sorted_lt = quicksort(lt, answers)
+            sorted_gt = quicksort(gt, answers)
+            return [l for l in sorted_lt + [eq] + sorted_gt if len(l)]
+        else:
+            return [xs]
