@@ -33,15 +33,11 @@ class Solver(object):
         Cache the model and update the constraints on demand before solving
         again.
 
-    :param alphas: hyperparameters.
     :param multimargin: whether to use two distinct margins. (default: ``False``)
     :param threads: how many threads Gurobi is allowed to use. (default: 1)
     :param debug: whether to spew debug output. (default: ``False``)
     """
-    def __init__(self, alphas, multimargin=False, threads=1, debug=False):
-        if not len(alphas) == 3 or not all([alpha >= 0 for alpha in alphas]):
-            raise ValueError("invalid hyperparameters '{}'".format(alphas))
-        self._alphas = alphas
+    def __init__(self, multimargin=False, threads=1, debug=False):
         self._multimargin = multimargin
         self._threads = threads
         self._debug = debug
@@ -133,14 +129,18 @@ class Solver(object):
         self._check_best_score(dataset, user, best_score, best_item)
         return best_score, best_item
 
-    def compute_setmargin(self, dataset, answers, set_size):
+    def compute_setmargin(self, dataset, answers, set_size, alphas):
         """Solves the set-margin problem.
 
         :param dataset: the dataset.
         :param answers: the known user pairwise preferences.
         :param set_size: how many distinct solutions to look for.
+        :param alphas: hyperparameters.
         :returns: the value of the optimal ws, xs, scores, slacks and margin.
         """
+        if not len(alphas) == 3 or not all([alpha >= 0 for alpha in alphas]):
+            raise ValueError("invalid hyperparameters '{}'".format(alphas))
+
         num_examples = len(answers)
         num_features = sum(dataset.domain_sizes)
 
@@ -175,21 +175,21 @@ class Solver(object):
         model.update()
 
         # Define the objective function
-        alphas = (
-            0.0 if len(slacks) == 0 else self._alphas[0] / (set_size * num_examples),
-            self._alphas[1] / set_size,
-            self._alphas[2] / set_size,
+        temp = (
+            0.0 if len(slacks) == 0 else alphas[0] / (set_size * num_examples),
+            alphas[1] / set_size,
+            alphas[2] / set_size,
         )
 
         obj_margins = grb.quicksum(margins)
 
         obj_slacks = 0
         if len(slacks) > 0:
-            obj_slacks = alphas[0] * grb.quicksum(slacks.values())
+            obj_slacks = temp[0] * grb.quicksum(slacks.values())
 
-        obj_weights = alphas[1] * grb.quicksum(ws.values())
+        obj_weights = temp[1] * grb.quicksum(ws.values())
 
-        obj_scores = alphas[2] * grb.quicksum([ps[i,i,z]
+        obj_scores = temp[2] * grb.quicksum([ps[i,i,z]
                                                for i in range(set_size)
                                                for z in range(num_features)])
 
@@ -292,7 +292,7 @@ class Solver(object):
                 set_size = {}
                 status = {}
                 alphas = {}
-                """).format(answers, set_size, status_to_reason[model.status], alphas)
+                """).format(answers, set_size, status_to_reason[model.status], temp)
             raise RuntimeError(message)
 
         output_ws = np.zeros((set_size, num_features))

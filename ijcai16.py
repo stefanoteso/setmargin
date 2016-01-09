@@ -113,8 +113,7 @@ def dump_and_draw(dataset_name, config, infos):
 def solve(dataset, config, ws=None):
     rng = np.random.RandomState(config.seed)
 
-    solver = setmargin.Solver((config.alpha, config.beta, config.gamma),
-                              multimargin=config.multimargin,
+    solver = setmargin.Solver(multimargin=config.multimargin,
                               threads=config.threads, debug=config.debug)
     infos = []
     for trial in range(config.num_trials):
@@ -134,8 +133,9 @@ def solve(dataset, config, ws=None):
                               w=w,
                               rng=rng)
 
+        alphas = (config.alpha, config.beta, config.gamma)
         info = setmargin.run(dataset, user, solver, config.num_iterations,
-                             config.set_size, debug=config.debug)
+                             config.set_size, alphas, debug=config.debug)
         infos.append(info)
     return infos
 

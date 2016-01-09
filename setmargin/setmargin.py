@@ -20,7 +20,7 @@ def print_answers(queries, hidden_w):
                                    score_xi - score_xj))
     print "\n".join(message)
 
-def run(dataset, user, solver, num_iterations, set_size, debug=False):
+def run(dataset, user, solver, num_iterations, set_size, alphas, debug=False):
     if not num_iterations > 0:
         raise ValueError("num_iterations must be positive")
 
@@ -41,7 +41,7 @@ def run(dataset, user, solver, num_iterations, set_size, debug=False):
         old_time = time.time()
 
         # Solve the set_size=k case
-        ws, xs = solver.compute_setmargin(dataset, answers, set_size)
+        ws, xs = solver.compute_setmargin(dataset, answers, set_size, alphas)
 
         # Update the user answers
         new_answers, num_queries = user.query_set(ws, xs, old_best_item)
@@ -54,7 +54,7 @@ def run(dataset, user, solver, num_iterations, set_size, debug=False):
             print_answers(answers, user.w)
 
         # Solve the set_size=1 case
-        ws, xs = solver.compute_setmargin(dataset, answers, 1)
+        ws, xs = solver.compute_setmargin(dataset, answers, 1, alphas)
 
         # Compute the utility loss
         norm = np.linalg.norm(user.w.ravel())
