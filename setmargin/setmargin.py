@@ -25,7 +25,7 @@ def print_answers(queries, hidden_w):
     print "\n".join(message)
 
 def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
-        crossval_interval=5, crossval_set_size=None, debug=False):
+        tol=1e-6, crossval_interval=5, crossval_set_size=None, debug=False):
     """Runs the setmargin algorithm.
 
     :param dataset: the dataset.
@@ -36,6 +36,7 @@ def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
     :param alphas: either a triple of non-negative floats, or ``"auto"``,
         in which case the hyperparameters are determined automatically through
         a periodic cross-validation procedure. (default: ``"auto"``)
+    :param tol: user tolerance, used for termination. (default: ``1e-6``)
     :param crossval_interval: number of iterations between cross-validation
         calls. (default: ``5``)
     :param crossval_set_size: number of items. (default: ``set_size``)
@@ -109,5 +110,10 @@ def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
         # Compute the utility loss
         loss = np.dot(user.w.ravel(), best_item - xs[0]) / user_w_norm
         info.append((num_queries, loss, elapsed))
+
+        # If the user is satisfied (clicks the 'add to cart' button),
+        # we are done
+        if loss < tol:
+            break
 
     return info
