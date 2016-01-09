@@ -335,7 +335,7 @@ class Solver(object):
                         output_slacks, output_margins)
 
         if any(np.linalg.norm(w) == 0 for w in ws):
-            print "Warning: null weight vector found:\n{}".format(ws)
+            print "Warning: null weight vector found:\n{}".format(output_ws)
 
         assert all(dataset.is_item_valid(x) for x in output_xs)
 
