@@ -113,6 +113,11 @@ def dump_and_draw(dataset_name, config, infos):
 def solve(dataset, config, ws=None):
     rng = np.random.RandomState(config.seed)
 
+    if config.crossval:
+        alphas = "auto"
+    else:
+        alphas = (config.alpha, config.beta, config.gamma)
+
     solver = setmargin.Solver(multimargin=config.multimargin,
                               threads=config.threads, debug=config.debug)
     infos = []
@@ -133,7 +138,6 @@ def solve(dataset, config, ws=None):
                               w=w,
                               rng=rng)
 
-        alphas = (config.alpha, config.beta, config.gamma)
         info = setmargin.run(dataset, user, solver, config.num_iterations,
                              config.set_size, alphas, debug=config.debug)
         infos.append(info)
@@ -148,9 +152,7 @@ def run_synthetic():
         "is_deterministic": False,
         "is_indifferent": True,
         "set_size": range(1, 4+1),
-        "alpha": 1.0,
-        "beta": (10.0, 1.0, 0.1, 0.0),
-        "gamma": (10.0, 1.0, 0.1, 0.0),
+        "crossval": True,
         "multimargin": False,
         "threads": cpu_count(),
         "debug": False,
@@ -196,6 +198,8 @@ def run_from_command_line():
                         help="number of iterations (default: 20)")
     parser.add_argument("-m", "--set-size", type=int, default=3,
                         help="number of hyperplanes/items to solve for (default: 3)")
+    parser.add_argument("-x", "--crossval", action="store_true",
+                        help="whether to perform automatic hyperparameter crossvalidation")
     parser.add_argument("-a", "--alpha", type=float, default=0.1,
                         help="hyperparameter controlling the importance of slacks (default: 0.1)")
     parser.add_argument("-b", "--beta", type=float, default=0.1,
