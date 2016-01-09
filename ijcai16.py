@@ -115,7 +115,7 @@ def solve(dataset, config, ws=None):
 
     solver = setmargin.Solver((config.alpha, config.beta, config.gamma),
                               multimargin=config.multimargin,
-                              threads=config.threads)
+                              threads=config.threads, debug=config.debug)
     infos = []
     for trial in range(config.num_trials):
         print dedent("""\
