@@ -247,6 +247,7 @@ def run_from_command_line():
                   config, infos)
 
 if __name__ == "__main__":
+    np.seterr(all="raise")
     if len(sys.argv) == 1:
         run_synthetic()
         run_pc_nocost()
