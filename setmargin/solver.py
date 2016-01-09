@@ -277,6 +277,7 @@ class Solver(object):
             x = [xs[(i,z)] for z in range(num_features)]
             self._add_item_constraints(model, dataset, x)
 
+        model.update()
         self._dump_model(model, "setmargin_full")
         try:
             model.optimize()
