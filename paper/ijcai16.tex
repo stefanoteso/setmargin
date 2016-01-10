@@ -200,7 +200,7 @@ vectors.
 
 \begin{align}
     \max_{M, W, X}
-        & \;\; M - \frac{\alpha}{k n} \sum_{i=1}^k \| \veps^{(i)} \|_1 - \frac{\beta}{k} \sum_{i=1}^k \| \vw^{(i)} \|_1 + \frac{\gamma}{k} \sum_{i=1}^k \langle \vw^{(i)}, \vx^{(i)} \rangle
+        & \;\; M - \alpha \sum_{i=1}^k \| \veps^{(i)} \|_1 - \beta \sum_{i=1}^k \| \vw^{(i)} \|_1 + \gamma \sum_{i=1}^k \langle \vw^{(i)}, \vx^{(i)} \rangle
         \nonumber
     \\
     \text{s.t.}
@@ -229,7 +229,41 @@ Eq.~\ref{eq:wxconstr} vanishes.}
 
 \paragraph{MILP Formulation.}
 
-WRITEME
+\stefano{It may make sense to first illustrate the changes, then provide the
+full OP.}
+
+{\footnotesize
+
+\begin{align}
+    \max_{M, W, X}
+        & \;\; M - \alpha \sum_{i=1}^k \| \veps^{(i)} \|_1 - \beta \sum_{i=1}^k \| \vw^{(i)} \|_1 + \gamma \sum_{i=1}^k \sum_{z=1}^n A^{i,i}_z
+        \nonumber
+    \\
+    \text{s.t.}
+        & \;\; \forall \; i \in [k], \forall \; h \in [n] \nonumber
+    \\
+        & \;\; \qquad \langle \vw^{(i)}, \vy^{(h)}_+ - \vy^{(h)}_- \rangle \geq M - \varepsilon^{(i)}_h \nonumber
+    \\
+        & \;\; \forall \; i, j \in [k], i \neq j \;.\; \sum_{z=1}^n A^{i,i}_z - A^{ij}_z \geq M
+    \\
+        & \;\; \forall \; i \in [k], \forall \; z \in [n] \nonumber
+    \\
+        & \;\; \qquad A^{i,i}_z \le \min \{ w_\text{max} x^{(i)}_z, w^{(i)}_z \}
+    \\
+        & \;\; \forall \; i, j \in [k], i \neq j \nonumber
+    \\
+        & \;\; \qquad A^{i,j}_z \ge \max \{ 0, w^{(i)}_z - w_\text{max}(1 - x^{(j)}_z) \}
+    \\
+        & \;\; \forall \; i \in [k] \;.\; \vw^\bot \leq \vw^{(i)} \leq \vw^\top \nonumber
+    \\
+        & \;\; \forall \; i \in [k] \;.\; \vx^{(i)} \in \calX_{\text{feasible}} \nonumber
+    \\
+        & \;\; \forall \; i \in [k] \;.\; \veps^{(i)}_h \geq 0 \nonumber
+    \\
+        & \;\; M \geq 0 \nonumber
+\end{align}
+
+}
 
 \paragraph{Set-wise Preference Elicitation.}
 
