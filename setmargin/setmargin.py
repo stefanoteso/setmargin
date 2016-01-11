@@ -53,8 +53,11 @@ def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
     user_w_norm = np.linalg.norm(user.w.ravel())
 
     do_crossval = alphas == "auto"
-    if crossval_set_size is None:
-        crossval_set_size = set_size
+    if do_crossval:
+        # XXX far from ideal
+        alphas = (1.0, 1.0, 1.0)
+        if crossval_set_size is None:
+            crossval_set_size = set_size
 
     answers, info, old_best_item = [], [], None
     for t in range(num_iterations):
@@ -69,25 +72,31 @@ def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
             """).format(t, num_iterations, pformat(answers))
 
         # Crossvalidate the hyperparameters if required
-        if do_crossval and t % crossval_interval == 0:
+        if do_crossval and t % crossval_interval == 0 and t > 0:
             loss_alphas = []
             for alphas in it.product(ALPHAS, BETAS, GAMMAS):
                 try:
-                    ws, xs = solver.compute_setmargin(dataset, answers,
-                                                      crossval_set_size,
-                                                      alphas)
+                    ws, _ = solver.compute_setmargin(dataset, answers,
+                                                     crossval_set_size, alphas)
                 except RuntimeError:
                     continue
-                mean_x = xs.mean(axis=0)
-                loss = np.dot(user.w.ravel(), best_item - mean_x) / user_w_norm
+
+                xis = np.array([xi for xi, _, _ in answers])
+                xjs = np.array([xj for _, xj, _ in answers])
+                ys = np.array([sign for _, _, sign in answers])
+
+                diff = np.abs(ys - np.sign(np.dot(ws, (xis - xjs).T)))
+                diff[diff > 0] = 1
+                loss = diff.sum(axis=1).mean()
                 loss_alphas.append((loss, alphas))
+
             assert len(loss_alphas) > 0
             alphas = sorted(loss_alphas)[0][1]
 
             if debug:
                 print "CROSS VALIDATION --> new alphas =", alphas
-                for loss, alpha in loss_alphas:
-                    print alpha, ": loss =", loss
+                for loss, temp in sorted(loss_alphas):
+                    print temp, ": loss =", loss
 
         old_time = time.time()
 
