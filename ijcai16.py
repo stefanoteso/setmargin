@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import cPickle as pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import product
