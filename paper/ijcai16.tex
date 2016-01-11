@@ -346,7 +346,8 @@ setting the following additional constraints. We distinguish between two cases:
 (i) $p^{i,i}_z$, and (ii) $p^{i,j}_z$ for $i \ne j$.  Recall that we are
 maximizing the margin $M$. Now, due to Eq~\ref{eq:pxconstr}, the optimizer will
 try to keep $p^{i,i}_z$ as large as possible and $p^{i,j}_z$ as small as
-possible.
+possible. \stefano{this is not necessarily the case, $M$ is bounded by the
+$y$'s as well.}
 
 (Case i) We add an explicit upper bound:
 %
