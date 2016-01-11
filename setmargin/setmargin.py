@@ -49,8 +49,18 @@ def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
     if not crossval_interval > 0:
         raise ValueError("crossval_interval must be positive")
 
-    _, best_item = solver.compute_best_score(dataset, user)
+    best_score, best_item = solver.compute_best_score(dataset, user)
     user_w_norm = np.linalg.norm(user.w.ravel())
+
+    if debug:
+        print dedent("""
+            best_score = {}
+            best_item =
+            {}
+
+            user.w = {}
+            user_w_norm = {}
+            """).format(best_score, best_item, user.w, user_w_norm)
 
     do_crossval = alphas == "auto"
     if do_crossval:
