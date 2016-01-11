@@ -473,6 +473,29 @@ were the same for all three methods.
 
 \paragraph{Constructive Dataset.} \stefano{WRITEME}
 
+The attributes are Manufacturer, CPU, Monitor size, PC type, Memory, and HD
+size. CPU type and CPU frequency as combined in a single variable, e.g. ``AMD
+Athlon @1000" stands for an AMD Athlon CPU clocked at 1 GHz. All other domains
+are left unchanged.
+
+Each attribute configuration is associated a corresponding {\em price}. The
+price of a configuration is the sum of the prices of the individual components.
+
+\begin{figure}
+    {\footnotesize
+    \begin{tabular}{cc}
+        {\bf Rule} & {\bf MILP constraint} \\ \hline\hline
+        & Manufacturer = Compacq $\Rightarrow$ Type = Laptop $\lor$ Type = Desktop \\
+        & Manufacturer = Apple $\Rightarrow$ CPU = PowerPC G3 @266 $\lor$ \ldots \\
+        & Type = Laptop $\Rightarrow$ Memory = 64 $\lor$ \ldots \\
+        & Type = HDSize $\Rightarrow$ HDSize = 20 $\lor$ \ldots \\
+        & Type = Desktop $\Rightarrow$ Monitor = 15 $\lor$ \ldots \\
+    \end{tabular}
+    }
+    \caption{\label{tab:pcconstraints} List of MILP constraints used in the
+    PC experiment.}
+\end{figure}
+
 - PC dataset without costs
 
 - PC dataset with costs
