@@ -302,10 +302,12 @@ class Solver(object):
                 output_ws[i,z] = ws[i,z].x
                 output_xs[i,z] = xs[i,z].x
 
+        output_ps = np.zeros((set_size, set_size, num_features))
         output_scores = np.zeros((set_size, set_size))
         for i in range(set_size):
             for j in range(set_size):
                 for z in range(num_features):
+                    output_ps[i,j,z] = ps[i,j,z].x
                     output_scores[i,j] += ps[i,j,z].x
 
         if len(answers):
@@ -326,13 +328,15 @@ class Solver(object):
             {}
             xs =
             {}
+            ps =
+            {}
             scores =
             {}
             slacks =
             {}
             margins = {}
-            """).format(set_size, output_ws, output_xs, output_scores,
-                        output_slacks, output_margins)
+            """).format(set_size, output_ws, output_xs, output_ps,
+                        output_scores, output_slacks, output_margins)
 
         if any(np.linalg.norm(w) == 0 for w in output_ws):
             print "Warning: null weight vector found:\n{}".format(output_ws)
@@ -348,6 +352,5 @@ class Solver(object):
                 debug scores =
                 {}
                 """).format(output_scores, debug_scores)
-            assert (np.diag(output_scores) - np.diag(debug_scores) < 1e-10).all()
 
         return output_ws, output_xs
