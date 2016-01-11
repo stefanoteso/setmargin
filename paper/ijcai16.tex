@@ -442,11 +442,17 @@ $\vw^\bot$ are left implicit.}
 \paragraph{Generalization to real variables.} \stefano{WRITEME}
 
 \section{Experiments}
+\label{sec:experiments}
 
 In this section we provide an experimental evaluation of the {\sc SetMargin}
 algorithm. We compare the against two strong Bayesian baselines:
 \cite{guo2010real} and \cite{viappiani2010optimal}.
 
+\stefano{describe the baselines}
+
+We implemented the {\sc SetMargin} algorithm using Python, while the MILP
+problems were solved with Gurobi 6.5.0. The full source of the experiments is
+available at \stefano{add URL}.
 
 In all experiments we use an internal cross-validation procedure to update the
 hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5 iterations. The
@@ -457,11 +463,41 @@ $\beta=0$ implies that the weight vector is not regularized, nor sparse, while
 $\gamma=0$ implies that the absolute quality of the configurations is ignored.
 \stefano{is this desirable?}
 
-\paragraph{Synthetic Dataset.} As a first test, we evaluated the performance
-of the three methods on a synthetic dataset, where all configurations
+\paragraph{Synthetic Dataset.} In order to evaluate the convergence and
+scalability properties of the proposed method, following~\cite{guo2010real} and
+\cite{viappiani2010optimal}, we evaluated it on a number of increasingly larger
+synthetic datasets. More specifically, we defined $7$ synthetic dataset over
+$n=2,\ldots,7$ attributes, with each attribute taking one of $n$ possible
+values.
+In other words, for $n=2$ we have that the feasible space
+$\calX_\text{feasible}$ is $[2] \times [2]$, while for $n=3$ we have
+$\calX_\text{feasible} = [3] \times [3] \times [3]$, and so on.
+The cardinality of $\calX_\text{feasible}$ is $n^n$, and grows
+(super-)exponentially with $n$. For $n=3$, the dataset is comparable to
+the synthetic ones used in~\cite{guo2010real} and~\cite{viappiani2010optimal},
+while for larger $n$ it grows much larger than those typically used in the
+Bayesian preference elicitation literature, and as such represents a good
+test bed for evaluating the scalability of the various methods.
 
-We ran all methods on $20$ different users. The hidden, true weight vectors
-were the same for all three methods.
+In order to work, the competitors require the dataset to represented
+explicitly, so we had to ground the $7$ datasets. This is not the case for {\sc
+SetMargin}, in which case the set of feasible configurations
+$\calX_\text{feasible}$ can be encoded {\em implicitly} through simple linear
+integer constraints. All of the methods can deal with binary vectors only; we
+translated the integer-valued configurations to such format using a simple
+one-hot encoding. For {\sc SetMargin}, this requires to encode additional
+XOR constraints. \stefano{explain}
+
+The three methods were evaluated on user weight vectors sampled from two
+distinct distributions: a normal distribution with mean $25$ and
+variance $\frac{25}{3}$, and from a uniform distribution over $[0,
+100]$. This procedure mimics closely~\cite{guo2010real}. In order to assess our
+method in a truly sparse setting, we obtained a set of sparse normal and
+uniform weight vectors by randomly deleting $80\%$ of the non-zero entries from
+the already sampled vectors. We name the four settings {\sc normal}, {\sc
+uniform}, {\sc sparse\_normal} and {\sc sparse\_uniform}. We sampled a total
+of $100$ weight vectors for each setting. The three methods were evaluated
+on the very same weight vectors.
 
 \stefano{plot average utility loss at the increase of dataset size}
 
@@ -469,14 +505,22 @@ were the same for all three methods.
 
 \stefano{comment on usefulness of sparse weights}
 
-\stefano{what about an experiment with Horn constraints?}
-
-\paragraph{Constructive Dataset.} \stefano{WRITEME}
+\paragraph{Constructive Dataset.} Next, we tested {\sc SetMargin} on a truly
+constructive setting, which can not be readily handled by non-constructive
+methods.
 
 The attributes are Manufacturer, CPU, Monitor size, PC type, Memory, and HD
 size. CPU type and CPU frequency as combined in a single variable, e.g. ``AMD
 Athlon @1000" stands for an AMD Athlon CPU clocked at 1 GHz. All other domains
 are left unchanged.
+
+The configurations constraints:
+%
+$$ x_i \Leftarrow x_{j_1} \lor \ldots \lor x_{j_n} $$
+%
+have been translated into MILP constraints of the form:
+%
+$$ (1 - x_i) + x_{j_1} + \ldots + x_{j_n} \ge 1 $$
 
 Each attribute configuration is associated a corresponding {\em price}. The
 price of a configuration is the sum of the prices of the individual components.
