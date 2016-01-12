@@ -3,18 +3,66 @@
 import time
 import itertools as it
 import numpy as np
+from sklearn.cross_validation import KFold
 from sklearn.utils import check_random_state
 from textwrap import dedent
 from pprint import pformat
 
 from util import *
 
-ALPHAS = [100.0, 10.0, 1.0]
-BETAS  = [10.0, 1.0, 0.1, 0.0]
-GAMMAS = [10.0, 1.0, 0.1, 0.0]
+ALL_ALPHAS = list(it.product(
+         [12.0, 11.0, 10.0, 9.0, 8.0],
+         [10.0, 1.0, 0.1, 0.01],
+         [10.0, 1.0, 0.1, 0.01],
+))
+
+def crossvalidate(dataset, solver, answers, set_size, debug):
+    """Performs a 5-fold cross-validation.
+
+    :param dataset:
+    :param answers:
+    :param set_size:
+    :param debug:
+    :returns:
+    """
+    loss_alphas = []
+    for alphas in ALL_ALPHAS:
+
+        if debug:
+            print "crossvalidating", alphas
+
+        kfold = KFold(len(answers), n_folds=5)
+
+        losses = []
+        for train_set, test_set in kfold:
+            train_answers = [answers[i] for i in train_set]
+
+            ws, _ = solver.compute_setmargin(dataset, train_answers, set_size,
+                                             alphas)
+
+            test_answers = [answers[i] for i in test_set]
+            xis = np.array([x for x, _, _ in test_answers])
+            xjs = np.array([x for _, x, _ in test_answers])
+            ys  = np.array([s for _, _, s in test_answers])
+
+            ys_hat = np.sign(np.dot(ws, (xis - xjs).T))
+            diff = 0.5 * np.abs(ys - ys_hat) # the difference is broadcast
+            losses.append(diff.sum(axis=1).mean())
+
+        loss_alphas.append((sum(losses) / len(losses), alphas))
+
+    loss_alphas = sorted(loss_alphas)
+    alphas = loss_alphas[0][1]
+
+    if debug:
+        print "crossvalidation: best alphas = ", alphas
+        for loss, alpha in loss_alphas:
+            print alpha, ":", loss
+
+    return alphas
 
 def print_answers(queries, hidden_w):
-    message = ["updated answers ="]
+    message = ["answers ="]
     for xi, xj, sign in queries:
         relation = {-1:"<", 0:"~", 1:">"}[sign]
         score_xi = np.dot(hidden_w, xi.T)[0]
@@ -76,37 +124,14 @@ def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
             ===============
             ITERATION {}/{}
             ===============
+            """).format(t, num_iterations)
 
-            answers =
-            {}
-            """).format(t, num_iterations, pformat(answers))
+            print_answers(answers, user.w)
 
         # Crossvalidate the hyperparameters if required
         if do_crossval and t % crossval_interval == 0 and t > 0:
-            loss_alphas = []
-            for alphas in it.product(ALPHAS, BETAS, GAMMAS):
-                try:
-                    ws, _ = solver.compute_setmargin(dataset, answers,
-                                                     crossval_set_size, alphas)
-                except RuntimeError:
-                    continue
-
-                xis = np.array([xi for xi, _, _ in answers])
-                xjs = np.array([xj for _, xj, _ in answers])
-                ys = np.array([sign for _, _, sign in answers])
-
-                diff = np.abs(ys - np.sign(np.dot(ws, (xis - xjs).T)))
-                diff[diff > 0] = 1
-                loss = diff.sum(axis=1).mean()
-                loss_alphas.append((loss, alphas))
-
-            assert len(loss_alphas) > 0
-            alphas = sorted(loss_alphas)[0][1]
-
-            if debug:
-                print "CROSS VALIDATION --> new alphas =", alphas
-                for loss, temp in sorted(loss_alphas):
-                    print temp, ": loss =", loss
+            alphas = crossvalidate(dataset, solver, answers, crossval_set_size,
+                                   debug)
 
         old_time = time.time()
 
@@ -127,12 +152,22 @@ def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
         ws, xs = solver.compute_setmargin(dataset, answers, 1, alphas)
 
         # Compute the utility loss
-        loss = np.dot(user.w.ravel(), best_item - xs[0]) / user_w_norm
+        best_score = np.dot(user.w.ravel(), best_item)
+        pred_score = np.dot(user.w.ravel(), xs[0])
+        loss = (best_score - pred_score) / user_w_norm
+        if debug:
+            print dedent("""\
+                    best_item = (true score = {})
+                    {}
+                    generated item = (true score = {})
+                    {}
+                    loss = {}
+                    """).format(best_score, best_item, pred_score, xs[0], loss)
         info.append((num_queries, loss, elapsed))
 
         # If the user is satisfied (clicks the 'add to cart' button),
         # we are done
-        if loss < tol:
-            break
+        #if loss < tol:
+        #    break
 
     return info
