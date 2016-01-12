@@ -148,6 +148,9 @@ def solve(dataset, config, ws=None):
                               w=w,
                               rng=rng)
 
+        print "created user"
+        print user
+
         info = setmargin.run(dataset, user, solver, config.num_iterations,
                              config.set_size, alphas,
                              crossval_set_size=config.crossval_set_size,

@@ -33,7 +33,9 @@ class User(object):
         self.w = self._sample(sampling_mode, domain_sizes) if w is None else w
 
     def __str__(self):
-        return "User({} D={} I={})".format(self.w, self.is_deterministic, self.is_indifferent)
+        return "User({} D={} I={} RM={})".format(self.w, self.is_deterministic,
+                                                 self.is_indifferent,
+                                                 self.ranking_mode)
 
     def _sample(self, sampling_mode, domain_sizes):
         if sampling_mode == "uniform":
