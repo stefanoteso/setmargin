@@ -463,41 +463,38 @@ $\beta=0$ implies that the weight vector is not regularized, nor sparse, while
 $\gamma=0$ implies that the absolute quality of the configurations is ignored.
 \stefano{is this desirable?}
 
-\paragraph{Synthetic Dataset.} In order to evaluate the convergence and
-scalability properties of the proposed method, following~\cite{guo2010real} and
-\cite{viappiani2010optimal}, we evaluated it on a number of increasingly larger
-synthetic datasets. More specifically, we defined $7$ synthetic dataset over
-$n=2,\ldots,7$ attributes, with each attribute taking one of $n$ possible
-values.
-In other words, for $n=2$ we have that the feasible space
-$\calX_\text{feasible}$ is $[2] \times [2]$, while for $n=3$ we have
-$\calX_\text{feasible} = [3] \times [3] \times [3]$, and so on.
-The cardinality of $\calX_\text{feasible}$ is $n^n$, and grows
-(super-)exponentially with $n$. For $n=3$, the dataset is comparable to
-the synthetic ones used in~\cite{guo2010real} and~\cite{viappiani2010optimal},
-while for larger $n$ it grows much larger than those typically used in the
-Bayesian preference elicitation literature, and as such represents a good
-test bed for evaluating the scalability of the various methods.
+\paragraph{Synthetic Dataset.} Following the experimental protocol
+in~\cite{guo2010real} and \cite{viappiani2010optimal}, in the first experiment
+we evaluate the behavior of the proposed method in a challenging artificial
+setting. We developed seven synthetic datasets: each dataset involves
+$n=2,\ldots,7$ attributes, where each attribute takes one of $n$ possible
+values. More explicitly, for $n=2$ the synthetic dataset is
+$\calX_\text{feasible} = [2] \times [2]$, for $n=3$ to $\calX_\text{feasible} =
+[3] \times [3] \times [3]$, and so on. The cardinality of
+$\calX_\text{feasible}$ is $n^n$, and grows (super-)exponentially with $n$. For
+$n=3$, the dataset is comparable to the synthetic one used
+in~\cite{guo2010real} and~\cite{viappiani2010optimal} (which have three domains
+of size of 2, 2 and 5, respectively, for a total of 20 feasible
+configurations), while for larger $n$ it grows much larger than those typically
+used in the Bayesian preference elicitation literature, and as such represents
+a good test bed for comparing the scalability of the various methods.
 
-In order to work, the competitors require the dataset to represented
-explicitly, so we had to ground the $7$ datasets. This is not the case for {\sc
-SetMargin}, in which case the set of feasible configurations
-$\calX_\text{feasible}$ can be encoded {\em implicitly} through simple linear
-integer constraints. All of the methods can deal with binary vectors only; we
-translated the integer-valued configurations to such format using a simple
-one-hot encoding. For {\sc SetMargin}, this requires to encode additional
-XOR constraints. \stefano{explain}
+The integer attributes were binarized using a standard one-hot encoding. The
+feasible configuration space was encoded in {\sc SetMargin} through appropriate
+MILP constraints (namely, mutual exclusivity of all binary variables
+corresponding to each attribute, to enforce the one-hot encoding), while the
+other methods required all datasets to be explicitly grounded.
 
-The three methods were evaluated on user weight vectors sampled from two
-distinct distributions: a normal distribution with mean $25$ and
-variance $\frac{25}{3}$, and from a uniform distribution over $[0,
-100]$. This procedure mimics closely~\cite{guo2010real}. In order to assess our
+The user weight vectors were sampled from four different distributions to
+simulated different kinds of users. The first two were chosen as
+in~\cite{guo2010real}: a uniform distribution over $[0, 100]$ and a normal
+distribution with mean $25$ and variance $\frac{25}{3}$. In order to assess our
 method in a truly sparse setting, we obtained a set of sparse normal and
 uniform weight vectors by randomly deleting $80\%$ of the non-zero entries from
-the already sampled vectors. We name the four settings {\sc normal}, {\sc
-uniform}, {\sc sparse\_normal} and {\sc sparse\_uniform}. We sampled a total
-of $100$ weight vectors for each setting. The three methods were evaluated
-on the very same weight vectors.
+the already sampled vectors. We will refer to the four settings as {\sc
+normal}, {\sc uniform}, {\sc sparse\_normal} and {\sc sparse\_uniform}. We
+sampled a total of $100$ weight vectors for each setting. All methods were
+evaluated on the very same weight vectors.
 
 \stefano{plot average utility loss at the increase of dataset size}
 
