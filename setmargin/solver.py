@@ -248,7 +248,13 @@ class Solver(object):
             for z in range(num_features):
                 model.addConstr(ws[i,z] <= MAX_W_Z)
 
-        # Eq. 18
+        # Eq. 18a
+        for i in range(set_size):
+            for j in range(set_size):
+                for z in range(num_features):
+                    model.addConstr(ps[i,j,z] >= 0)
+
+        # Eq. 18b
         for i in range(set_size):
             for z in range(num_features):
                 model.addConstr(ws[i,z] >= 0)
