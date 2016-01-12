@@ -152,7 +152,7 @@ def solve(dataset, config, ws=None):
         print user
 
         info = setmargin.run(dataset, user, solver, config.num_iterations,
-                             config.set_size, alphas,
+                             config.set_size, alphas, tol=config.tol,
                              crossval_set_size=config.crossval_set_size,
                              debug=config.debug)
         infos.append(info)
@@ -170,6 +170,7 @@ def run_synthetic():
         "crossval": True,
         "crossval_set_size": 1,
         "multimargin": False,
+        "tol": 1e-4,
         "threads": cpu_count(),
         "debug": False,
         "seed": 0,
@@ -208,36 +209,42 @@ def run_from_command_line():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("dataset", type=str,
                         help="dataset")
+
     parser.add_argument("-N", "--num_trials", type=int, default=20,
                         help="number of trials")
+    parser.add_argument("--domain-sizes", type=str, default="2,2,5",
+                        help="domain sizes for the synthetic dataset only")
+
     parser.add_argument("-n", "--num_iterations", type=int, default=20,
                         help="number of iterations")
     parser.add_argument("-m", "--set-size", type=int, default=3,
                         help="number of hyperplanes/items to solve for")
-    parser.add_argument("-x", "--crossval", action="store_true",
-                        help="whether to perform automatic hyperparameter crossvalidation. If enabled, -a -b -c are ignored.")
-    parser.add_argument("-X", "--crossval-set-size", type=int, default=None,
-                        help="set_size for the hyperparameter crossvalidation.")
+    parser.add_argument("-t", "--tol", type=float, default=1e-4,
+                        help="tolerance used for termination")
     parser.add_argument("-a", "--alpha", type=float, default=0.1,
                         help="hyperparameter controlling the importance of slacks")
     parser.add_argument("-b", "--beta", type=float, default=0.1,
                         help="hyperparameter controlling the importance of regularization")
     parser.add_argument("-c", "--gamma", type=float, default=0.1,
                         help="hyperparameter controlling the score of the output items")
-    parser.add_argument("-r", "--ranking-mode", type=str, default="all_pairs",
-                        help="ranking mode for set-wide queries, any of ('all_pairs', 'sorted_pairs')")
+    parser.add_argument("-x", "--crossval", action="store_true",
+                        help="whether to perform automatic hyperparameter crossvalidation. If enabled, -a -b -c are ignored.")
+    parser.add_argument("-X", "--crossval-set-size", type=int, default=None,
+                        help="set_size for the hyperparameter crossvalidation.")
     parser.add_argument("-M", "--multimargin", action="store_true",
                         help="whether the example and generated object margins should be independent")
+
     parser.add_argument("-u", "--sampling-mode", type=str, default="uniform",
                         help="utility sampling mode, any of ('uniform', 'normal')")
+    parser.add_argument("-r", "--ranking-mode", type=str, default="all_pairs",
+                        help="ranking mode for set-wide queries, any of ('all_pairs', 'sorted_pairs')")
     parser.add_argument("-d", "--is-deterministic", action="store_true",
                         help="whether the user answers should be deterministic rather than stochastic")
     parser.add_argument("-i", "--is-indifferent", action="store_true",
                         help="whether the user can (not) be indifferent")
+
     parser.add_argument("-s", "--seed", type=int, default=None,
                         help="RNG seed")
-    parser.add_argument("--domain-sizes", type=str, default="2,2,5",
-                        help="domain sizes for the synthetic dataset only")
     parser.add_argument("--threads", type=int, default=1,
                         help="Max number of threads to user")
     parser.add_argument("--debug", action="store_true",
