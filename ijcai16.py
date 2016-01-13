@@ -5,6 +5,7 @@ import sys
 import cPickle as pickle
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.cross_validation import KFold
 from itertools import product
 from os.path import join
 from textwrap import dedent
@@ -12,6 +13,12 @@ from pprint import pformat
 from multiprocessing import cpu_count
 
 import setmargin
+
+ALL_ALPHAS = list(product(
+         [100.0, 20.0, 15.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.5, 5.0, 1.0],
+         [20.0, 10.0, 5.0, 1.0, 0.5, 0.1, 0.05, 0.01],
+         [20.0, 10.0, 5.0, 1.0, 0.5, 0.1, 0.05, 0.01],
+))
 
 class Grid(object):
     def __init__(self, d):
@@ -120,16 +127,69 @@ def dump_and_draw(dataset_name, config, infos):
     del fig
     del ax
 
+def precrossvalidate(dataset, config, solver, users):
+    """Use the last 20 users for parameter selection."""
+    target_users = users[len(users) - 20:]
+    assert len(target_users) == 20
+
+    loss_alphas = []
+    for alphas in ALL_ALPHAS:
+
+        print "pre-crossvalidating", alphas
+
+        kfold = KFold(len(target_users), n_folds=5)
+
+        losses = []
+        for train_set, test_set in kfold:
+
+            for i in train_set:
+                infos = setmargin.run(dataset, target_users[i], solver,
+                                      config.num_iterations, config.set_size,
+                                      alphas, tol=config.tol, debug=config.debug)
+                # XXX we only consider the true utility loss at the last
+                # iteration
+                losses.append(infos[-1][1])
+
+        loss_alphas.append((sum(losses) / len(losses), alphas))
+
+    loss_alphas = sorted(loss_alphas)
+    best_alphas = loss_alphas[0][1]
+
+    print "pre-crossvalidation: best alphas = ", alphas
+    for loss, alphas in loss_alphas:
+        print alphas, ":", loss
+
+    return best_alphas
+
 def solve(dataset, config, ws=None):
     rng = np.random.RandomState(config.seed)
 
+    solver = setmargin.Solver(multimargin=config.multimargin,
+                              threads=config.threads, debug=config.debug)
+
+    num_users = config.num_trials if ws is None else ws.shape[0]
+
+    users = []
+    for i in range(num_users):
+        w = None if ws is None else ws[i].reshape(1, -1)
+        user = setmargin.User(dataset.domain_sizes,
+                              sampling_mode=config.sampling_mode,
+                              ranking_mode=config.ranking_mode,
+                              is_deterministic=config.is_deterministic,
+                              is_indifferent=config.is_indifferent,
+                              w=w,
+                              rng=rng)
+        print "created user ="
+        print user
+        users.append(user)
+
+    if config.precrossval:
+        alphas = precrossvalidate(dataset, config, solver, users)
     if config.crossval:
         alphas = "auto"
     else:
         alphas = (config.alpha, config.beta, config.gamma)
 
-    solver = setmargin.Solver(multimargin=config.multimargin,
-                              threads=config.threads, debug=config.debug)
     infos = []
     for trial in range(config.num_trials):
         print dedent("""\
@@ -138,21 +198,9 @@ def solve(dataset, config, ws=None):
             ===========
             """).format(trial, config.num_trials)
 
-        w = None if ws is None else ws[trial].reshape(1,-1)
-
-        user = setmargin.User(dataset.domain_sizes,
-                              sampling_mode=config.sampling_mode,
-                              ranking_mode=config.ranking_mode,
-                              is_deterministic=config.is_deterministic,
-                              is_indifferent=config.is_indifferent,
-                              w=w,
-                              rng=rng)
-
-        print "created user"
-        print user
-
-        info = setmargin.run(dataset, user, solver, config.num_iterations,
-                             config.set_size, alphas, tol=config.tol,
+        info = setmargin.run(dataset, users[trial], solver,
+                             config.num_iterations, config.set_size, alphas,
+                             tol=config.tol,
                              crossval_set_size=config.crossval_set_size,
                              debug=config.debug)
         infos.append(info)
@@ -167,6 +215,7 @@ def run_synthetic():
         "is_deterministic": False,
         "is_indifferent": True,
         "set_size": range(1, 4+1),
+        "precrossval": False,
         "crossval": True,
         "crossval_set_size": 1,
         "multimargin": False,
@@ -231,6 +280,8 @@ def run_from_command_line():
                         help="whether to perform automatic hyperparameter crossvalidation. If enabled, -a -b -c are ignored.")
     parser.add_argument("-X", "--crossval-set-size", type=int, default=None,
                         help="set_size for the hyperparameter crossvalidation.")
+    parser.add_argument("-y", "--precrossval", action="store_true",
+                        help="do parameter selection using crossvalidation prior to learning")
     parser.add_argument("-M", "--multimargin", action="store_true",
                         help="whether the example and generated object margins should be independent")
 
