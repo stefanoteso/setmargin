@@ -74,13 +74,7 @@ def get_result_paths(dataset_name, config):
     path4 = "results_{}_avgtime.svg".format(basename)
     return path0, path1, path2, path3, path4
 
-def dump_and_draw(dataset_name, config, infos):
-    infos_path, loss_matrix_path, time_matrix_path, loss_svg_path, time_svg_path = \
-        get_result_paths(dataset_name, config)
-
-    with open(infos_path, "wb") as fp:
-        pickle.dump(infos, fp)
-
+def infos_to_matrices(infos):
     num_trials = len(infos)
     max_queries = max([sum(n for n, _, _ in info) for info in infos])
 
@@ -98,6 +92,30 @@ def dump_and_draw(dataset_name, config, infos):
             base += num_queries
             prev_loss = loss
 
+    return loss_matrix, time_matrix
+
+# info = [
+#     (2, 1.0, 1.0),
+#     (2, 0.5, 1.0),
+#     (2, 0.0, 1.0),
+# ]
+# infos = [info, info]
+# print infos
+# lm, tm = infos_to_matrices(infos)
+# print lm.shape
+# print lm
+# print tm.shape
+# print tm
+# quit()
+
+def dump_and_draw(dataset_name, config, infos):
+    infos_path, loss_matrix_path, time_matrix_path, loss_svg_path, time_svg_path = \
+        get_result_paths(dataset_name, config)
+
+    with open(infos_path, "wb") as fp:
+        pickle.dump(infos, fp)
+
+    loss_matrix, time_matrix = infos_to_matrices(infos)
     np.savetxt(loss_matrix_path, loss_matrix)
     np.savetxt(time_matrix_path, time_matrix)
 
