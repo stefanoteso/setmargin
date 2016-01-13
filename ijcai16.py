@@ -92,7 +92,7 @@ def infos_to_matrices(infos):
             base += num_queries
             prev_loss = loss
 
-    return loss_matrix, time_matrix
+    return num_trials, max_queries, loss_matrix, time_matrix
 
 # info = [
 #     (2, 1.0, 1.0),
@@ -115,7 +115,8 @@ def dump_and_draw(dataset_name, config, infos):
     with open(infos_path, "wb") as fp:
         pickle.dump(infos, fp)
 
-    loss_matrix, time_matrix = infos_to_matrices(infos)
+    num_trials, max_queries, loss_matrix, time_matrix = \
+        infos_to_matrices(infos)
     np.savetxt(loss_matrix_path, loss_matrix)
     np.savetxt(time_matrix_path, time_matrix)
 
