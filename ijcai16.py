@@ -315,7 +315,7 @@ def run_from_command_line():
 
     parser.add_argument("-s", "--seed", type=int, default=None,
                         help="RNG seed")
-    parser.add_argument("--threads", type=int, default=1,
+    parser.add_argument("--threads", type=int, default=None,
                         help="Max number of threads to user")
     parser.add_argument("--debug", action="store_true",
                         help="Enable debug spew")
