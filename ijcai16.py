@@ -338,10 +338,12 @@ def run_from_command_line():
     domain_sizes = map(int, [ds for ds in args.domain_sizes.split(",") if len(ds)])
     if args.dataset == "synthetic":
         dataset = setmargin.SyntheticDataset(domain_sizes)
-    elif args.dataset == "random_constraints":
-        dataset = setmargin.RandomDataset(domain_sizes, rng=rng)
+    elif args.dataset == "debug_constraint":
+        dataset = setmargin.DebugConstraintDataset(domain_sizes, rng=rng)
+    elif args.dataset == "debug_cost":
+        dataset = setmargin.DebugCostDataset(domain_sizes, rng=rng)
     elif args.dataset == "pc":
-        dataset = setmargin.LiftedPCDataset()
+        dataset = setmargin.PCDataset()
     else:
         raise ValueError("invalid dataset.")
     if args.debug:

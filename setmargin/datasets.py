@@ -17,16 +17,31 @@ class Dataset(object):
     :param items: array of items as one-hot row vectors.
     :param x_constraints: constraints on the item configurations.
     """
-    def __init__(self, domain_sizes, items, x_constraints):
+    def __init__(self, domain_sizes, items, costs, x_constraints):
         self.domain_sizes = domain_sizes
         self.items = items
+        self.costs = costs
         self.x_constraints = x_constraints
 
     def __str__(self):
-        return "Dataset(domain_sizes={} len(items)={} constrs={}" \
-                   .format(self.domain_sizes,
-                           len(self.items) if self.items is not None else 0,
-                           self.x_constraints)
+        return "Dataset(domain_sizes={} bools={} reals={} constrs={}" \
+                   .format(self.domain_sizes, self.num_bools(),
+                           self.num_reals(), self.x_constraints)
+
+    def num_bools(self):
+        return sum(self.domain_sizes)
+
+    def num_reals(self):
+        return 0 if self.costs is None else self.costs.shape[0]
+
+    def num_vars(self):
+        return self.num_bools() + self.num_reals()
+
+    def get_domain_ranges(self):
+        base = 0
+        for size in self.domain_sizes:
+            yield base, base + size
+            base += size
 
     def _dom_var_to_bit(self, j, z):
         assert 0 <= j <= len(self.domain_sizes)
@@ -44,6 +59,10 @@ class Dataset(object):
         for zs_in_domain in get_zs_in_domains(self.domain_sizes):
             if sum(x[z] for z in zs_in_domain) != 1:
                 return False
+        if self.costs is not None:
+            x, c = x[:self.num_bools()], x[self.num_bools():]
+            if not (np.dot(self.costs, x) == c).all():
+                return False
         if self.x_constraints is not None:
             for head, body in self.x_constraints:
                 if x[head] and not any(x[atom] == 1 for atom in body):
@@ -51,15 +70,15 @@ class Dataset(object):
         return True
 
 class SyntheticDataset(Dataset):
-    def __init__(self, domain_sizes, x_constraints=None):
-        items = self._ground(domain_sizes, x_constraints)
-        super(SyntheticDataset, self).__init__(domain_sizes, items, x_constraints)
+    def __init__(self, domain_sizes):
+        items = self._ground(domain_sizes, None)
+        super(SyntheticDataset, self).__init__(domain_sizes, items, None, None)
 
-class RandomDataset(Dataset):
+class DebugConstraintDataset(Dataset):
     def __init__(self, domain_sizes, rng=None):
         x_constraints = self._sample_constraints(domain_sizes,
                                                  check_random_state(rng))
-        super(RandomDataset, self).__init__(domain_sizes, x_constraints)
+        super(DebugConstraintDataset, self).__init__(domain_sizes, None, x_constraints)
 
     def _sample_constraints(self, domain_sizes, rng):
         print "sampling constraints"
@@ -80,7 +99,14 @@ class RandomDataset(Dataset):
         print "--------------------"
         return constraints
 
-class LiftedPCDataset(Dataset):
+class DebugCostDataset(Dataset):
+    def __init__(self, domain_sizes, num_costs=2, rng=None):
+        rng = check_random_state(rng)
+        items = self._ground(domain_sizes, None)
+        costs = rng.uniform(-1, 1, size=(num_costs, sum(domain_sizes)))
+        super(DebugCostDataset, self).__init__(domain_sizes, items, costs, None)
+
+class PCDataset(Dataset):
     def __init__(self):
         domain_of = {
             "Manufacturer": [
@@ -114,7 +140,7 @@ class LiftedPCDataset(Dataset):
         }
         self.domain_of = domain_of
 
-        price_of = {
+        cost_of = {
             "Manufacturer": [100, 0, 100, 50, 0, 0, 50, 50],
             "CPU": map(int, [
                 # AMD Athlon
@@ -148,12 +174,16 @@ class LiftedPCDataset(Dataset):
             ],
         }
 
-        assert len(domain_of) == len(price_of)
-        assert all(len(domain_of[attr]) == len(price_of[attr]) for attr in domain_of)
-
         self.attributes = sorted(domain_of.keys())
 
         domain_sizes = [len(domain_of[attr]) for attr in self.attributes]
+
+        cost = []
+        assert len(domain_of) == len(costs_of)
+        for attr in self.attributes:
+            assert len(domain_of[attr]) == len(cost_of[attr])
+            cost.extend(costs_of[attr])
+        costs = np.array([cost])
 
         x_constraints = []
 
@@ -266,7 +296,7 @@ class LiftedPCDataset(Dataset):
             ("Type", ["Laptop"]),
             ("Monitor", [10, 10.4, 12, 13.3, 14, 15])))
 
-        super(LiftedPCDataset, self).__init__(domain_sizes, None, x_constraints)
+        super(PCDataset, self).__init__(domain_sizes, None, costs, x_constraints)
 
     def _attr_value_to_bit(self, attr, value):
         base, i = 0, None
