@@ -270,9 +270,12 @@ def run_from_command_line():
     if args.debug:
         print dataset
 
+    dataset_name = args.dataset
+    if args.dataset == "synthetic":
+        dataset_name += "_" + args.domain_sizes
+
     infos = solve(dataset, config)
-    dump_and_draw("{}_{}".format(args.dataset, ",".join(map(str, args.domain_sizes))),
-                  config, infos)
+    dump_and_draw(dataset_name, config, infos)
 
 if __name__ == "__main__":
     np.seterr(all="raise")
