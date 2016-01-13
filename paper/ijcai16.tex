@@ -188,32 +188,38 @@ WRITEME
 
 \section{Setwise Max-margin Learning}
 
-\paragraph{Notation.} We use boldface letters $\vx$ to indicate vectors,
-capital letters $X$ for matrices, and calligraphic capital letters $\calX$ for
-sets. The $\ell_1$ vector norm is denoted as $\|\vx\|_1 := \sum_z |x_z|$. We
-use $[n]$ as a shorthand for the set $\{1, \ldots, n\}$.
+\stefano{Paolo, feel free to improve the text and especially the citations
+as you see fit.}
+
+\paragraph{Notation.} We use boldface letters $\vx$ to indicate vectors, and
+calligraphic capital letters $\calX$ for sets. We frequently abbreviate the set
+$\{ x^i \}_{i=1}^n$ as $\{ x^i \}$ whenever the range of the index $i$ is clear
+from the context, and use $[n]$ as a shorthand for the set $\{1, \ldots, n\}$.
+The $\ell_1$ vector norm is denoted as $\|\vx\|_1 := \sum_z |x_z|$.
 
 \paragraph{Setting.} We assume to have a multi-attribute feature space $\calX$
 of configurations $\vx = (x_1, \ldots, x_n)$ over $n$ features. For the time
 being we will focus on binary features only, i.e. $x_z\in\{0,1\}$, to keep
-matters simple; this restriction will be partially lifted later on.
-\stefano{revisit the previous sentence once cost vars are in place}
-We further assume the set of {\em feasible} configurations can be expressed as
+matters simple. This is a common choice for preference elicitation methods,
+e.g.~\cite{guo2010real,viappiani2010optimal}; discrete features are handled by
+means of a simple one-hot encoding. Partial support for continuous features
+will be discussed later on.
+We further assume that the set of {\em feasible} configurations is expressed as
 a conjunction of linear constraints. This is not a severe restriction:
 arbitrary propositional constraints can be trivially encoded in this setting,
-e.g. the Boolean disjunction of two binary variables $x_1 \lor x_2$ can be
+e.g. the ``Boolean disjunction'' of two binary variables $x_1 \lor x_2$ can be
 rewritten as $x_1 + x_2 \ge 1$. The full set of feasible configurations will be
 indicated as $\calX_\text{feasible}$.
 
-In adherence to previous work\stefano{add reference}, we model users by means
+In adherence to previous work~\cite{guo2010real,viappiani2010optimal}, we model users by means
 of linear utility functions: the user's preferences are represented by a weight
 vector $\vw\in\bbR^n$, and the utility of a configuration $\vx$ is given by
 $\langle \vw, \vx \rangle = \sum_{z=1}^n w_z x_z$. In the following we will
 require all weights to be {\em non-negative} and {\em bounded}: the individual
 weights $w_z$ must fall in a (constant but otherwise arbitrary) interval
-$[w^\bot_z, w^\top_z]$. These two requirements allow the translation of our core
-optimization problem into a mixed-integer linear problem, as done in the next
-section. \stefano{sentence is a bit bogus}
+$[w^\bot_z, w^\top_z]$. Both requirements are quite natural, and enable the
+translation of our core optimization problem into a mixed-integer linear
+problem (as done in Section~\ref{sec:formulation}).
 
 During learning, the actual weight vector $\vw$ is {\em unknown} to the
 learning system, and must be estimated from pairwise choices elicited from the
@@ -225,6 +231,7 @@ Details on the actual query selection strategy used will be provided in
 Section~\ref{sec:querystrategy}.
 
 \subsection{Problem Formulation}
+\label{sec:formulation}
 
 \paragraph{Non-linear Formulation.} We now introduce an initial formulation of
 the optimization problem, that we do {\em not} aim at solving directly.
@@ -261,11 +268,11 @@ an additional term $\sum_{i=1}^k \langle \vw^{i}, \vx^{i} \rangle$ in the
 objective function. \stefano{sparsity}
 
 A straightforward encoding of the above desiderata leads to the following {\em
-non-linear} optimization problem:
+non-linear} optimization problem over the variables $M$, $\{ \vw^i \}$, $\{ \vx^i \}$:
 %
 {\footnotesize
 \begin{align}
-    \max_{M, W, X}
+    \max
         & \;\; M - \alpha \sum_{i=1}^k \| \veps^{i} \|_1 - \beta \sum_{i=1}^k \| \vw^{i} \|_1 + \gamma \sum_{i=1}^k \langle \vw^{i}, \vx^{i} \rangle
         \nonumber
     \\
@@ -376,7 +383,7 @@ Substituting the above MILP constraints into the original optimization problem,
 we obtain:
 {\footnotesize
 \begin{align}
-    \max_{M, W, X}
+    \max
         & \;\; M - \alpha \sum_{i=1}^k \| \veps^{i} \|_1 - \beta \sum_{i=1}^k \| \vw^{i} \|_1 + \gamma \sum_{i=1}^k \sum_{z=1}^n p^{i,i}_z
         \nonumber
     \\
