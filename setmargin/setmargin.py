@@ -140,6 +140,14 @@ def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
 
         # Update the user answers
         new_answers, num_queries = user.query_set(ws, xs, old_best_item)
+        num_identical_answers = 0
+        for xi, xj, sx in new_answers:
+            for zi, zj, sz in answers:
+                if (xi == zi).all() and (xj == zj).all():
+                    num_identical_answers += 1
+        if num_identical_answers > 0:
+            print "Warning: {} identical (up to sign) answers added!" \
+                      .format(num_identical_answers)
         answers.extend(new_answers)
         old_best_item = xs[0] if xs.shape[0] == 1 else None
 
