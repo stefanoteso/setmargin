@@ -37,13 +37,24 @@ class User(object):
                                                  self.is_indifferent,
                                                  self.ranking_mode)
 
-    def _sample(self, sampling_mode, domain_sizes):
-        if sampling_mode == "uniform":
-            return self._rng.uniform(0, 1, size=(sum(domain_sizes), 1)).reshape(1,-1)
-        elif sampling_mode == "normal":
-            return self._rng.normal(0.25, 0.25 / 3, size=(sum(domain_sizes), 1)).reshape(1,-1)
+    def _sample(self, sampling_mode, domain_sizes, sparsity=0.2):
+        num_attrs = sum(domain_sizes)
+        if sampling_mode in ("uniform", "uniform_sparse"):
+            w = self._rng.uniform(0, 1, size=num_attrs)
+        elif sampling_mode in ("normal", "normal_sparse"):
+            w = self._rng.normal(0.25, 0.25 / 3, size=num_attrs)
         else:
             raise ValueError("invalid sampling_mode")
+        if sampling_mode.endswith("sparse"):
+            mask, base = np.zeros(w.shape), 0
+            for domain_size in domain_sizes:
+                domain_mask = np.zeros(domain_size)
+                num_ones = max(1, int(domain_size * sparsity))
+                domain_mask[:num_ones] = 1
+                mask[base:base+domain_size] = self._rng.permutation(domain_mask)
+                base += domain_size
+            w[mask == 0] = 0
+        return w.reshape(1, -1)
 
     def query(self, xi, xj):
         """Queries the user about a single pairwise choice.
