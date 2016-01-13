@@ -332,8 +332,6 @@ def run_from_command_line():
     elif args.dataset == "random_constraints":
         dataset = setmargin.RandomDataset(domain_sizes, rng=rng)
     elif args.dataset == "pc":
-        dataset = setmargin.PCDataset()
-    elif args.dataset == "liftedpc":
         dataset = setmargin.LiftedPCDataset()
     else:
         raise ValueError("invalid dataset.")
