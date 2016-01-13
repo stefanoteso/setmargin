@@ -463,9 +463,8 @@ The simplest alternative is to query the user $\frac{1}{2}n(n-1)$ pairs.
 
 In this section we provide extensive experimental evaluation of the {\sc
 SetMargin} algorithm. We implemented the {\sc SetMargin} algorithm using
-Python, and leverage Gurobi 6.5.0 for solving the MILP problem. Both the 
-{\sc SetMargin} source code and the full experimental setup are available at
-\stefano{add URL}.
+Python, leveraging Gurobi 6.5.0 as the MILP solver. Both the {\sc SetMargin}
+source code and the full experimental setup are available at \stefano{add URL}.
 
 We compare {\sc SetMargin} against two strong Bayesian baselines:
 \cite{guo2010real} and \cite{viappiani2010optimal}.
@@ -478,7 +477,7 @@ classical Bradley-Torr model, which does not attempt to model {\em indifference}
 the proabability that a user $\vw$ will prefer configuration $\vx^i$ over
 the alternative $\vx^j$, barring indifference, amounts to:
 %
-$$ P(\vx^i > \vx^j \;|\; \vw, \vx^i \not\sim \vx^j) = (1 + \exp(-\alpha \langle\vw,\vx^i - \vx^j\rangle))^{-1} $$
+$$ (1 + \exp(-\alpha \langle\vw,\vx^i - \vx^j\rangle))^{-1} $$
 %
 In other words, the probability grows with the difference between the utilities
 of the two items. Support for indifference has been introduced
@@ -486,20 +485,18 @@ in~\cite{guo2010real} by postulating that the probability of the user being
 indifferent about the two configurations $\vx^i, \vx^j$ depends on how close
 the two utilities are, as in:
 %
-$$ P(\vx^i \sim \vx^j \;|\; \vw) = \exp(\beta |\langle\vw,\vx^i - \vx^j\rangle|) $$
+$$ \exp(\beta |\langle\vw,\vx^i - \vx^j\rangle|) $$
 %
 The parameters $\alpha$ and $\beta$ were set as in~\cite{guo2010real}. Please
 see the latter for more details
 \stefano{The above does not satisfy me at all.}
 
-In all experiments we use an internal cross-validation procedure to update the
+In all experiments we use an internal 5-fold cross-validation procedure to update the
 hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5 iterations. The
-hyperparameters are chosen as to maximize the ranking loss over the user
-answers collected so far. $\alpha$ is taken in $\{100, 10, 1\}$,
-while $\beta$ and $\gamma$ are taken in $\{100, 10, 1, 0.1, 0\}$. Note that
-$\beta=0$ implies that the weight vector is not regularized, nor sparse, while
-$\gamma=0$ implies that the absolute quality of the configurations is ignored.
-\stefano{is this desirable?}
+hyperparameters are chosen as to minimize the ranking loss over the user
+answers collected so far. $\alpha$ is taken in $\{20, 15, 10, 5, 1\}$,
+while $\beta$ and $\gamma$ are taken in $\{10, 5, 1, 0.5, 0.1\}$.
+\stefano{explain that we can't turn off $\gamma$}
 
 \paragraph{Synthetic Dataset.} Following the experimental protocol
 in~\cite{guo2010real} and \cite{viappiani2010optimal}, in the first experiment
@@ -509,7 +506,7 @@ $n=2,\ldots,7$ attributes, where each attribute takes one of $n$ possible
 values. More explicitly, for $n=2$ the synthetic dataset is
 $\calX_\text{feasible} = [2] \times [2]$, for $n=3$ to $\calX_\text{feasible} =
 [3] \times [3] \times [3]$, and so on. The cardinality of
-$\calX_\text{feasible}$ is $n^n$, and grows (super-)exponentially with $n$. For
+$\calX_\text{feasible}$ is $n^n$, and grows (super) exponentially with $n$. For
 $n=3$, the dataset is comparable to the synthetic one used
 in~\cite{guo2010real} and~\cite{viappiani2010optimal} (which have three domains
 of size of 2, 2 and 5, respectively, for a total of 20 feasible
@@ -527,8 +524,8 @@ normal distribution with mean $25$ and covariance $\frac{25}{3}$\footnote{This
 procedure differs from the one reported in~\cite{guo2010real}; we opted for
 following the procedure implemented in their code. \stefano{more diplomacy needed}}.
 We further produced two novel {\em sparse} sets of weight vectors by deleting
-$80\%$ uniformly at random \stefano{Paolo, double check please} the entries
-from the vectors sampled in the uniform and normal settings. We sampled $100$
+$80\%$ of the entries of the vectors sampled in the uniform and normal settings
+uniformly at random \stefano{Paolo, is this correct?}. We sampled $100$
 vectors for each setting. All methods were evaluated on the very same weight
 vectors.
 
@@ -538,40 +535,52 @@ vectors.
 
 \stefano{comment on usefulness of sparse weights}
 
-\paragraph{Constructive Dataset.} Next, we tested {\sc SetMargin} on a truly
-constructive setting, which can not be readily handled by non-constructive
-methods.
+\paragraph{Constructive dataset.} Next, we tested {\sc SetMargin} on a truly
+constructive setting. We developed a constructive version of the PC dataset
+used in~\cite{guo2010real}: instead of explicitly enumerating all possible PC
+item, we definined the set of feasible configurations through MILP constraints.
 
-The attributes are Manufacturer, CPU, Monitor size, PC type, Memory, and HD
-size. CPU type and CPU frequency as combined in a single variable, e.g. ``AMD
-Athlon @1000" stands for an AMD Athlon CPU clocked at 1 GHz. All other domains
-are left unchanged.
+A PC configurations is defined by seven attributes: computer type (laptop,
+desktop, or tower), manufacturer, CPU model, monitor size, RAM amount, storage
+size, and price. See Table~\ref{tab:pcdataset} for an overivew of the
+attributes. The price attribute is defined as a linear combination of the other
+attributes: this is a fair modeling choice, as often the price of a PC is
+well approximated by sum of the price of its components plus an offset due to
+branding. Compared to the PC dataset in~\cite{guo2010real}, we combined the CPU
+type and CPU frequency attributes into a single CPU attribute (e.g. ``PowerPC
+G4 @733 MHz``), so to avoid multiplicative terms in the price function.
+\stefano{too detailed/handwavy?}
 
-The configurations constraints:
+Interactions between attributes are expressed as Horn clauses. An example
+costraint might look like this: ``if the manufacturer is Apple, then the
+CPU must be either a PowerPC G3 or a PowerPC G4'', which can be encoded
+into MILP form as:
 %
-$$ x_i \Leftarrow x_{j_1} \lor \ldots \lor x_{j_n} $$
+$$ (1 - x_\text{Apple}) + x_\text{G3} + x_\text{G4} \ge 1 $$
 %
-have been translated into MILP constraints of the form:
-%
-$$ (1 - x_i) + x_{j_1} + \ldots + x_{j_n} \ge 1 $$
+Note that mutual exclusivity between all binary variables corresponding to an
+attribute ensures that only one of $x_\text{G3}$ and $x_\text{G4}$ can be 1.
+The dataset includes constraints between the following attributes: manufacturer
+$\to$ type, manufacturer $\to$ CPU, type $\to$ RAM amount, type $\to$ storage
+size, type $\to$ monitor size. In total we encoded 16 Horn constraints, each
+with one head and multiple options in the body. We do not report the full
+list due to space limitations.
 
-Each attribute configuration is associated a corresponding {\em price}. The
-price of a configuration is the sum of the prices of the individual components.
-
-\begin{figure}
-    {\footnotesize
-    \begin{tabular}{cc}
-        {\bf Rule} & {\bf MILP constraint} \\ \hline\hline
-        & Manufacturer = Compacq $\Rightarrow$ Type = Laptop $\lor$ Type = Desktop \\
-        & Manufacturer = Apple $\Rightarrow$ CPU = PowerPC G3 @266 $\lor$ \ldots \\
-        & Type = Laptop $\Rightarrow$ Memory = 64 $\lor$ \ldots \\
-        & Type = HDSize $\Rightarrow$ HDSize = 20 $\lor$ \ldots \\
-        & Type = Desktop $\Rightarrow$ Monitor = 15 $\lor$ \ldots \\
+\begin{table}
+    \centering
+    \begin{tabular}{ccc}
+        {\bf Attribute} & {\bf Type} & {\bf Values} \\
+        \hline \hline
+        Type & discrete & 3 \\
+        Manufacturer & discrete & 8 \\
+        CPU model & discrete & 37 \\
+        RAM amount & discrete & 10 \\
+        HD size & discrete & 10 \\
+        Monitor size & discrete & 8 \\
+        Price & continuous & --
     \end{tabular}
-    }
-    \caption{\label{tab:pcconstraints} List of MILP constraints used in the
-    PC experiment.}
-\end{figure}
+    \caption{\label{tab:pcdataset} Statistics for the PC dataset.}
+\end{table}
 
 - PC dataset without costs
 
