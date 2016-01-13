@@ -112,7 +112,7 @@ def dump_and_draw(dataset_name, config, infos):
     ax.set_xlabel("Number of queries")
     ax.set_ylabel("Average loss over trials")
     ax.set_ylim([0.0, max(0.5, max(loss_means) + max(loss_stddevs) + 0.1)])
-    ax.errorbar(np.arange(1, max_queries + 1), loss_means, yerr=loss_stddevs)
+    ax.errorbar(np.arange(1, max_queries + 1), loss_means)
     fig.savefig(loss_svg_path, bbox_inches="tight")
     del fig
     del ax
@@ -122,7 +122,7 @@ def dump_and_draw(dataset_name, config, infos):
     ax.set_xlabel("Number of queries")
     ax.set_ylabel("Average time over trials")
     ax.set_ylim([0.0, max(0.5, max(time_means) + max(time_stddevs) + 0.1)])
-    ax.errorbar(np.arange(1, max_queries + 1), time_means, yerr=time_stddevs)
+    ax.errorbar(np.arange(1, max_queries + 1), time_means)
     fig.savefig(time_svg_path, bbox_inches="tight")
     del fig
     del ax
