@@ -34,10 +34,10 @@ class Solver(object):
         again.
 
     :param multimargin: whether to use two distinct margins. (default: ``False``)
-    :param threads: how many threads Gurobi is allowed to use. (default: 1)
+    :param threads: how many threads Gurobi is allowed to use. (default: ``None``)
     :param debug: whether to spew debug output. (default: ``False``)
     """
-    def __init__(self, multimargin=False, threads=1, debug=False):
+    def __init__(self, multimargin=False, threads=None, debug=False):
         self._multimargin = multimargin
         self._threads = threads
         self._debug = debug
@@ -146,7 +146,8 @@ class Solver(object):
 
         model = grb.Model("facility")
         model.params.Seed = 0
-        model.params.Threads = self._threads
+        if self._threads is not None:
+            model.params.Threads = self._threads
         model.params.OutputFlag = 0
 
         # Declare the variables
