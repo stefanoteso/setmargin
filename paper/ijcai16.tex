@@ -4,9 +4,9 @@
 
 \documentclass{article}
 \usepackage{ijcai16}
-\usepackage{graphicx}
 \usepackage{times}
 %\usepackage{latexsym}
+\usepackage{graphicx}
 
 \RequirePackage{amsmath,amssymb,amsfonts,amsthm}
 \usepackage{algorithm}
@@ -195,7 +195,7 @@ as you see fit.}
 calligraphic capital letters $\calX$ for sets. We frequently abbreviate the set
 $\{ x^i \}_{i=1}^n$ as $\{ x^i \}$ whenever the range of the index $i$ is clear
 from the context, and use $[n]$ as a shorthand for the set $\{1, \ldots, n\}$.
-The $\ell_1$ vector norm is denoted as $\|\vx\|_1 := \sum_z |x_z|$.
+The $\ell_1$ vector norm is denoted by $\|\vx\|_1 := \sum_z |x_z|$.
 
 \paragraph{Setting.} We assume to have a multi-attribute feature space $\calX$
 of configurations $\vx = (x_1, \ldots, x_n)$ over $n$ features. For the time
@@ -209,13 +209,13 @@ We further assume that the set of {\em feasible} configurations is expressed as
 a conjunction of linear constraints. This is not a severe restriction:
 arbitrary propositional constraints can be trivially encoded in this setting,
 e.g. the ``Boolean disjunction'' of two binary variables $x_1 \lor x_2$ can be
-rewritten as $x_1 + x_2 \ge 1$. The full set of feasible configurations will be
-indicated as $\calX_\text{feasible}$.
+rewritten as $x_1 + x_2 \ge 1$. The full set of feasible configurations is
+denoted by $\calX_\text{feasible}$.
 
 In adherence to previous work~\cite{guo2010real,viappiani2010optimal}, we model users by means
 of linear utility functions: the user's preferences are represented by a weight
 vector $\vw\in\bbR^n$, and the utility of a configuration $\vx$ is given by
-$\langle \vw, \vx \rangle = \sum_{z=1}^n w_z x_z$. In the following we will
+$\langle \vw, \vx \rangle = \sum_{z=1}^n w_z x_z$. In the following we
 require all weights to be {\em non-negative} and {\em bounded}: the individual
 weights $w_z$ must fall in a (constant but otherwise arbitrary) interval
 $[w^\bot_z, w^\top_z]$, with $w^\bot_z \ge 0$. Both requirements are quite
@@ -225,7 +225,7 @@ mixed-integer linear problem (as done in Section~\ref{sec:formulation}).
 During learning, the actual weight vector $\vw$ is {\em unknown} to the
 learning system, and must be estimated from pairwise choices elicited from the
 user. The set of examples consists of pairwise comparisons between a more
-preferred configuration $\vy_+$ and a less preferred on $\vy_-$. Each preference
+preferred configuration $\vy_+$ and a less preferred one $\vy_-$. Each preference
 induces a ranking constraint $\langle \vw, \vy_+ - \vy_- \rangle \ge 0$.
 Details on the actual query selection strategy will be provided in
 Section~\ref{sec:querystrategy}.
@@ -548,7 +548,7 @@ attributes: this is a fair modeling choice, as often the price of a PC is
 well approximated by sum of the price of its components plus an offset due to
 branding. Compared to the PC dataset in~\cite{guo2010real}, we combined the CPU
 type and CPU frequency attributes into a single CPU attribute (e.g. ``PowerPC
-G4 @733 MHz``), so to avoid multiplicative terms in the price function.
+G4 @733 MHz''), so to avoid multiplicative terms in the price function.
 \stefano{too detailed/handwavy?}
 
 Interactions between attributes are expressed as Horn clauses. An example
@@ -596,5 +596,39 @@ WRITEME
 
 \bibliographystyle{named}
 \bibliography{ijcai16}
+
+\onecolumn
+
+\begin{figure}[b]
+    \centering
+    \begin{tabular}{cccc}
+        {\bf synthetic 2} & {\bf synthetic 3} & {\bf synthetic 4} & {\bf synthetic 5}
+        \\
+        \includegraphics[width=12em]{figure_synthetic_2_uniform} &
+        \includegraphics[width=12em]{figure_synthetic_3_uniform} &
+        \includegraphics[width=12em]{figure_synthetic_4_uniform} &
+        \includegraphics[width=12em]{figure_synthetic_5_uniform}
+        \\
+        \includegraphics[width=12em]{figure_synthetic_2_uniform_sparse} &
+        \includegraphics[width=12em]{figure_synthetic_3_uniform_sparse} &
+        \includegraphics[width=12em]{figure_synthetic_4_uniform_sparse} &
+        \includegraphics[width=12em]{figure_synthetic_5_uniform_sparse}
+        \\
+        \includegraphics[width=12em]{figure_synthetic_2_normal} &
+        \includegraphics[width=12em]{figure_synthetic_3_normal} &
+        \includegraphics[width=12em]{figure_synthetic_4_normal} &
+        \includegraphics[width=12em]{figure_synthetic_5_normal}
+        \\
+        \includegraphics[width=12em]{figure_synthetic_2_normal_sparse} &
+        \includegraphics[width=12em]{figure_synthetic_3_normal_sparse} &
+        \includegraphics[width=12em]{figure_synthetic_4_normal_sparse} &
+        \includegraphics[width=12em]{figure_synthetic_5_normal_sparse}
+    \end{tabular}
+    \caption{Results on the synthetic dataset. Each row represents a different
+    setting: uniform, uniform sparse, normal, normal sparse. Color indicates
+    the set size $k$: blue means $k=2$, greed $k=3$, and red $k=4$.}
+\end{figure}
+
+\twocolumn
 
 \end{document}
