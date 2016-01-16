@@ -14,6 +14,8 @@ class Dataset(object):
     def __init__(self, domain_sizes, costs, x_constraints):
         self.domain_sizes = domain_sizes
         self.costs = costs
+        if costs is not None:
+            assert costs.shape == (self.num_reals(), self.num_bools())
         self.x_constraints = x_constraints
 
     def __str__(self):
