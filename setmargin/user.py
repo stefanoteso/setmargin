@@ -56,11 +56,10 @@ class User(object):
             w[mask == 0] = 0
         return w.reshape(1, -1)
 
-    def query(self, xi, xj):
+    def query_diff(self, diff):
         """Queries the user about a single pairwise choice.
 
-        :param xi: an item.
-        :param xj: the other item.
+        :param diff: different in utility loss: u(xi) - u(xj).
         :returns: 0 if the user is indifferent, 1 if xi is better than xj,
             and -1 if xi is worse than xj.
         """
@@ -68,8 +67,6 @@ class User(object):
         # uses ALPHA=1, BETA=1; here however we have weights in the range [0, 1]
         # so we must rescale ALPHA and BETA to obtain the same probabilities.
         ALPHA, BETA = 100, 100
-
-        diff = np.dot(self.w, xi.T - xj.T)
 
         if self.is_deterministic:
             return int(np.sign(diff))
@@ -84,6 +81,16 @@ class User(object):
         elif z < (eq + gt):
             return 1
         return -1
+
+    def query(self, xi, xj):
+        """Queries the user about a single pairwise choice.
+
+        :param xi: an item.
+        :param xj: the other item.
+        :returns: 0 if the user is indifferent, 1 if xi is better than xj,
+            and -1 if xi is worse than xj.
+        """
+        return self.query_diff(np.dot(self.w, xi.T - xj.T))
 
     def query_set(self, ws, xs, old_best_item):
         """Queries the user about the provided set of items.
