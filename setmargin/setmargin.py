@@ -170,7 +170,7 @@ def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
         # Compute the utility loss
         best_score = np.dot(user.w.ravel(), best_item)
         pred_score = np.dot(user.w.ravel(), xs[0])
-        loss = (best_score - pred_score) / user_w_norm
+        loss = best_score - pred_score
         if debug:
             print dedent("""\
                     best_item = (true score = {})
