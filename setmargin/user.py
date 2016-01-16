@@ -40,9 +40,9 @@ class User(object):
     def _sample(self, sampling_mode, domain_sizes, sparsity=0.2):
         num_attrs = sum(domain_sizes)
         if sampling_mode in ("uniform", "uniform_sparse"):
-            w = self._rng.uniform(0, 1, size=num_attrs)
+            w = self._rng.uniform(1, 100, size=num_attrs)
         elif sampling_mode in ("normal", "normal_sparse"):
-            w = self._rng.normal(0.25, 0.25 / 3, size=num_attrs)
+            w = self._rng.normal(25.0, 25.0 / 3, size=num_attrs)
         else:
             raise ValueError("invalid sampling_mode")
         if sampling_mode.endswith("sparse"):
@@ -63,10 +63,7 @@ class User(object):
         :returns: 0 if the user is indifferent, 1 if xi is better than xj,
             and -1 if xi is worse than xj.
         """
-        # The original problem has weights sampled in the range [0, 100], and
-        # uses ALPHA=1, BETA=1; here however we have weights in the range [0, 1]
-        # so we must rescale ALPHA and BETA to obtain the same probabilities.
-        ALPHA, BETA = 100, 100
+        ALPHA, BETA = 1.0, 1.0
 
         if self.is_deterministic:
             return int(np.sign(diff))
