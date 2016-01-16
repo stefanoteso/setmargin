@@ -278,7 +278,7 @@ def run_from_command_line():
     parser.add_argument("dataset", type=str,
                         help="dataset")
 
-    parser.add_argument("-N", "--num_trials", type=int, default=20,
+    parser.add_argument("-T", "--num_trials", type=int, default=20,
                         help="number of trials")
     parser.add_argument("--domain-sizes", type=str, default="2,2,5",
                         help="domain sizes for the synthetic dataset only")
