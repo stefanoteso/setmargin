@@ -72,19 +72,21 @@ def print_answers(queries, hidden_w):
                                    score_xi - score_xj))
     print "\n".join(message)
 
-def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
-        tol=1e-4, crossval_interval=5, crossval_set_size=None, debug=False):
+def run(dataset, user, solver, set_size, max_iterations=100, tol=1e-4,
+        alphas="auto", crossval_interval=5, crossval_set_size=None,
+        debug=False):
     """Runs the setmargin algorithm.
 
     :param dataset: the dataset.
     :param user: the user.
     :param solver: the setmargin solver.
-    :param num_iterations: number of iterations to run for.
     :param set_size: set size.
+    :param max_iterations: maximum number of iterations to run for.
+        (default: ``100``)
+    :param tol: user tolerance, used for termination. (default: ``1e-4``)
     :param alphas: either a triple of non-negative floats, or ``"auto"``,
         in which case the hyperparameters are determined automatically through
         a periodic cross-validation procedure. (default: ``"auto"``)
-    :param tol: user tolerance, used for termination. (default: ``1e-4``)
     :param crossval_interval: number of iterations between cross-validation
         calls. (default: ``5``)
     :param crossval_set_size: number of items. (default: ``set_size``)
@@ -92,8 +94,8 @@ def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
     :return: the number of queries, utility loss and elapsed time for
         each iteration.
     """
-    if not num_iterations > 0:
-        raise ValueError("num_iterations must be positive")
+    if not max_iterations > 0:
+        raise ValueError("max_iterations must be positive")
     if not crossval_interval > 0:
         raise ValueError("crossval_interval must be positive")
 
@@ -117,14 +119,15 @@ def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
         if crossval_set_size is None:
             crossval_set_size = set_size
 
-    answers, info, old_best_item = [], [], None
-    for t in range(num_iterations):
+    answers, info, old_best_item, t = [], [], None, 0
+    while True:
+
         if debug:
             print dedent("""\
-            ===============
-            ITERATION {}/{}
-            ===============
-            """).format(t, num_iterations)
+            ============
+            ITERATION {}
+            ============
+            """).format(t)
 
             print_answers(answers, user.w)
 
@@ -173,9 +176,17 @@ def run(dataset, user, solver, num_iterations, set_size, alphas="auto",
                     """).format(best_score, best_item, pred_score, xs[0], loss)
         info.append((num_queries, loss, elapsed))
 
+        t += 1
+        if t >= max_iterations:
+            if debug:
+                print "maximum iterations reached, terminating"
+            break
+
         # If the user is satisfied (clicks the 'add to cart' button),
         # we are done
         if loss < tol:
+            if debug:
+                print "minimum tolerance reached, terminating"
             break
 
     return info

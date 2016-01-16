@@ -65,7 +65,7 @@ def get_result_paths(dataset_name, config):
         "multimargin={}".format(config.multimargin),
         "threads={}".format(config.threads),
         config.num_trials,
-        config.num_iterations,
+        config.max_iterations,
     ]))
     path0 = "results_{}_infos.pickle".format(basename)
     path1 = "results_{}_loss_matrix.txt".format(basename)
@@ -163,8 +163,9 @@ def precrossvalidate(dataset, config, solver, users):
 
             for i in train_set:
                 infos = setmargin.run(dataset, target_users[i], solver,
-                                      config.num_iterations, config.set_size,
-                                      alphas, tol=config.tol, debug=config.debug)
+                                      config.set_size, alphas=alphas,
+                                      max_iterations=config.max_iterations,
+                                      tol=config.tol, debug=config.debug)
                 # XXX we only consider the true utility loss at the last
                 # iteration
                 losses.append(infos[-1][1])
@@ -217,10 +218,9 @@ def solve(dataset, config, ws=None):
             ===========
             """).format(trial, config.num_trials)
 
-        info = setmargin.run(dataset, users[trial], solver,
-                             config.num_iterations, config.set_size, alphas,
-                             tol=config.tol,
-                             crossval_set_size=config.crossval_set_size,
+        info = setmargin.run(dataset, users[trial], solver, config.set_size,
+                             max_iterations=config.max_iterations, tol=config.tol,
+                             alphas=alphas, crossval_set_size=config.crossval_set_size,
                              debug=config.debug)
         infos.append(info)
     return infos
@@ -228,7 +228,7 @@ def solve(dataset, config, ws=None):
 def run_synthetic():
     CONFIGS = Grid({
         "num_trials": 20,
-        "num_iterations": 100,
+        "max_iterations": 100,
         "sampling_mode": ("uniform", "uniform_sparse", "normal", "normal_sparse"),
         "ranking_mode": ("all_pairs",),
         "is_deterministic": False,
@@ -283,8 +283,8 @@ def run_from_command_line():
     parser.add_argument("--domain-sizes", type=str, default="2,2,5",
                         help="domain sizes for the synthetic dataset only")
 
-    parser.add_argument("-n", "--num_iterations", type=int, default=20,
-                        help="number of iterations")
+    parser.add_argument("-n", "--max-iterations", type=int, default=20,
+                        help="maximum number of iterations")
     parser.add_argument("-m", "--set-size", type=int, default=3,
                         help="number of hyperplanes/items to solve for")
     parser.add_argument("-t", "--tol", type=float, default=1e-4,
