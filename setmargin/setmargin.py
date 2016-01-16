@@ -25,11 +25,11 @@ def crossvalidate(dataset, solver, answers, set_size, debug):
     :param debug:
     :returns:
     """
+    if debug:
+        print "crossvalidating..."
     loss_alphas = []
     for alphas in ALL_ALPHAS:
 
-        if debug:
-            print "crossvalidating", alphas
 
         kfold = KFold(len(answers), n_folds=5)
 
