@@ -8,6 +8,7 @@ from textwrap import dedent
 from util import *
 
 MAX_W_Z = 1
+ENABLE_LP_DUMP = False
 
 status_to_reason = {
     1: "LOADED",
@@ -43,7 +44,7 @@ class Solver(object):
         self._debug = debug
 
     def _dump_model(self, model, prefix):
-        if self._debug:
+        if self._debug and ENABLE_LP_DUMP:
             fp = tempfile.NamedTemporaryFile(prefix=prefix, suffix=".lp",
                                              delete=False)
             fp.close()
