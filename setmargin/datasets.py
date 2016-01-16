@@ -91,7 +91,7 @@ class DebugCostDataset(Dataset):
         super(DebugCostDataset, self).__init__(domain_sizes, costs, None)
 
 class PCDataset(Dataset):
-    def __init__(self):
+    def __init__(self, has_costs=False):
         domain_of = {
             "Manufacturer": [
                 "Apple", "Compaq", "Dell", "Fujitsu", "Gateway", "HP", "Sony",
@@ -280,7 +280,7 @@ class PCDataset(Dataset):
             ("Type", ["Laptop"]),
             ("Monitor", [10, 10.4, 12, 13.3, 14, 15])))
 
-        super(PCDataset, self).__init__(domain_sizes, costs, x_constraints)
+        super(PCDataset, self).__init__(domain_sizes, costs if has_costs else None, x_constraints)
 
     def _attr_value_to_bit(self, attr, value):
         base, i = 0, None

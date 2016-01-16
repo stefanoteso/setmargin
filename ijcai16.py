@@ -347,8 +347,10 @@ def run_from_command_line():
         dataset = setmargin.DebugConstraintDataset(domain_sizes, rng=0)
     elif args.dataset == "debug_cost":
         dataset = setmargin.DebugCostDataset(domain_sizes, rng=0)
-    elif args.dataset == "pc":
-        dataset = setmargin.PCDataset()
+    elif args.dataset == "pc-no-costs":
+        dataset = setmargin.PCDataset(has_costs=False)
+    elif args.dataset == "pc-with-costs":
+        dataset = setmargin.PCDataset(has_costs=True)
     else:
         raise ValueError("invalid dataset.")
     if args.debug:

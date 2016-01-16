@@ -171,7 +171,7 @@ class Solver(object):
         # Declare the variables
         ws, xs = {}, {}
         for i in range(set_size):
-            for z in range(num_features):
+            for z in range(num_bools):
                 ws[i,z] = model.addVar(vtype=GRB.CONTINUOUS,
                                        name="w_{}_{}".format(i, z))
                 xs[i,z] = model.addVar(vtype=GRB.BINARY,
@@ -186,7 +186,7 @@ class Solver(object):
         ps = {}
         for i in range(set_size):
             for j in range(set_size):
-                for z in range(num_features):
+                for z in range(num_bools):
                     ps[i,j,z] = model.addVar(vtype=GRB.CONTINUOUS,
                                              name="p_{}_{}_{}".format(i, j, z))
 
@@ -224,7 +224,7 @@ class Solver(object):
 
         obj_scores = temp[2] * grb.quicksum([ps[i,i,z]
                                                for i in range(set_size)
-                                               for z in range(num_features)])
+                                               for z in range(num_bools)])
 
         model.setObjective(obj_margins - obj_slacks - obj_weights + obj_scores)
 
@@ -237,7 +237,7 @@ class Solver(object):
                 assert ans in (-1, 0, 1)
 
                 diff = x1 - x2 if ans >= 0 else x2 - x1
-                dot = grb.quicksum([ws[i,z] * diff[z] for z in range(num_features)])
+                dot = grb.quicksum([ws[i,z] * diff[z] for z in range(num_bools)])
 
                 if ans == 0:
                     # Only one of dot and -dot is positive, and the slacks are
@@ -251,39 +251,39 @@ class Solver(object):
         # Eq. 10
         for i in range(set_size):
             for j in range(i) + range(i+1, set_size):
-                score_diff = grb.quicksum([ps[i,i,z] - ps[i,j,z] for z in range(num_features)])
+                score_diff = grb.quicksum([ps[i,i,z] - ps[i,j,z] for z in range(num_bools)])
                 model.addConstr(score_diff >= margins[-1])
 
         # Eq. 11
         for i in range(set_size):
-            for z in range(num_features):
+            for z in range(num_bools):
                 model.addConstr(ps[i,i,z] <= (MAX_W_Z * xs[i,z]))
 
         # Eq. 12
         for i in range(set_size):
-            for z in range(num_features):
+            for z in range(num_bools):
                 model.addConstr(ps[i,i,z] <= ws[i,z])
 
         # Eq. 13
         for i in range(set_size):
             for j in range(i) + range(i+1, set_size):
-                for z in range(num_features):
+                for z in range(num_bools):
                     model.addConstr(ps[i,j,z] >= (ws[i,z] - 2 * MAX_W_Z * (1 - xs[j,z])))
 
         # Eq. 15
         for i in range(set_size):
-            for z in range(num_features):
+            for z in range(num_bools):
                 model.addConstr(ws[i,z] <= MAX_W_Z)
 
         # Eq. 18a
         for i in range(set_size):
             for j in range(set_size):
-                for z in range(num_features):
+                for z in range(num_bools):
                     model.addConstr(ps[i,j,z] >= 0)
 
         # Eq. 18b
         for i in range(set_size):
-            for z in range(num_features):
+            for z in range(num_bools):
                 model.addConstr(ws[i,z] >= 0)
 
         # Eq. 19
@@ -307,7 +307,7 @@ class Solver(object):
                 model.addConstr(margins[1] == 0)
 
         for i in range(set_size):
-            x = [xs[(i,z)] for z in range(num_features)]
+            x = [xs[(i,z)] for z in range(num_bools)]
             self._add_item_constraints(model, dataset, x)
 
         model.update()
@@ -328,18 +328,18 @@ class Solver(object):
                 """).format(answers, set_size, status_to_reason[model.status], temp)
             raise RuntimeError(message)
 
-        output_ws = np.zeros((set_size, num_features))
-        output_xs = np.zeros((set_size, num_features))
+        output_ws = np.zeros((set_size, num_bools))
+        output_xs = np.zeros((set_size, num_bools))
         for i in range(set_size):
-            for z in range(num_features):
+            for z in range(num_bools):
                 output_ws[i,z] = ws[i,z].x
                 output_xs[i,z] = xs[i,z].x
 
-        output_ps = np.zeros((set_size, set_size, num_features))
+        output_ps = np.zeros((set_size, set_size, num_bools))
         output_scores = np.zeros((set_size, set_size))
         for i in range(set_size):
             for j in range(set_size):
-                for z in range(num_features):
+                for z in range(num_bools):
                     output_ps[i,j,z] = ps[i,j,z].x
                     output_scores[i,j] += ps[i,j,z].x
 
