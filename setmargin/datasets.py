@@ -124,7 +124,7 @@ class PCDataset(Dataset):
         }
         self.domain_of = domain_of
 
-        cost_of = {
+        costs_of = {
             "Manufacturer": [100, 0, 100, 50, 0, 0, 50, 50],
             "CPU": map(int, [
                 # AMD Athlon
@@ -165,7 +165,7 @@ class PCDataset(Dataset):
         cost = []
         assert len(domain_of) == len(costs_of)
         for attr in self.attributes:
-            assert len(domain_of[attr]) == len(cost_of[attr])
+            assert len(domain_of[attr]) == len(costs_of[attr])
             cost.extend(costs_of[attr])
         costs = np.array([cost])
 
