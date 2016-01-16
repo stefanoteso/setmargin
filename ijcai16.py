@@ -299,7 +299,7 @@ def run_from_command_line():
                        help="tolerance used for termination")
 
     group = parser.add_argument_group("setmargin hyperparameters")
-    group.add_argument("-m", "--set-size", type=int, default=3,
+    group.add_argument("-k", "--set-size", type=int, default=3,
                        help="number of hyperplanes/items to solve for")
     group.add_argument("-a", "--alpha", type=float, default=0.1,
                        help="hyperparameter controlling the importance of slacks")
