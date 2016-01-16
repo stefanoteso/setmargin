@@ -72,8 +72,8 @@ def print_answers(queries, hidden_w):
                                    score_xi - score_xj))
     print "\n".join(message)
 
-def run(dataset, user, solver, set_size, max_iterations=100, tol=1e-4,
-        alphas="auto", crossval_interval=5, crossval_set_size=None,
+def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
+        tol=1e-4, alphas="auto", crossval_interval=5, crossval_set_size=None,
         debug=False):
     """Runs the setmargin algorithm.
 
@@ -82,6 +82,8 @@ def run(dataset, user, solver, set_size, max_iterations=100, tol=1e-4,
     :param solver: the setmargin solver.
     :param set_size: set size.
     :param max_iterations: maximum number of iterations to run for.
+        (default: ``100``)
+    :param max_answers: maximum number of answers to elicit in total.
         (default: ``100``)
     :param tol: user tolerance, used for termination. (default: ``1e-4``)
     :param alphas: either a triple of non-negative floats, or ``"auto"``,
@@ -96,6 +98,8 @@ def run(dataset, user, solver, set_size, max_iterations=100, tol=1e-4,
     """
     if not max_iterations > 0:
         raise ValueError("max_iterations must be positive")
+    if not max_answers > 0:
+        raise ValueError("max_answers must be positive")
     if not crossval_interval > 0:
         raise ValueError("crossval_interval must be positive")
 
@@ -180,6 +184,11 @@ def run(dataset, user, solver, set_size, max_iterations=100, tol=1e-4,
         if t >= max_iterations:
             if debug:
                 print "maximum iterations reached, terminating"
+            break
+
+        if len(answers) >= max_answers:
+            if debug:
+                print "maximum number of answers reached, terminating"
             break
 
         # If the user is satisfied (clicks the 'add to cart' button),

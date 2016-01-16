@@ -66,6 +66,7 @@ def get_result_paths(dataset_name, config):
         "threads={}".format(config.threads),
         config.num_trials,
         config.max_iterations,
+        config.max_answers,
     ]))
     path0 = "results_{}_infos.pickle".format(basename)
     path1 = "results_{}_loss_matrix.txt".format(basename)
@@ -165,6 +166,7 @@ def precrossvalidate(dataset, config, solver, users):
                 infos = setmargin.run(dataset, target_users[i], solver,
                                       config.set_size, alphas=alphas,
                                       max_iterations=config.max_iterations,
+                                      max_answers=config.max_answers,
                                       tol=config.tol, debug=config.debug)
                 # XXX we only consider the true utility loss at the last
                 # iteration
@@ -219,7 +221,8 @@ def solve(dataset, config, ws=None):
             """).format(trial, config.num_trials)
 
         info = setmargin.run(dataset, users[trial], solver, config.set_size,
-                             max_iterations=config.max_iterations, tol=config.tol,
+                             max_iterations=config.max_iterations,
+                             max_answers=config.max_answers, tol=config.tol,
                              alphas=alphas, crossval_set_size=config.crossval_set_size,
                              debug=config.debug)
         infos.append(info)
@@ -229,6 +232,7 @@ def run_synthetic():
     CONFIGS = Grid({
         "num_trials": 20,
         "max_iterations": 100,
+        "max_answers": 100,
         "sampling_mode": ("uniform", "uniform_sparse", "normal", "normal_sparse"),
         "ranking_mode": ("all_pairs",),
         "is_deterministic": False,
@@ -285,6 +289,8 @@ def run_from_command_line():
 
     parser.add_argument("-n", "--max-iterations", type=int, default=20,
                         help="maximum number of iterations")
+    parser.add_argument("-N", "--max-answers", type=int, default=20,
+                        help="number of iterations")
     parser.add_argument("-m", "--set-size", type=int, default=3,
                         help="number of hyperplanes/items to solve for")
     parser.add_argument("-t", "--tol", type=float, default=1e-4,
