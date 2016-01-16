@@ -135,12 +135,12 @@ def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
 
             print_answers(answers, user.w)
 
+        old_time = time.time()
+
         # Crossvalidate the hyperparameters if required
         if do_crossval and t % crossval_interval == 0 and t > 0:
             alphas = crossvalidate(dataset, solver, answers, crossval_set_size,
                                    debug)
-
-        old_time = time.time()
 
         # Solve the set_size=k case
         ws, xs = solver.compute_setmargin(dataset, answers, set_size, alphas)
