@@ -43,11 +43,6 @@ class Dataset(object):
             yield base, base + size
             base += size
 
-    def _dom_var_to_bit(self, j, z):
-        assert 0 <= j <= len(self.domain_sizes)
-        assert 0 <= z <= self.domain_sizes[j]
-        return sum(self.domain_sizes[:j]) + z
-
     def _ground(self, domain_sizes, x_constraints):
         items = np.array([vonehot(domain_sizes, item)
                           for item in it.product(*map(range, domain_sizes))])
@@ -78,7 +73,7 @@ class DebugConstraintDataset(Dataset):
     def __init__(self, domain_sizes, rng=None):
         x_constraints = self._sample_constraints(domain_sizes,
                                                  check_random_state(rng))
-        super(DebugConstraintDataset, self).__init__(domain_sizes, None, x_constraints)
+        super(DebugConstraintDataset, self).__init__(domain_sizes, None, None, x_constraints)
 
     def _sample_constraints(self, domain_sizes, rng):
         print "sampling constraints"
@@ -92,8 +87,8 @@ class DebugConstraintDataset(Dataset):
             head = rng.random_integers(0, dsi - 1)
             body = rng.random_integers(0, dsj - 1)
             print "{}:{} -> {}:{}".format(i, head, j, body)
-            index_head = self._feat_to_var(domain_sizes, i, head)
-            index_body = self._feat_to_var(domain_sizes, j, body)
+            index_head = sum(domain_sizes[:i]) + head
+            index_body = sum(domain_sizes[:j]) + body
             constraints.append((index_head, [index_body]))
         print "constraints =\n", constraints
         print "--------------------"
