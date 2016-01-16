@@ -279,52 +279,53 @@ def run_from_command_line():
     import argparse
 
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("dataset", type=str,
-                        help="dataset")
-
+    parser.add_argument("dataset", type=str, help="dataset")
     parser.add_argument("-T", "--num_trials", type=int, default=20,
                         help="number of trials")
     parser.add_argument("--domain-sizes", type=str, default="2,2,5",
-                        help="domain sizes for the synthetic dataset only")
-
-    parser.add_argument("-n", "--max-iterations", type=int, default=20,
-                        help="maximum number of iterations")
-    parser.add_argument("-N", "--max-answers", type=int, default=20,
-                        help="number of iterations")
-    parser.add_argument("-m", "--set-size", type=int, default=3,
-                        help="number of hyperplanes/items to solve for")
-    parser.add_argument("-t", "--tol", type=float, default=1e-4,
-                        help="tolerance used for termination")
-    parser.add_argument("-a", "--alpha", type=float, default=0.1,
-                        help="hyperparameter controlling the importance of slacks")
-    parser.add_argument("-b", "--beta", type=float, default=0.1,
-                        help="hyperparameter controlling the importance of regularization")
-    parser.add_argument("-c", "--gamma", type=float, default=0.1,
-                        help="hyperparameter controlling the score of the output items")
-    parser.add_argument("-x", "--crossval", action="store_true",
-                        help="whether to perform automatic hyperparameter crossvalidation. If enabled, -a -b -c are ignored.")
-    parser.add_argument("-X", "--crossval-set-size", type=int, default=None,
-                        help="set_size for the hyperparameter crossvalidation.")
-    parser.add_argument("-y", "--precrossval", action="store_true",
-                        help="do parameter selection using crossvalidation prior to learning")
-    parser.add_argument("-M", "--multimargin", action="store_true",
-                        help="whether the example and generated object margins should be independent")
-
-    parser.add_argument("-u", "--sampling-mode", type=str, default="uniform",
-                        help="utility sampling mode, any of ('uniform', 'normal')")
-    parser.add_argument("-r", "--ranking-mode", type=str, default="all_pairs",
-                        help="ranking mode for set-wide queries, any of ('all_pairs', 'sorted_pairs')")
-    parser.add_argument("-d", "--is-deterministic", action="store_true",
-                        help="whether the user answers should be deterministic rather than stochastic")
-    parser.add_argument("-i", "--is-indifferent", action="store_true",
-                        help="whether the user can (not) be indifferent")
-
-    parser.add_argument("-s", "--seed", type=int, default=None,
-                        help="RNG seed")
+                        help="domain sizes for the synthetic dataset")
+    parser.add_argument("-s", "--seed", type=int, default=None, help="RNG seed")
     parser.add_argument("--threads", type=int, default=None,
                         help="Max number of threads to user")
     parser.add_argument("--debug", action="store_true",
                         help="Enable debug spew")
+
+    group = parser.add_argument_group("setmargin termination")
+    group.add_argument("-n", "--max-iterations", type=int, default=20,
+                       help="maximum number of iterations")
+    group.add_argument("-N", "--max-answers", type=int, default=20,
+                       help="number of iterations")
+    group.add_argument("-t", "--tol", type=float, default=1e-4,
+                       help="tolerance used for termination")
+
+    group = parser.add_argument_group("setmargin hyperparameters")
+    group.add_argument("-m", "--set-size", type=int, default=3,
+                       help="number of hyperplanes/items to solve for")
+    group.add_argument("-a", "--alpha", type=float, default=0.1,
+                       help="hyperparameter controlling the importance of slacks")
+    group.add_argument("-b", "--beta", type=float, default=0.1,
+                       help="hyperparameter controlling the importance of regularization")
+    group.add_argument("-c", "--gamma", type=float, default=0.1,
+                       help="hyperparameter controlling the score of the output items")
+    group.add_argument("-x", "--crossval", action="store_true",
+                       help="whether to perform automatic hyperparameter crossvalidation. If enabled, -a -b -c are ignored.")
+    group.add_argument("-X", "--crossval-set-size", type=int, default=None,
+                       help="set_size for the hyperparameter crossvalidation.")
+    group.add_argument("-y", "--precrossval", action="store_true",
+                       help="do parameter selection using crossvalidation prior to learning")
+    group.add_argument("-M", "--multimargin", action="store_true",
+                       help="whether the example and generated object margins should be independent")
+
+    group = parser.add_argument_group("user simulation")
+    group.add_argument("-u", "--sampling-mode", type=str, default="uniform",
+                       help="utility sampling mode, any of ('uniform', 'normal')")
+    group.add_argument("-r", "--ranking-mode", type=str, default="all_pairs",
+                       help="ranking mode for set-wide queries, any of ('all_pairs', 'sorted_pairs')")
+    group.add_argument("-d", "--is-deterministic", action="store_true",
+                       help="whether the user answers should be deterministic rather than stochastic")
+    group.add_argument("-i", "--is-indifferent", action="store_true",
+                       help="whether the user can (not) be indifferent")
+
     args = parser.parse_args()
 
     argsdict = vars(args)
