@@ -339,9 +339,9 @@ def run_from_command_line():
     if args.dataset == "synthetic":
         dataset = setmargin.SyntheticDataset(domain_sizes)
     elif args.dataset == "debug_constraint":
-        dataset = setmargin.DebugConstraintDataset(domain_sizes, rng=rng)
+        dataset = setmargin.DebugConstraintDataset(domain_sizes, rng=0)
     elif args.dataset == "debug_cost":
-        dataset = setmargin.DebugCostDataset(domain_sizes, rng=rng)
+        dataset = setmargin.DebugCostDataset(domain_sizes, rng=0)
     elif args.dataset == "pc":
         dataset = setmargin.PCDataset()
     else:
