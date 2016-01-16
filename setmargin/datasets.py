@@ -8,18 +8,11 @@ from util import *
 class Dataset(object):
     """A dataset over the Cartesian product of all attribute domains.
 
-    .. warning::
-
-        In lifted settings, i.e. where the dataset is only specificed
-        by constraints, items is ``None``.
-
     :param domain_sizes: list of domain sizes.
-    :param items: array of items as one-hot row vectors.
     :param x_constraints: constraints on the item configurations.
     """
-    def __init__(self, domain_sizes, items, costs, x_constraints):
+    def __init__(self, domain_sizes, costs, x_constraints):
         self.domain_sizes = domain_sizes
-        self.items = items
         self.costs = costs
         self.x_constraints = x_constraints
 
@@ -43,12 +36,8 @@ class Dataset(object):
             yield base, base + size
             base += size
 
-    def _ground(self, domain_sizes, x_constraints):
-        items = np.array([vonehot(domain_sizes, item)
-                          for item in it.product(*map(range, domain_sizes))])
-        assert items.shape == (prod(domain_sizes), sum(domain_sizes))
-        # XXX filter out invalid configurations
-        return items
+    def ground(self):
+        raise NotImplementedError()
 
     def is_item_valid(self, x):
         for zs_in_domain in get_zs_in_domains(self.domain_sizes):
@@ -66,14 +55,13 @@ class Dataset(object):
 
 class SyntheticDataset(Dataset):
     def __init__(self, domain_sizes):
-        items = self._ground(domain_sizes, None)
-        super(SyntheticDataset, self).__init__(domain_sizes, items, None, None)
+        super(SyntheticDataset, self).__init__(domain_sizes, None, None)
 
 class DebugConstraintDataset(Dataset):
     def __init__(self, domain_sizes, rng=None):
         x_constraints = self._sample_constraints(domain_sizes,
                                                  check_random_state(rng))
-        super(DebugConstraintDataset, self).__init__(domain_sizes, None, None, x_constraints)
+        super(DebugConstraintDataset, self).__init__(domain_sizes, None, x_constraints)
 
     def _sample_constraints(self, domain_sizes, rng):
         print "sampling constraints"
@@ -97,9 +85,8 @@ class DebugConstraintDataset(Dataset):
 class DebugCostDataset(Dataset):
     def __init__(self, domain_sizes, num_costs=2, rng=None):
         rng = check_random_state(rng)
-        items = self._ground(domain_sizes, None)
         costs = rng.uniform(-1, 1, size=(num_costs, sum(domain_sizes)))
-        super(DebugCostDataset, self).__init__(domain_sizes, items, costs, None)
+        super(DebugCostDataset, self).__init__(domain_sizes, costs, None)
 
 class PCDataset(Dataset):
     def __init__(self):
@@ -291,7 +278,7 @@ class PCDataset(Dataset):
             ("Type", ["Laptop"]),
             ("Monitor", [10, 10.4, 12, 13.3, 14, 15])))
 
-        super(PCDataset, self).__init__(domain_sizes, None, costs, x_constraints)
+        super(PCDataset, self).__init__(domain_sizes, costs, x_constraints)
 
     def _attr_value_to_bit(self, attr, value):
         base, i = 0, None
