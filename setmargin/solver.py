@@ -159,9 +159,10 @@ class Solver(object):
             raise ValueError("invalid hyperparameters '{}'".format(alphas))
 
         num_examples = len(answers)
-        num_features = sum(dataset.domain_sizes)
+        num_bools = dataset.num_bools()
+        num_reals = dataset.num_reals()
 
-        model = grb.Model("facility")
+        model = grb.Model("setmargin")
         model.params.Seed = 0
         if self._threads is not None:
             model.params.Threads = self._threads
@@ -171,23 +172,31 @@ class Solver(object):
         ws, xs = {}, {}
         for i in range(set_size):
             for z in range(num_features):
-                ws[i,z] = model.addVar(vtype=GRB.CONTINUOUS, name="w_{}_{}".format(i, z))
-                xs[i,z] = model.addVar(vtype=GRB.BINARY, name="x_{}_{}".format(i, z))
+                ws[i,z] = model.addVar(vtype=GRB.CONTINUOUS,
+                                       name="w_{}_{}".format(i, z))
+                xs[i,z] = model.addVar(vtype=GRB.BINARY,
+                                       name="x_{}_{}".format(i, z))
 
         slacks = {}
         for i in range(set_size):
             for k in range(num_examples):
-                slacks[i,k] = model.addVar(vtype=GRB.CONTINUOUS, name="slack_{}_{}".format(i, k))
+                slacks[i,k] = model.addVar(vtype=GRB.CONTINUOUS,
+                                           name="slack_{}_{}".format(i, k))
 
         ps = {}
         for i in range(set_size):
             for j in range(set_size):
                 for z in range(num_features):
-                    ps[i,j,z] = model.addVar(vtype=GRB.CONTINUOUS, name="p_{}_{}_{}".format(i, j, z))
+                    ps[i,j,z] = model.addVar(vtype=GRB.CONTINUOUS,
+                                             name="p_{}_{}_{}".format(i, j, z))
 
-        margins = [model.addVar(vtype=GRB.CONTINUOUS, name="margin_on_examples")]
-        if self._multimargin:
-            margins.append(model.addVar(vtype=GRB.CONTINUOUS, name="margin_on_generated_objects"))
+        if not self._multimargin:
+            margins = [model.addVar(vtype=GRB.CONTINUOUS, name="margin")]
+        else:
+            margins = [
+                model.addVar(vtype=GRB.CONTINUOUS, name="margin_on_ys"),
+                model.addVar(vtype=GRB.CONTINUOUS, name="margin_on_xs"),
+            ]
 
         model.modelSense = GRB.MAXIMIZE
         model.update()
