@@ -26,6 +26,27 @@ status_to_reason = {
     13: "SUBOPTIMAL",
 }
 
+def gudot(x, z):
+    """
+    :param x: a list of scalars or Gurobi expressions.
+    :param z: a list of scalars or Gurobi expressions.
+    :returns: a Gurobi expression.
+    """
+    assert len(x) == len(z)
+    return grb.quicksum([x[i] * z[i] for i in range(len(x))])
+
+def gubilinear(x, a, z):
+    """
+    :param x: a list of scalars or Gurobi expressions.
+    :param a: a numpy array.
+    :param z: a list of scalars or Gurobi expressions.
+    :returns: a Gurobi expression.
+    """
+    assert len(x) == a.shape[0]
+    assert len(z) == a.shape[1]
+    q = [gudot(a[i], z) for i in range(len(x))]
+    return gudot(x, q)
+
 class Solver(object):
     """Set-margin solver based on the Gurobi MILP solver.
 
@@ -60,6 +81,21 @@ class Solver(object):
         if dataset.x_constraints is not None:
             for body, head in dataset.x_constraints:
                 model.addConstr((1 - x[body]) + grb.quicksum([x[atom] for atom in head]) >= 1)
+
+    def _compose_item(self, dataset, x):
+        """
+        :param dataset:
+        :param x: the Boolean part of an item as a list of Gurobi variables.
+        :returns:
+        """
+        num_reals, num_bools = dataset.num_reals(), dataset.num_bools()
+        item = np.array([x[z].x for z in range(num_bools)])
+        assert item.shape == (num_bools,)
+        if num_reals > 0:
+            item = np.hstack((item, np.dot(dataset.costs, item)))
+        assert item.shape == (num_bools + num_reals,)
+        return item
+
 
     def compute_best_score(self, dataset, user):
         """Returns the highest score for all items the dataset.
