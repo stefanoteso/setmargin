@@ -295,7 +295,7 @@ def run_from_command_line():
                        help="maximum number of iterations")
     group.add_argument("-N", "--max-answers", type=int, default=20,
                        help="number of iterations")
-    group.add_argument("-t", "--tol", type=float, default=1e-4,
+    group.add_argument("-t", "--tol", type=str, default="auto",
                        help="tolerance used for termination")
 
     group = parser.add_argument_group("setmargin hyperparameters")
@@ -330,6 +330,10 @@ def run_from_command_line():
 
     argsdict = vars(args)
     argsdict["dataset"] = args.dataset
+    try:
+        argsdict["tol"] = float(argsdict["tol"])
+    except:
+        pass
 
     config = Grid(argsdict)
 
