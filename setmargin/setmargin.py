@@ -11,7 +11,7 @@ from pprint import pformat
 from util import *
 
 ALL_ALPHAS = list(it.product(
-         [12.0, 11.0, 10.0, 9.0, 8.0],
+         [20.0, 10.0, 5.0, 1.0],
          [10.0, 1.0, 0.1, 0.01],
          [10.0, 1.0, 0.1, 0.01],
 ))
