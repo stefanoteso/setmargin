@@ -43,6 +43,7 @@ def _load_utilities(num_attrs, sampling_mode):
         for line in fp:
             utilities.append(map(float, line.split(",")))
     # XXX turn negative values into zeros
+    utilities = np.array(utilities)
     utilities[utilities < 0] = 0
     return utilities
 
@@ -232,24 +233,24 @@ def run_synthetic():
         "num_trials": 20,
         "max_iterations": 100,
         "max_answers": 100,
-        "sampling_mode": ("uniform", "uniform_sparse", "normal", "normal_sparse"),
+        "sampling_mode": ("uniform_sparse", "normal_sparse", "uniform", "normal"),
         "ranking_mode": ("all_pairs",),
         "is_deterministic": False,
         "is_indifferent": True,
-        "set_size": range(1, 4+1),
+        "set_size": range(2, 4+1),
         "precrossval": False,
         "crossval": True,
         "crossval_set_size": 1,
         "crossval_interval": 5,
         "multimargin": False,
-        "tol": 1e-4,
+        "tol": 1e-2,
         "threads": cpu_count(),
-        "debug": False,
+        "debug": True,
         "seed": 0,
     })
 
     utilities = {}
-    for num_attrs in range(2, 8):
+    for num_attrs in range(3, 6+1):
         domain_sizes = [num_attrs] * num_attrs
         dataset = setmargin.SyntheticDataset(domain_sizes)
 
