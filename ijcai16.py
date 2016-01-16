@@ -42,8 +42,6 @@ def _load_utilities(num_attrs, sampling_mode):
     with open(join("data", "randomUtility", basename), "rb") as fp:
         for line in fp:
             utilities.append(map(float, line.split(",")))
-    # rescale the range from [0,100) to [0,1)
-    utilities = np.array(utilities) / 100.0
     # XXX turn negative values into zeros
     utilities[utilities < 0] = 0
     return utilities
