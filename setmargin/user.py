@@ -10,7 +10,7 @@ class User(object):
 
     The sampling ranges are adapted from those used in [1]_.
 
-    :param domain_sizes: list of domain sizes.
+    :param dataset: the dataset.
     :param sampling_mode: sampling mode. (default: ``"uniform"``)
     :param ranking_mode: ranking mode for set queries. (default: ``"all_pairs"``)
     :param is_deterministic: whether the user is deterministic. (default: ``False``)
@@ -22,37 +22,37 @@ class User(object):
            Preference Elicitation with Pairwise Comparison Queries*, AISTATS
            2010.
     """
-    def __init__(self, domain_sizes, sampling_mode="uniform", ranking_mode="all_pairs",
+    def __init__(self, dataset, sampling_mode="uniform", ranking_mode="all_pairs",
                  is_deterministic=False, is_indifferent=False, w=None,
                  rng=None):
-        self._domain_sizes = domain_sizes
         self.ranking_mode = ranking_mode
         self.is_deterministic = is_deterministic
         self.is_indifferent = is_indifferent
         self._rng = check_random_state(rng)
-        self.w = self._sample(sampling_mode, domain_sizes) if w is None else w
+        self.w = self._sample(dataset, sampling_mode) if w is None else w
 
     def __str__(self):
         return "User({} D={} I={} RM={})".format(self.w, self.is_deterministic,
                                                  self.is_indifferent,
                                                  self.ranking_mode)
 
-    def _sample(self, sampling_mode, domain_sizes, sparsity=0.2):
-        num_attrs = sum(domain_sizes)
+    def _sample(self, dataset, sampling_mode, sparsity=0.2):
+        num_vars = dataset.num_vars()
         if sampling_mode in ("uniform", "uniform_sparse"):
-            w = self._rng.uniform(1, 100, size=num_attrs)
+            w = self._rng.uniform(1, 100, size=num_vars)
         elif sampling_mode in ("normal", "normal_sparse"):
-            w = self._rng.normal(25.0, 25.0 / 3, size=num_attrs)
+            w = self._rng.normal(25.0, 25.0 / 3, size=num_vars)
         else:
             raise ValueError("invalid sampling_mode")
         if sampling_mode.endswith("sparse"):
-            mask, base = np.zeros(w.shape), 0
-            for domain_size in domain_sizes:
+            mask = np.zeros(w.shape)
+            for attr0, attr1 in dataset.get_domain_ranges():
+                domain_size = attr1 - attr0
                 domain_mask = np.zeros(domain_size)
                 num_ones = max(1, int(domain_size * sparsity))
                 domain_mask[:num_ones] = 1
-                mask[base:base+domain_size] = self._rng.permutation(domain_mask)
-                base += domain_size
+                mask[attr0:attr1] = self._rng.permutation(domain_mask)
+            # XXX the cost weights are not masked at all
             w[mask == 0] = 0
         return w.reshape(1, -1)
 

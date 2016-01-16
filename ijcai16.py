@@ -192,7 +192,7 @@ def solve(dataset, config, ws=None):
     users = []
     for i in range(num_users):
         w = None if ws is None else ws[i].reshape(1, -1)
-        user = setmargin.User(dataset.domain_sizes,
+        user = setmargin.User(dataset,
                               sampling_mode=config.sampling_mode,
                               ranking_mode=config.ranking_mode,
                               is_deterministic=config.is_deterministic,
