@@ -98,27 +98,37 @@ class Solver(object):
 
 
     def compute_best_score(self, dataset, user):
-        """Returns the highest score for all items the dataset.
+        """Finds the highest-scoring item in the dataset according to the user.
+
+        The score of an item (including Boolean and real parts) is:
+
+        .. math::
+            score(w,x) = \\langle w_B + C^\\top w_C, x \\rangle
 
         :param dataset: the dataset.
         :param user: the user.
         :returns: the best score and the corresponding best item.
         """
-        num_features = sum(dataset.domain_sizes)
+        num_bools, num_reals = dataset.num_bools(), dataset.num_reals()
 
         model = grb.Model("setmargin_dot")
         model.params.Seed = 0
         model.params.OutputFlag = 0
 
         x = [model.addVar(vtype=GRB.BINARY, name="x_{}".format(z))
-             for z in range(num_features)]
+             for z in range(num_bools)]
 
         model.modelSense = GRB.MAXIMIZE
         model.update()
 
         w = user.w.ravel()
-        model.setObjective(grb.quicksum([w[z] * x[z]
-                                        for z in range(num_features)]))
+        assert w.shape == (num_bools + num_reals,)
+
+        obj = gudot(w[:num_bools], x)
+        if num_reals > 0:
+            assert dataset.costs.shape == (num_reals, num_bools)
+            obj += gubilinear(w[-num_reals:], dataset.costs, x)
+        model.setObjective(obj)
 
         self._add_item_constraints(model, dataset, x)
 
@@ -130,7 +140,8 @@ class Solver(object):
             best_score = model.objVal
         except:
             raise RuntimeError("optimization failed! {}".format(status_to_reason[model.status]))
-        best_item = np.array([var.x for var in x])
+
+        best_item = self._compose_item(dataset, x)
         assert dataset.is_item_valid(best_item)
 
         return best_score, best_item
