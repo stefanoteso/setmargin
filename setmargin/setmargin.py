@@ -73,7 +73,7 @@ def print_answers(queries, hidden_w):
     print "\n".join(message)
 
 def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
-        tol=1e-4, alphas="auto", crossval_interval=5, crossval_set_size=None,
+        tol="auto", alphas="auto", crossval_interval=5, crossval_set_size=None,
         debug=False):
     """Runs the setmargin algorithm.
 
@@ -85,7 +85,8 @@ def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
         (default: ``100``)
     :param max_answers: maximum number of answers to elicit in total.
         (default: ``100``)
-    :param tol: user tolerance, used for termination. (default: ``1e-4``)
+    :param tol: user tolerance, used for termination, or ``"auto"``, in
+        which case user indifference is used instead. (default: ``"auto"``)
     :param alphas: either a triple of non-negative floats, or ``"auto"``,
         in which case the hyperparameters are determined automatically through
         a periodic cross-validation procedure. (default: ``"auto"``)
@@ -193,7 +194,11 @@ def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
 
         # If the user is satisfied (clicks the 'add to cart' button),
         # we are done
-        if loss < tol:
+        if tol == "auto" and user.query_diff(loss) == 0:
+            if debug:
+                print "user indifference reached, terminating"
+            break
+        elif tol != "auto" and loss < tol:
             if debug:
                 print "minimum tolerance reached, terminating"
             break
