@@ -222,6 +222,7 @@ def solve(dataset, config, ws=None):
                              max_iterations=config.max_iterations,
                              max_answers=config.max_answers, tol=config.tol,
                              alphas=alphas, crossval_set_size=config.crossval_set_size,
+                             crossval_interval=config.crossval_interval,
                              debug=config.debug)
         infos.append(info)
     return infos
@@ -239,6 +240,7 @@ def run_synthetic():
         "precrossval": False,
         "crossval": True,
         "crossval_set_size": 1,
+        "crossval_interval": 5,
         "multimargin": False,
         "tol": 1e-4,
         "threads": cpu_count(),
@@ -309,6 +311,8 @@ def run_from_command_line():
                        help="whether to perform automatic hyperparameter crossvalidation. If enabled, -a -b -c are ignored.")
     group.add_argument("-X", "--crossval-set-size", type=int, default=None,
                        help="set_size for the hyperparameter crossvalidation.")
+    group.add_argument("-I", "--crossval-interval", type=int, default=5,
+                       help="crossvalidation interval.")
     group.add_argument("-y", "--precrossval", action="store_true",
                        help="do parameter selection using crossvalidation prior to learning")
     group.add_argument("-M", "--multimargin", action="store_true",
