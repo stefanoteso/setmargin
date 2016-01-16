@@ -10,6 +10,7 @@ from pprint import pformat
 
 from util import *
 
+NUM_FOLDS = 5
 ALL_ALPHAS = list(it.product(
          [20.0, 10.0, 5.0, 1.0],
          [10.0, 1.0, 0.1, 0.01],
@@ -29,9 +30,7 @@ def crossvalidate(dataset, solver, answers, set_size, debug):
         print "crossvalidating..."
     loss_alphas = []
     for alphas in ALL_ALPHAS:
-
-
-        kfold = KFold(len(answers), n_folds=5)
+        kfold = KFold(len(answers), n_folds=NUM_FOLDS)
 
         losses = []
         for train_set, test_set in kfold:
@@ -139,7 +138,7 @@ def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
         old_time = time.time()
 
         # Crossvalidate the hyperparameters if required
-        if do_crossval and t % crossval_interval == 0 and t > 0:
+        if do_crossval and t % crossval_interval == 0 and t >= NUM_FOLDS:
             alphas = crossvalidate(dataset, solver, answers, crossval_set_size,
                                    debug)
 
