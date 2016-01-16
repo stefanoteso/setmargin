@@ -50,37 +50,6 @@ class Solver(object):
             print "dumping model to", fp.name
             model.write(fp.name)
 
-    def _check_best_score(self, dataset, user, best_score, best_item):
-        if dataset.items is None:
-            return
-        if dataset.x_constraints is not None:
-            return
-
-        in_dataset = False
-        for item in dataset.items:
-            in_dataset = in_dataset or (item == best_item).all()
-        assert in_dataset, "best_item not in dataset.items"
-
-        scores = np.dot(user.w.ravel(), dataset.items.T)
-        debug_best_score = np.max(scores)
-        if np.abs(best_score - debug_best_score) > 1e-10:
-            debug_best_item = dataset.items[np.argmax(scores)].ravel()
-            raise RuntimeError(dedent("""\
-                best_score sanity check failed!
-
-                best_score = {}
-                best_item =
-                {}
-
-                debug best_score = {}
-                debug best_item =
-                {}
-
-                all scores =
-                {}
-                """).format(best_score, best_item, debug_best_score,
-                            debug_best_item, scores))
-
     def _add_item_constraints(self, model, dataset, x):
         """Add one-hot and other item constraints."""
         zs_in_domains = get_zs_in_domains(dataset.domain_sizes)
@@ -125,8 +94,8 @@ class Solver(object):
         except:
             raise RuntimeError("optimization failed! {}".format(status_to_reason[model.status]))
         best_item = np.array([var.x for var in x])
+        assert dataset.is_item_valid(best_item)
 
-        self._check_best_score(dataset, user, best_score, best_item)
         return best_score, best_item
 
     def compute_setmargin(self, dataset, answers, set_size, alphas):
