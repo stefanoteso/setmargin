@@ -46,8 +46,10 @@ class Dataset(object):
         return zs_in_domains
 
     def is_item_valid(self, x):
+        if (x < -1e-10).any():
+            return False
         for zs_in_domain in self.get_zs_in_domains():
-            if sum(x[z] for z in zs_in_domain) != 1:
+            if sum(x[zs_in_domain]) != 1:
                 return False
         if self.costs is not None:
             x, c = x[:self.num_bools()], x[self.num_bools():]
