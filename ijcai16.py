@@ -294,7 +294,7 @@ def run_pc(has_costs):
         "seed": 0,
     })
 
-    dataset = PCDataset(has_costs=has_costs)
+    dataset = setmargin.PCDataset(has_costs=has_costs)
 
     for config in CONFIGS.iterate():
 
