@@ -8,8 +8,6 @@ from sklearn.utils import check_random_state
 from textwrap import dedent
 from pprint import pformat
 
-from util import *
-
 NUM_FOLDS = 5
 ALL_ALPHAS = list(it.product(
          [20.0, 10.0, 5.0, 1.0],

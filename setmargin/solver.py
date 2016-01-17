@@ -5,7 +5,6 @@ import tempfile
 import gurobipy as grb
 from gurobipy import GRB
 from textwrap import dedent
-from util import *
 
 MAX_W_Z = 1
 ENABLE_LP_DUMP = False

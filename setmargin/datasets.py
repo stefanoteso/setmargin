@@ -3,7 +3,6 @@
 import numpy as np
 import itertools as it
 from sklearn.utils import check_random_state
-from util import *
 
 class Dataset(object):
     """A dataset over the Cartesian product of all attribute domains.
