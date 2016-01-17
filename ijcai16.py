@@ -399,10 +399,16 @@ def run_from_command_line():
 
 if __name__ == "__main__":
     np.seterr(all="raise")
-    if len(sys.argv) == 1:
-        run_synthetic(False)
-        run_synthetic(True)
-        run_pc(False)
-        run_pc(True)
+    if len(sys.argv) == 2:
+        if sys.argv[1] == "synthetic":
+            run_synthetic(False)
+        elif sys.argv[1] == "synthetic-variance":
+            run_synthetic(True)
+        elif sys.argv[1] == "pc-no-costs":
+            run_pc(False)
+        elif sys.argv[1] == "pc-with-costs":
+            run_pc(True)
+        else:
+            raise ValueError("invalid IJCAI experiment name.")
     else:
         run_from_command_line()
