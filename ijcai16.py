@@ -182,7 +182,7 @@ def precrossvalidate(dataset, config, solver, users):
 
     return best_alphas
 
-def solve(dataset, config, ws=None, num_repeats=1):
+def solve(dataset, config, ws=None):
     rng = np.random.RandomState(config.seed)
 
     solver = setmargin.Solver(multimargin=config.multimargin,
@@ -190,8 +190,8 @@ def solve(dataset, config, ws=None, num_repeats=1):
 
     num_users = config.num_trials if ws is None else ws.shape[0]
 
-    users, i = [], 0
-    while i < num_users:
+    users = []
+    for i in range(num_users):
         w = None if ws is None else ws[i].reshape(1, -1)
         user = setmargin.User(dataset,
                               sampling_mode=config.sampling_mode,
@@ -200,11 +200,12 @@ def solve(dataset, config, ws=None, num_repeats=1):
                               is_indifferent=config.is_indifferent,
                               w=w,
                               rng=rng)
-        print "created user ({} times) =".format(num_repeats)
-        print user
-        users.extend([user] * num_repeats)
-        i += num_repeats
-    assert len(users) == num_users
+        users.append(user)
+
+    if config.debug:
+        print "users ="
+        for user in users:
+            print user
 
     if config.precrossval:
         alphas = precrossvalidate(dataset, config, solver, users)
@@ -267,10 +268,12 @@ def run_synthetic(same_user):
             key = (num_attrs, config.sampling_mode)
             if not key in utilities:
                 utilities[key] = _load_utilities(*key)
-            ws = utilities[key]
 
-            num_repeats = config.num_trials if same_user else 1
-            infos = solve(dataset, config, ws=ws, num_repeats=num_repeats)
+            ws = utilities[key][:config.num_trials]
+            if same_user:
+                ws = np.tile(ws[0], (config.num_trials, 1))
+
+            infos = solve(dataset, config, ws=ws)
             dump_and_draw("synthetic_{}".format(num_attrs), config, infos)
 
 def run_pc_nocost():
