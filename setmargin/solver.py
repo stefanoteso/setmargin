@@ -80,20 +80,6 @@ class Solver(object):
             for body, head in dataset.x_constraints:
                 model.addConstr((1 - x[body]) + grb.quicksum([x[atom] for atom in head]) >= 1)
 
-    def _compose_item(self, dataset, x):
-        """
-        :param dataset:
-        :param x: the Boolean part of an item as a list of Gurobi variables.
-        :returns:
-        """
-        num_reals, num_bools = dataset.num_reals(), dataset.num_bools()
-        item = np.array([x[z].x for z in range(num_bools)])
-        assert item.shape == (num_bools,)
-        if num_reals > 0:
-            item = np.hstack((item, np.dot(dataset.costs, item)))
-        assert item.shape == (num_bools + num_reals,)
-        return item
-
     def compute_best_score(self, dataset, user):
         """Finds the highest-scoring item in the dataset according to the user.
 
@@ -138,7 +124,8 @@ class Solver(object):
         except:
             raise RuntimeError("optimization failed! {}".format(status_to_reason[model.status]))
 
-        best_item = self._compose_item(dataset, x)
+        best_item = np.array([x[z].x for z in range(num_bools)])
+        best_item = dataset.compose_item(best_item)
         assert dataset.is_item_valid(best_item)
 
         return best_score, best_item
@@ -339,8 +326,8 @@ class Solver(object):
 
         full_output_xs = []
         for i in range(set_size):
-            x = [xs[i,z] for z in range(num_bools)]
-            full_output_xs.append(self._compose_item(dataset, x))
+            x = np.array([xs[i,z].x for z in range(num_bools)])
+            full_output_xs.append(dataset.compose_item(x))
         full_output_xs = np.array(full_output_xs)
 
         output_ps = np.zeros((set_size, set_size, num_bools))
