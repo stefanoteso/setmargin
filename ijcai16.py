@@ -276,11 +276,39 @@ def run_synthetic(same_user):
             infos = solve(dataset, config, ws=ws)
             dump_and_draw("synthetic_{}".format(num_attrs), config, infos)
 
-def run_pc_nocost():
-    pass
+def run_pc(has_costs):
+    CONFIGS = Grid({
+        "num_trials": 20,
+        "max_iterations": 100,
+        "max_answers": 100,
+        "sampling_mode": ("uniform_sparse", "normal_sparse", "uniform", "normal"),
+        "ranking_mode": ("all_pairs",),
+        "is_deterministic": False,
+        "is_indifferent": True,
+        "set_size": range(2, 4+1),
+        "precrossval": False,
+        "crossval": True,
+        "crossval_set_size": 1,
+        "crossval_interval": 5,
+        "multimargin": False,
+        "tol": 1e-2,
+        "threads": cpu_count(),
+        "debug": True,
+        "seed": 0,
+    })
 
-def run_pc():
-    pass
+    dataset = PCDataset(has_costs=has_costs)
+
+    for config in CONFIGS.iterate():
+
+        print dedent("""\
+            =====================
+            RUNNING CONFIGURATION
+            {}
+            """).format(pformat(config.asdict()))
+
+        infos = solve(dataset, config)
+        dump_and_draw("pc_with_costs" if has_cost else "pc_no_costs", config, infos)
 
 def run_from_command_line():
     import argparse
@@ -374,7 +402,7 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         run_synthetic(False)
         run_synthetic(True)
-        run_pc_nocost()
-        run_pc()
+        run_pc(False)
+        run_pc(True)
     else:
         run_from_command_line()
