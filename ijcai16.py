@@ -183,25 +183,22 @@ def precrossvalidate(dataset, config, solver, users):
     return best_alphas
 
 def solve(dataset, config, ws=None):
-    rng = np.random.RandomState(config.seed)
-
     solver = setmargin.Solver(multimargin=config.multimargin,
                               threads=config.threads, debug=config.debug)
 
-    num_users = config.num_trials if ws is None else ws.shape[0]
+    rng = np.random.RandomState(config.seed)
 
     users = []
+    num_users = config.num_trials if ws is None else ws.shape[0]
     for i in range(num_users):
         w = None if ws is None else ws[i].reshape(1, -1)
-        user = setmargin.User(dataset,
-                              sampling_mode=config.sampling_mode,
-                              ranking_mode=config.ranking_mode,
-                              is_deterministic=config.is_deterministic,
-                              is_indifferent=config.is_indifferent,
-                              w=w,
-                              rng=rng)
-        users.append(user)
-
+        users.append(setmargin.User(dataset,
+                                    sampling_mode=config.sampling_mode,
+                                    ranking_mode=config.ranking_mode,
+                                    is_deterministic=config.is_deterministic,
+                                    is_indifferent=config.is_indifferent,
+                                    w=w,
+                                    rng=rng))
     if config.debug:
         print "users ="
         for user in users:
