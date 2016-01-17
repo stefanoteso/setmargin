@@ -204,7 +204,7 @@ def solve(dataset, config, ws=None, num_repeats=1):
         print user
         users.extend([user] * num_repeats)
         i += num_repeats
-    assert len(users) == num_users * num_repeats
+    assert len(users) == num_users
 
     if config.precrossval:
         alphas = precrossvalidate(dataset, config, solver, users)
