@@ -6,7 +6,6 @@ import gurobipy as grb
 from gurobipy import GRB
 from textwrap import dedent
 
-MAX_W_Z = 1
 ENABLE_LP_DUMP = False
 
 status_to_reason = {
@@ -160,6 +159,11 @@ class Solver(object):
         num_bools = dataset.num_bools()
         num_reals = dataset.num_reals()
 
+        w_top = np.ones(num_bools)
+        if num_reals > 0:
+            w_top += np.dot(dataset.costs.T, np.ones(num_reals))
+        w_max = np.max(w_top)
+
         model = grb.Model("setmargin")
         model.params.Seed = 0
         if self._threads is not None:
@@ -255,7 +259,7 @@ class Solver(object):
         # Eq. 11
         for i in range(set_size):
             for z in range(num_bools):
-                model.addConstr(ps[i,i,z] <= (MAX_W_Z * xs[i,z]))
+                model.addConstr(ps[i,i,z] <= (w_max * xs[i,z]))
 
         # Eq. 12
         for i in range(set_size):
@@ -266,12 +270,12 @@ class Solver(object):
         for i in range(set_size):
             for j in range(i) + range(i+1, set_size):
                 for z in range(num_bools):
-                    model.addConstr(ps[i,j,z] >= (ws[i,z] - 2 * MAX_W_Z * (1 - xs[j,z])))
+                    model.addConstr(ps[i,j,z] >= (ws[i,z] - 2 * w_max * (1 - xs[j,z])))
 
         # Eq. 15
         for i in range(set_size):
             for z in range(num_bools):
-                model.addConstr(ws[i,z] <= MAX_W_Z)
+                model.addConstr(ws[i,z] <= w_max)
 
         # Eq. 18a
         for i in range(set_size):
