@@ -407,7 +407,7 @@ formulation, we obtain the following mixed-integer linear problem:
     \\
         & \;\; \qquad p^{i,j}_z \ge \max \{ 0, w^{i}_z - w_\text{max}(1 - x^{j}_z) \}
     \\
-        & \;\; \forall \; i \in [k] \;.\; \vw^\bot \le \vw^{i} \le \vw^\top \nonumber
+        & \;\; \forall \; i \in [k] \;.\; \vw^\bot \le \vw^{i} \le \vw^\top \label{eq:wbounds2}
     \\
         & \;\; \forall \; i \in [k] \;.\; \vx^{i} \in \calX_{\text{feasible}} \nonumber
     \\
@@ -418,6 +418,33 @@ formulation, we obtain the following mixed-integer linear problem:
 }
 %
 which can be solved by any suitable MILP solver.
+
+\paragraph{Linearly dependent real attributes.} In many domains of interest,
+items are composed of both Boolean and real-valued attributes, where the latter
+depend entirely on the former. For instance, the price, weight and power
+consumption of a laptop may be modelled as real-valued attributes, and further
+they depend entirely on the choice of components.
+%
+In this setting, item configurations are composed of two parts: $\vx = (\vx_B;\vx_R)$, where $\vx_B$ is
+Boolean and $\vx_R$ is real-valued, and the relation between the two is
+entirely described by a non-negative\footnote{Non-negativity is required for
+the MILP translation to work.\stefano{better explanation please}} cost matrix
+$C\in\bbR^{\text{num costs} \times \text{num bools}}$, such that $\vx_R = C
+\vx_B$.  It is straightforward to extend the MILP formulation to this setting,
+as follows.
+
+First, we rewrite the weight vector as $\vw = (\vw_B;\vw_R)$. The utility becomes
+%
+$$ \langle \vw, \vx \rangle = \langle \vw_B, \vx_B \rangle + \langle \vw_R, C \vx_B \rangle = \langle \vw_B + C^\top \vw_B, \vx_B \rangle $$
+%
+We let $\vv^i := \vw_B^i + C^\top \vv_B^i$, and $q^{ij}_z := (\vw^i_B + C^\top \vw^i_R)_z x^j_z$,
+and substitute them in the MILP problem to $\vw$ and $p^{ij}_z$, respectively.
+All constraints remain the same, except Eq.~\ref{eq:wbounds2}, which must be
+rewritten in terms of $\vv^i$:
+%
+$$ \forall \; i \in [k] \;.\; (\vw_B^\bot + C^\bot \vw_R) \le \vv^i \le (\vw_B^\top + C^\top \vw_R^\top)$$
+
+\stefano{improve please}
 
 \subsection{Set-wise Preference Elicitation}
 
@@ -453,10 +480,6 @@ $\vw^\bot$ are left implicit.}
 \stefano{WRITEME}
 
 The simplest alternative is to query the user $\frac{1}{2}n(n-1)$ pairs.
-
-\paragraph{Generalization to real variables.}
-
-\stefano{WRITEME}
 
 \section{Experiments}
 \label{sec:experiments}
