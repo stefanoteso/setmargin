@@ -95,11 +95,10 @@ class User(object):
         """
         return self.query_diff(np.dot(self.w, xi.T - xj.T))
 
-    def query_set(self, ws, xs, old_best_item):
+    def query_set(self, xs, old_best_item):
         """Queries the user about the provided set of items.
 
         :param user: the user.
-        :param ws: the estimated user preference(s) at the current iteration.
         :param xs: the estimated best item(s) at the current iteration.
         :param old_best_item: the estimated best item at the previous iteration.
         :returns: WRITEME

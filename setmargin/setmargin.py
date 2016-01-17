@@ -144,7 +144,7 @@ def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
         ws, xs = solver.compute_setmargin(dataset, answers, set_size, alphas)
 
         # Update the user answers
-        new_answers, num_queries = user.query_set(ws, xs, old_best_item)
+        new_answers, num_queries = user.query_set(xs, old_best_item)
         num_identical_answers = 0
         for xi, xj, sx in new_answers:
             for zi, zj, sz in answers:
