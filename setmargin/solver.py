@@ -95,7 +95,6 @@ class Solver(object):
         assert item.shape == (num_bools + num_reals,)
         return item
 
-
     def compute_best_score(self, dataset, user):
         """Finds the highest-scoring item in the dataset according to the user.
 
@@ -334,6 +333,12 @@ class Solver(object):
                 output_ws[i,z] = ws[i,z].x
                 output_xs[i,z] = xs[i,z].x
 
+        full_output_xs = []
+        for i in range(set_size):
+            x = [xs[i,z] for z in range(num_bools)]
+            full_output_xs.append(self._compose_item(dataset, x))
+        full_output_xs = np.array(full_output_xs)
+
         output_ps = np.zeros((set_size, set_size, num_bools))
         output_scores = np.zeros((set_size, set_size))
         for i in range(set_size):
@@ -360,6 +365,8 @@ class Solver(object):
             {}
             xs =
             {}
+            full xs =
+            {}
             ps =
             {}
             scores =
@@ -367,13 +374,13 @@ class Solver(object):
             slacks =
             {}
             margins = {}
-            """).format(set_size, output_ws, output_xs, output_ps,
-                        output_scores, output_slacks, output_margins)
+            """).format(set_size, output_ws, output_xs, full_output_xs,
+                        output_ps, output_scores, output_slacks, output_margins)
 
         if any(np.linalg.norm(w) == 0 for w in output_ws):
             print "Warning: null weight vector found!"
 
-        assert all(dataset.is_item_valid(x) for x in output_xs)
+        assert all(dataset.is_item_valid(x) for x in full_output_xs)
 
         debug_scores = np.dot(output_ws, output_xs.T)
         if (np.abs(output_scores - debug_scores) >= 1e-10).any():
@@ -385,4 +392,4 @@ class Solver(object):
                 {}
                 """).format(output_scores, debug_scores)
 
-        return output_ws, output_xs
+        return output_ws, full_output_xs
