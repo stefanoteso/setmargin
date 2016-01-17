@@ -56,6 +56,12 @@ class User(object):
             w[mask == 0] = 0
         return w.reshape(1, -1)
 
+    def utility(self, dataset, x):
+        return np.dot(self.w.ravel(), x)
+
+    def utility_loss(self, dataset, xi, xj):
+        return self.utility(dataset, xi) - self.utility(dataset, xj)
+
     def query_diff(self, diff):
         """Queries the user about a single pairwise choice.
 
