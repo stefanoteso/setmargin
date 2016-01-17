@@ -61,6 +61,13 @@ class Dataset(object):
                     return False
         return True
 
+    def compose_item(self, x):
+        assert x.shape == (self.num_bools(),)
+        if self.num_reals() > 0:
+            x = np.hstack((x, np.dot(self.costs, x)))
+        assert x.shape == (self.num_bools() + self.num_reals(),)
+        return x
+
 class SyntheticDataset(Dataset):
     def __init__(self, domain_sizes):
         super(SyntheticDataset, self).__init__(domain_sizes, None, None)
