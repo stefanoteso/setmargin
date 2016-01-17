@@ -38,9 +38,6 @@ class Dataset(object):
             yield base, base + size
             base += size
 
-    def ground(self):
-        raise NotImplementedError()
-
     def is_item_valid(self, x):
         for zs_in_domain in get_zs_in_domains(self.domain_sizes):
             if sum(x[z] for z in zs_in_domain) != 1:
