@@ -38,8 +38,16 @@ class Dataset(object):
             yield base, base + size
             base += size
 
+    def get_zs_in_domains(self):
+        zs_in_domains, last_z = [], 0
+        for domain_size in self.domain_sizes:
+            assert domain_size > 1
+            zs_in_domains.append(range(last_z, last_z + domain_size))
+            last_z += domain_size
+        return zs_in_domains
+
     def is_item_valid(self, x):
-        for zs_in_domain in get_zs_in_domains(self.domain_sizes):
+        for zs_in_domain in self.get_zs_in_domains():
             if sum(x[z] for z in zs_in_domain) != 1:
                 return False
         if self.costs is not None:

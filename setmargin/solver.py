@@ -74,7 +74,7 @@ class Solver(object):
 
     def _add_item_constraints(self, model, dataset, x):
         """Add one-hot and other item constraints."""
-        zs_in_domains = get_zs_in_domains(dataset.domain_sizes)
+        zs_in_domains = dataset.get_zs_in_domains()
         for zs_in_domain in zs_in_domains:
             model.addConstr(grb.quicksum([x[z] for z in zs_in_domain]) == 1)
 
