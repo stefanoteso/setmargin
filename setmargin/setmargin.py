@@ -58,15 +58,15 @@ def crossvalidate(dataset, solver, answers, set_size, debug):
 
     return alphas
 
-def print_answers(queries, hidden_w):
+def print_answers(user, answers):
     message = ["answers ="]
-    for xi, xj, sign in queries:
+    for xi, xj, sign in answers:
         relation = {-1:"<", 0:"~", 1:">"}[sign]
-        score_xi = np.dot(hidden_w, xi.T)[0]
-        score_xj = np.dot(hidden_w, xj.T)[0]
+        utility_xi = user.utility(xi)
+        utility_xj = user.utility(xj)
         message.append("  {} ({:6.3f}) {} ({:6.3f}) {} -- diff {:6.3f}" \
-                           .format(xi, score_xi, relation, score_xj, xj,
-                                   score_xi - score_xj))
+                           .format(xi, utility_xi, relation, utility_xj, xj,
+                                   utility_xi - utility_xj))
     print "\n".join(message)
 
 def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
@@ -102,6 +102,7 @@ def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
         raise ValueError("crossval_interval must be positive")
 
     best_score, best_item = solver.compute_best_score(dataset, user)
+    assert best_item.shape == (dataset.num_bools(),)
     user_w_norm = np.linalg.norm(user.w.ravel())
 
     if debug:
@@ -131,7 +132,7 @@ def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
             ============
             """).format(t)
 
-            print_answers(answers, user.w)
+            print_answers(user, answers)
 
         old_time = time.time()
 
@@ -141,7 +142,8 @@ def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
                                    debug)
 
         # Solve the set_size=k case
-        ws, xs = solver.compute_setmargin(dataset, answers, set_size, alphas)
+        _, xs = solver.compute_setmargin(dataset, answers, set_size, alphas)
+        assert xs.shape == (set_size, dataset.num_bools())
 
         # Update the user answers
         new_answers, num_queries = user.query_set(xs, old_best_item)
@@ -159,14 +161,15 @@ def run(dataset, user, solver, set_size, max_iterations=100, max_answers=100,
         elapsed = time.time() - old_time
 
         if debug:
-            print_answers(answers, user.w)
+            print_answers(user, answers)
 
         # Solve the set_size=1 case
-        ws, xs = solver.compute_setmargin(dataset, answers, 1, alphas)
+        _, xs = solver.compute_setmargin(dataset, answers, 1, alphas)
+        assert xs.shape == (1, dataset.num_bools())
 
         # Compute the utility loss
-        best_score = np.dot(user.w.ravel(), best_item)
-        pred_score = np.dot(user.w.ravel(), xs[0])
+        best_score = np.dot(user.w.ravel(), dataset.compose_item(best_item))
+        pred_score = np.dot(user.w.ravel(), dataset.compose_item(xs[0]))
         loss = best_score - pred_score
         if debug:
             print dedent("""\
