@@ -188,48 +188,53 @@ WRITEME
 
 \section{Setwise Max-margin Learning}
 
-\stefano{Paolo, feel free to improve the text and especially the citations
-as you see fit.}
+\stefano{Paolo, Andrea, feel free to improve the text and especially the
+citations as you see fit.}
 
-\paragraph{Notation.} We use boldface letters $\vx$ to indicate vectors, and
-calligraphic capital letters $\calX$ for sets. We frequently abbreviate the set
-$\{ x^i \}_{i=1}^n$ as $\{ x^i \}$ whenever the range of the index $i$ is clear
-from the context, and use $[n]$ as a shorthand for the set $\{1, \ldots, n\}$.
-The $\ell_1$ vector norm is denoted by $\|\vx\|_1 := \sum_z |x_z|$.
+\paragraph{Notation.} We use boldface letters $\vx$ to indicate vectors,
+uppercase letters $X$ for matrices, and calligraphic capital letters $\calX$
+for sets. We frequently abbreviate the set $\{ x^i \}_{i=1}^n$ as $\{ x^i \}$
+whenever the range of the index $i$ is clear from the context, and use $[n]$ as
+a shorthand for the set $\{1, \ldots, n\}$. We write $\|\vx\|_1 := \sum_z |x_z|$
+to indicate the $\ell_1$ vector norm, and $\langle \cdot, \cdot \rangle$ to
+denote the usual dot product.
 
 \paragraph{Setting.} We assume to have a multi-attribute feature space $\calX$
 of configurations $\vx = (x_1, \ldots, x_n)$ over $n$ features. For the time
-being we will focus on binary features only, i.e. $x_z\in\{0,1\}$, to keep
-matters simple. This is a common choice for preference elicitation methods,
-e.g.~\cite{guo2010real,viappiani2010optimal}; discrete features are handled by
-means of a simple one-hot encoding. Partial support for continuous features
-will be discussed later on.
+being we will focus on binary features only, i.e. $x_z\in\{0,1\}$ for all
+$z\in[n]$, to keep matters simple. This is a common choice for preference
+elicitation methods~\cite{guo2010real,viappiani2010optimal}; discrete features
+can be handled for instance by means of a simple one-hot encoding. Support for
+linearly dependent continuous features will be discussed later on.
 
-We further assume that the set of {\em feasible} configurations is expressed as
+We further assume that the set of {\em feasible} configurations, denoted by
+$\calX_\text{feasible}$, is expressed as
 a conjunction of linear constraints. This is not a severe restriction:
 arbitrary propositional constraints can be trivially encoded in this setting,
-e.g. the ``Boolean disjunction'' of two binary variables $x_1 \lor x_2$ can be
-rewritten as $x_1 + x_2 \ge 1$. The full set of feasible configurations is
-denoted by $\calX_\text{feasible}$.
+e.g. under the canonical mapping of $True$ to $1$ and $False$ to $0$, the
+Boolean disjunction of two binary variables $x_1 \lor x_2$ can be rewritten as
+$x_1 + x_2 \ge 1$.
 
 In adherence to previous work~\cite{guo2010real,viappiani2010optimal}, we model users by means
 of linear utility functions: the user's preferences are represented by a weight
 vector $\vw\in\bbR^n$, and the utility of a configuration $\vx$ is given by
-$\langle \vw, \vx \rangle = \sum_{z=1}^n w_z x_z$. In the following we
-require all weights to be {\em non-negative} and {\em bounded}: the individual
-weights $w_z$ must fall in a (constant but otherwise arbitrary) interval
+$\langle \vw, \vx \rangle = \sum_{z=1}^n w_z x_z$. In the remainder of the paper we
+require all weights to be {\em non-negative} and {\em bounded}: the per-attribute
+weights $w_z$ must lie in a (constant but otherwise arbitrary) interval
 $[w^\bot_z, w^\top_z]$, with $w^\bot_z \ge 0$. Both requirements are quite
 natural, and enable the translation of our core optimization problem into a
 mixed-integer linear problem (as done in Section~\ref{sec:formulation}).
 
 During learning, the actual weight vector $\vw$ is {\em unknown} to the
 learning system, and must be estimated from pairwise choices elicited from the
-user. The set of examples consists of pairwise comparisons between a more
-preferred configuration $\vy_+$ and a less preferred one $\vy_-$. Each preference
-induces a ranking constraint $\langle \vw, \vy_+ - \vy_- \rangle \ge 0$.
-Details on the actual query selection strategy will be provided in
-Section~\ref{sec:querystrategy}.
-\stefano{add indifference}
+user.  We consider three possible outcomes for a pairwise comparison between
+two configurations $\vx$ and $\vx'$: either $\vx$ is preferred to $\vx'$ (written
+$\vx \succ \vx'$), $\vx'$ is preferred to $\vx$ ($\vx \prec \vx'$), or there is
+no clear preference between the two items ($\vx \approx \vx'$). We write
+$\calD$ to denote the full set of answers elicited from the user. Queries are
+typically selected so as to maximize some measure of informativeness of the
+resulting responses.  Details on our actual query selection strategy will be
+provided in Section~\ref{sec:formulation}.
 
 \subsection{Problem Formulation}
 \label{sec:formulation}
@@ -238,23 +243,34 @@ Section~\ref{sec:querystrategy}.
 the optimization problem, that we do {\em not} aim at solving directly.
 
 In the set-margin approach, the goal is twofold. First, for any given set size
-$k\geq 1$, we want to find a {\em set} of $k$ weight vectors $\vw^{1},
-\ldots, \vw^{k}$, chosen so that all preferences (examples) are satisfied by
-the largest possible margin. This is achieved by translating all binary
-preferences into inequalities of the form $\langle \vw^i, \vy^h_+ - \vy^h_- \rangle
-\geq M$, where $h$ ranges over the examples, and maximizing the margin $M$.
-Non-separable datasets, which occur in practice due to user inconsistency, are
-handled by introducing slack variables. The updated constraints look as follows:
+$k\geq 1$, we want to find a {\em set} of $k$ weight vectors $\vw^{1}, \ldots,
+\vw^{k}$, chosen so that all user-provided preferences are satisfied by the
+largest possible margin (i.e. all weight vector are consistent with respect to
+the user responses $\calD$, modulo inconsistencies) and so that they are
+maximally diverse.  Second, we want to construct a {\em set} of $k$
+configurations $\vx^{1}, \ldots, \vx^{k}$, so that each configuration $\vx^{i}$
+is the ``best'' possible option when evaluated according to the corresponding
+$\vw^{i}$, and consequently maximally diverse as well. These options will be
+later employed to formulate the user queries.
+
+The first goal achieved by translating all pairwise preferences $\calD$ into
+ranking constraints: preferences of the form $\vy^h_+ \succ \vy^h_-$ become
+linear inequalities of the form $\langle \vw^i, \vy^h_+ - \vy^h_- \rangle \geq
+M$, where $M$ is the {\em margin} variable (which we aim at maximizing) and $h$
+ranges over the responses.  Non-separable datasets, which occur in practice due
+to user inconsistency, are handled by introducing slack variables (whose sum we
+aim at minimizing). When augmented with the slacks, the above inequalities take
+the form:
 %
 $$ \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge M - \varepsilon^{i}_h $$
 %
 where $\varepsilon^{i}_h$ is the penalty incurred by weight vector $\vw^{i}$
-for violating the ranking of example $h$.
+for violating the ranking of example $h$. Indifference preferences, i.e.
+$\vy^h_1 \approx \vy^h_2$, are translated as $|\langle \vw^i, \vy^h_1 - \vy^h_2 \rangle| < \varepsilon^i_h$:
+the slack increases with the difference between the estimated utility of the
+two options.
 
-Second, we want to produce a set of $k$ configurations $\vx^{1}, \ldots,
-\vx^{k}$, so that each configuration $\vx^{i}$ is the ``best'' possible
-option when evaluated according to the corresponding $\vw^{i}$. Ideally,
-this requirement would be implemented as:
+Ideally, the second goal would be implemented as:
 %
 $$ \vx^{i} = \argmax_{\vx \in \calX_\text{feasible}} \langle \vw^{i}, \vx^{i} \rangle $$
 %
@@ -302,11 +318,12 @@ weights (third part) and quality of the configurations $\{ \vx^{i} \}$ (last
 part). The non-negative hyperparameters $\alpha,\beta,\gamma$ control the
 influence of the various components.
 
-The third part requires requires some further explanation. We choose an
-$\ell_1$ regularizer in order to facilitate learning {\em sparse} weight
-vectors: it is reasonable to assume that a user will have strong opinions
-over some attributes, but will be indifferent over most of them.
-\stefano{Andrea, improve the above please}
+The third part of the objective does require a more in depth explanation. In
+many scenarios the user will have strong preferences about some attributes, but
+will be indifferent to most of them~\cite{}. The $\ell_1$ penalty is frequently
+used to improve the sparsity of learned models~\cite{}, with consequent gains
+in generalization ability and efficiency, as confirmed by our empirical
+findings (see Section~\ref{sec:experiments}). \stefano{add refs}
 
 The two core constraints as Equations~\ref{eq:wyconstr} and \ref{eq:wxconstr},
 which are taken directly from the discussion above. The former enforces the
@@ -357,8 +374,7 @@ setting the following additional constraints. We distinguish between two cases:
 (i) $p^{i,i}_z$, and (ii) $p^{i,j}_z$ for $i \ne j$.  Recall that we are
 maximizing the margin $M$. Now, due to Eq~\ref{eq:pxconstr}, the optimizer will
 try to keep $p^{i,i}_z$ as large as possible and $p^{i,j}_z$ as small as
-possible. \stefano{this is not necessarily the case, $M$ is bounded by the
-$y$'s as well.}
+possible.
 
 (Case i) We add an explicit upper bound:
 %
@@ -381,7 +397,11 @@ If $x^i_z = 1$ the lower bound simplifies to $\max \{ 0, w^{i}_z \} = w^{i}_z$,
 due to the non-negativity of $w^i_z$. Otherwise, if $x^i_z = 0$
 then the lower bound becomes $\max \{ 0, w^{i}_z - w_\text{max} \}$, where
 the second term is at most $0$. Since $p^{i,j}_z$ is being minimized, in both
-cases it will attain the lower bound, and thus satisfy $p^{i,j}_z = w^i_z x^i_z$.
+cases it will attain the lower bound, and thus satisfy $p^{i,j}_z = w^i_z
+x^i_z$\footnote{Since $M$ is upper-bounded by Eq.~\ref{eq:wyconstr}, in some
+cases the $p^{i,j}_z$ variables do not attain the lower bound. As a
+consequence, the MILP reformulation of Eq.~\ref{eq:wxconstr} is marginally
+inexact. Despite this issue, the MILP formulation acceptably in practice.}.
 
 Substituting the above MILP constraints into the original non-linear
 formulation, we obtain the following mixed-integer linear problem:
@@ -419,51 +439,29 @@ formulation, we obtain the following mixed-integer linear problem:
 %
 which can be solved by any suitable MILP solver.
 
-\paragraph{Linearly dependent real attributes.} In many domains of interest,
-items are composed of both Boolean and real-valued attributes, where the latter
-depend entirely on the former. For instance, the price, weight and power
-consumption of a laptop may be modelled as real-valued attributes, and further
-they depend entirely on the choice of components.
-%
-In this setting, item configurations are composed of two parts: $\vx = (\vx_B;\vx_R)$, where $\vx_B$ is
-Boolean and $\vx_R$ is real-valued, and the relation between the two is
-entirely described by a non-negative\footnote{Non-negativity is required for
-the MILP translation to work.\stefano{better explanation please}} cost matrix
-$C\in\bbR^{\text{num costs} \times \text{num bools}}$, such that $\vx_R = C
-\vx_B$.  It is straightforward to extend the MILP formulation to this setting,
-as follows.
-
-First, we rewrite the weight vector as $\vw = (\vw_B;\vw_R)$. The utility becomes
-%
-$$ \langle \vw, \vx \rangle = \langle \vw_B, \vx_B \rangle + \langle \vw_R, C \vx_B \rangle = \langle \vw_B + C^\top \vw_B, \vx_B \rangle $$
-%
-We let $\vv^i := \vw_B^i + C^\top \vv_B^i$, and $q^{ij}_z := (\vw^i_B + C^\top \vw^i_R)_z x^j_z$,
-and substitute them in the MILP problem to $\vw$ and $p^{ij}_z$, respectively.
-All constraints remain the same, except Eq.~\ref{eq:wbounds2}, which must be
-rewritten in terms of $\vv^i$:
-%
-$$ \forall \; i \in [k] \;.\; (\vw_B^\bot + C^\bot \vw_R) \le \vv^i \le (\vw_B^\top + C^\top \vw_R^\top)$$
-
-\stefano{improve please}
-
-\subsection{Set-wise Preference Elicitation}
-
-\stefano{WRITEME}
-
-See Algorithm~\ref{alg:setmargin}.
+\paragraph{Set-wise max-margin.} The full {\sc SetMargin} algorithm follows the
+usual preference elicitation loop. Starting from an initially empty set of user
+responses $\calD$, it repeatedly solves the MILP problem above using the set
+$\calD$ to enforce ranking constraints on the weight vectors $\{\vw^i\}$. The
+generated configurations $\{\vx^i\}$, which are chosen to be as good as
+possible with respect to the estimated user preferences, and as diverse as
+possible, are then employed to formulate a set of user queries. The new replies
+are added to $\calD$ and the whole procedure is repeated. The algorithm
+terminates after a fixed number of iterations, or once another suitable
+condition is met. The procedure is sketched in Algorithm~\ref{alg:setmargin}.
 
 \begin{algorithm}
 {\footnotesize
 \begin{algorithmic}[1]
     \Procedure{SetMargin}{$k, \alpha, \beta, \gamma, T$}
-        \State $\calQ \gets \emptyset$
+        \State $\calD \gets \emptyset$
         \For{$t = 1, \ldots, T$}
-            \State \{$\vw^{i}, \vx^{i}\}_{i=1}^k \gets \text{{\sc Solve}}(\calQ, k, \alpha, \beta, \gamma)$
+            \State \{$\vw^{i}, \vx^{i}\}_{i=1}^k \gets \text{{\sc Solve}}(\calD, k, \alpha, \beta, \gamma)$
             \For{$\vx^{i},\vx^{j} \in \{ \vx^{1}, \ldots, \vx^{k} \} \; \text{{\bf s.t.}} \; i < j$}
-                \State $\calQ \gets \calQ \cup \text{{\sc QueryUser}}(\vx^{i},\vx^{j})$
+                \State $\calD \gets \calD \cup \text{{\sc QueryUser}}(\vx^{i},\vx^{j})$
             \EndFor
         \EndFor
-        \State $\vw^*, \vx^* \gets \text{{\sc Solve}}(\calQ, 1, \alpha, \beta, \gamma)$
+        \State $\vw^*, \vx^* \gets \text{{\sc Solve}}(\calD, 1, \alpha, \beta, \gamma)$
         \State ${\bf return}\; \vw^*, \vx^*$
     \EndProcedure
 \end{algorithmic}
@@ -474,26 +472,60 @@ number of iterations. The values of $\calX_\text{feasible}$, $\vw^\top$ and
 $\vw^\bot$ are left implicit.}
 \end{algorithm}
 
-\subsection{Query Strategy}
-\label{sec:querystrategy}
+\paragraph{Query selection.} Contrarily to most other preference elicitation
+methods, which generate a single candidate option per iteration, {\sc
+SetMargin} constructs a whole {\em set} of options. We thus can not leverage
+standard query selection strategies \stefano{which ones?}.
 
-\stefano{WRITEME}
+The simplest solution is to query the user about all $k \choose 2$ pairs of
+configurations in $\{\vx^i\}$. Since $k$ is a small constant, the resulting
+number of queries does not grow large in practice.  An appealing alternative
+involves using a modified sorting algorithm, such as merge-sort, to order the
+set $\{\vx^i\}$ by asking only $O(n\log n)$ queries to the user. However, this
+approach is very susceptible to noise: a single inconsistent user response may
+affect all successive comparisons, leading to a cascading effect. While more
+robust strategies may be conceived, empirically we found that the simpler
+quadratic scheme tends to work reasonably well.
 
-The simplest alternative is to query the user $\frac{1}{2}n(n-1)$ pairs.
+\paragraph{Linearly dependent real attributes.} In many domains of interest,
+items are composed of both Boolean and real-valued attributes, where the latter
+depend linearly  on the former. This is for instance the case for the price,
+weight and power consumption of a laptop model, which depend linearly on the
+choice of components.
+%
+In this setting, item configurations are composed of two parts: $\vx =
+(\vx_B;\vx_R)$, where $\vx_B$ is Boolean and $\vx_R$ is real-valued, and the
+relation between the two is entirely described by an appropriately sized
+non-negative cost matrix $C$, such that $\vx_R = C \vx_B$. It is
+straightforward to extend the MILP formulation to this setting, as follows.
+
+First, we rewrite the weight vector as $\vw = (\vw_B;\vw_R)$. The utility
+becomes:
+%
+$$ \langle \vw, \vx \rangle = \langle \vw_B, \vx_B \rangle + \langle \vw_R, C \vx_B \rangle = \langle \vw_B + C^\top \vw_B, \vx_B \rangle $$
+%
+The generalized problem is obtained by substituting $\vw^i$ with $\vv^i := \vw_B^i + C^\top \vv_B^i$ and $p^{i,j}_z$
+with $q^{i,j}_z := (\vw^i_B + C^\top \vw^i_R)_z x^j_z$ in the MILP problem.
+All constraints remain the same, except Eq.~\ref{eq:wbounds2}, which must be
+rewritten in terms of $\vv^i$:
+%
+$$ \forall \; i \in [k] \;.\; (\vw_B^\bot + C^\bot \vw_R) \le \vv^i \le (\vw_B^\top + C^\top \vw_R^\top)$$
+%
+As can be seen, non-negativity of $C$ is required for the weights $\{\vv^i\}$
+to be non-negative.
 
 \section{Experiments}
 \label{sec:experiments}
 
-In this section we provide extensive experimental evaluation of the {\sc
-SetMargin} algorithm. We implemented the {\sc SetMargin} algorithm using
-Python, leveraging Gurobi 6.5.0 as the MILP solver. Both the {\sc SetMargin}
-source code and the full experimental setup are available at \stefano{add URL}.
+We implemented the {\sc SetMargin} algorithm using Python, leveraging Gurobi
+6.5.0 for solving the core MILP problem. Both the {\sc SetMargin} source code
+and the full experimental setup are available at \stefano{add URL}.
 
 We compare {\sc SetMargin} against two strong Bayesian baselines:
 \cite{guo2010real} and \cite{viappiani2010optimal}.
 \stefano{Paolo, could you describe the baselines?}
 
-We adopted the {\em indifference-augmented} Bradley-Torr user response model
+We adopt the {\em indifference-augmented} Bradley-Torr user response model
 introduced in~\cite{guo2010real}. When queried about a pair of configurations,
 the user replies with the true utility of the two items. According to the
 classical Bradley-Torr model, which does not attempt to model {\em indifference},
@@ -514,11 +546,11 @@ The parameters $\alpha$ and $\beta$ were set as in~\cite{guo2010real}. Please
 see the latter for more details
 \stefano{The above does not satisfy me at all.}
 
-In all experiments we use an internal 5-fold cross-validation procedure to update the
-hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5 iterations. The
-hyperparameters are chosen as to minimize the ranking loss over the user
-answers collected so far. $\alpha$ is taken in $\{20, 15, 10, 5, 1\}$,
-while $\beta$ and $\gamma$ are taken in $\{10, 5, 1, 0.5, 0.1\}$.
+In all experiments we use an internal 5-fold cross-validation procedure to
+update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
+iterations. The hyperparameters are chosen as to minimize the ranking loss over
+the user responses collected so far. $\alpha$ is taken in $\{20, 10, 5, 1\}$,
+while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.
 \stefano{explain that we can't turn off $\gamma$}
 
 \paragraph{Synthetic Dataset.} Following the experimental protocol
@@ -540,17 +572,27 @@ The feasible configuration space was encoded in {\sc SetMargin} through
 appropriate MILP constraints, while the other methods required all datasets to
 be explicitly grounded.
 
-Users were simulated by drawing random utility vectors from four different
-distributions. The first two mimic those used in~\cite{guo2010real}: (1) a
-uniform distribution over $[1, 100]$ for each individual weight, and (2) a
-normal distribution with mean $25$ and covariance $\frac{25}{3}$\footnote{This
-procedure differs from the one reported in~\cite{guo2010real}; we opted for
-following the procedure implemented in their code. \stefano{more diplomacy needed}}.
-We further produced two novel {\em sparse} sets of weight vectors by deleting
-$80\%$ of the entries of the vectors sampled in the uniform and normal settings
-uniformly at random \stefano{Paolo, is this correct?}. We sampled $100$
-vectors for each setting. All methods were evaluated on the very same weight
-vectors.
+Users were simulated by drawing $20$ random utility vectors from each of four
+different distributions. The first two mimic those used
+in~\cite{guo2010real}\footnote{The normal distribution reported
+in~\cite{guo2010real} differs slightly from the one implemented in the code of
+their experimental setting. In this paper we use the latter.}:
+(1) a uniform distribution over $[1, 100]$ for each individual weight, and (2)
+a normal distribution with mean $25$ and covariance
+$\frac{25}{3}$.  We further produced two novel
+{\em sparse} sets of weight vectors by deleting $80\%$ of the entries of the
+vectors sampled in the uniform and normal settings uniformly at random
+\stefano{Paolo, is this correct?}. All methods were evaluated on the very same
+weight vectors.
+
+In Figure~\ref{fig:} we plot, for each setting, the behavior of the utility
+loss:
+%
+$$ \left(\max_{\vx\in\calX_\text{feasible}} u(\vx)) - u(\vx^{i}) \right) $$
+%
+varying the number of collected user responses. The thick line is the median
+utility loss taken over all 20 users, while the shaded area represents the
+variance. 
 
 \stefano{plot average utility loss at the increase of dataset size}
 
@@ -740,6 +782,34 @@ WRITEME
     \caption{Results on the synthetic dataset, with crossvalidation every 5 steps. Each row represents a different
     setting: uniform, uniform sparse, normal, normal sparse. Color indicates
     the set size $k$: orange means $k=2$, blue $k=3$, and violet $k=4$.}
+\end{figure}
+
+\begin{figure}[b]
+    \centering
+    \begin{tabular}{cc}
+        {\bf loss} & {\bf time}
+        \\
+        \multicolumn{2}{c}{{\bf uniform sparse (no costs)}}
+        \\
+        \includegraphics[width=12em]{figures/pc_no_costs_uniform_sparse_cv5_loss} &
+        \includegraphics[width=12em]{figures/pc_no_costs_uniform_sparse_cv5_time}
+        \\
+        \multicolumn{2}{c}{{\bf normal sparse (no costs)}}
+        \\
+        \includegraphics[width=12em]{figures/pc_no_costs_normal_sparse_cv5_loss} &
+        \includegraphics[width=12em]{figures/pc_no_costs_normal_sparse_cv5_time}
+        \\
+        \multicolumn{2}{c}{{\bf uniform sparse (with costs)}}
+        \\
+        \includegraphics[width=12em]{figures/pc_with_costs_uniform_sparse_cv5_loss} &
+        \includegraphics[width=12em]{figures/pc_with_costs_uniform_sparse_cv5_time}
+        \\
+        \multicolumn{2}{c}{{\bf normal sparse (with costs)}}
+        \\
+        \includegraphics[width=12em]{figures/pc_with_costs_normal_sparse_cv5_loss} &
+        \includegraphics[width=12em]{figures/pc_with_costs_normal_sparse_cv5_time}
+    \end{tabular}
+    \caption{Results for the PC dataset with and without costs.}
 \end{figure}
 
 \twocolumn
