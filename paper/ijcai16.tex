@@ -624,28 +624,122 @@ WRITEME
 
 \begin{figure}[b]
     \centering
-    \begin{tabular}{ccc}
-        {\bf synthetic 3} & {\bf synthetic 4} & {\bf synthetic 5}
+    \begin{tabular}{cccc}
+        {\bf synthetic 3} & {\bf synthetic 4} & {\bf synthetic 5} & {\bf synthetic 6}
         \\
-        \includegraphics[width=12em]{figures/synthetic_3_uniform} &
-        \includegraphics[width=12em]{figures/synthetic_4_uniform} &
-        \includegraphics[width=12em]{figures/synthetic_5_uniform}
+        \includegraphics[width=12em]{figures/synthetic_3_uniform_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_4_uniform_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_5_uniform_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_6_uniform_cv1_loss}
         \\
-        \includegraphics[width=12em]{figures/synthetic_3_uniform_sparse} &
-        \includegraphics[width=12em]{figures/synthetic_4_uniform_sparse} &
-        \includegraphics[width=12em]{figures/synthetic_5_uniform_sparse}
+        \includegraphics[width=12em]{figures/synthetic_3_uniform_sparse_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_4_uniform_sparse_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_5_uniform_sparse_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_6_uniform_sparse_cv1_loss}
         \\
-        \includegraphics[width=12em]{figures/synthetic_3_normal} &
-        \includegraphics[width=12em]{figures/synthetic_4_normal} &
-        \includegraphics[width=12em]{figures/synthetic_5_normal}
+        \includegraphics[width=12em]{figures/synthetic_3_normal_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_4_normal_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_5_normal_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_6_normal_cv1_loss}
         \\
-        \includegraphics[width=12em]{figures/synthetic_3_normal_sparse} &
-        \includegraphics[width=12em]{figures/synthetic_4_normal_sparse} &
-        \includegraphics[width=12em]{figures/synthetic_5_normal_sparse}
+        \includegraphics[width=12em]{figures/synthetic_3_normal_sparse_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_4_normal_sparse_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_5_normal_sparse_cv1_loss} &
+        \includegraphics[width=12em]{figures/synthetic_6_normal_sparse_cv1_loss}
     \end{tabular}
-    \caption{Results on the synthetic dataset. Each row represents a different
+    \caption{Results on the synthetic dataset, with crossvalidation at each step. Each row represents a different
     setting: uniform, uniform sparse, normal, normal sparse. Color indicates
-    the set size $k$: blue means $k=2$, greed $k=3$, and red $k=4$.}
+    the set size $k$: orange means $k=2$, blue $k=3$, and violet $k=4$.}
+\end{figure}
+
+\begin{figure}[b]
+    \centering
+    \begin{tabular}{cccc}
+        {\bf synthetic 3} & {\bf synthetic 4} & {\bf synthetic 5} & {\bf synthetic 6}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_uniform_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_4_uniform_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_5_uniform_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_6_uniform_cv5_loss}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_uniform_sparse_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_4_uniform_sparse_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_5_uniform_sparse_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_6_uniform_sparse_cv5_loss}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_normal_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_4_normal_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_5_normal_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_6_normal_cv5_loss}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_normal_sparse_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_4_normal_sparse_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_5_normal_sparse_cv5_loss} &
+        \includegraphics[width=12em]{figures/synthetic_6_normal_sparse_cv5_loss}
+    \end{tabular}
+    \caption{Results on the synthetic dataset, with crossvalidation every 5 steps. Each row represents a different
+    setting: uniform, uniform sparse, normal, normal sparse. Color indicates
+    the set size $k$: orange means $k=2$, blue $k=3$, and violet $k=4$.}
+\end{figure}
+
+\begin{figure}[b]
+    \centering
+    \begin{tabular}{cccc}
+        {\bf synthetic 3} & {\bf synthetic 4} & {\bf synthetic 5} & {\bf synthetic 6}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_uniform_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_4_uniform_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_5_uniform_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_6_uniform_cv1_time}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_uniform_sparse_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_4_uniform_sparse_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_5_uniform_sparse_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_6_uniform_sparse_cv1_time}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_normal_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_4_normal_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_5_normal_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_6_normal_cv1_time}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_normal_sparse_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_4_normal_sparse_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_5_normal_sparse_cv1_time} &
+        \includegraphics[width=12em]{figures/synthetic_6_normal_sparse_cv1_time}
+    \end{tabular}
+    \caption{Results on the synthetic dataset, with crossvalidation at each step. Each row represents a different
+    setting: uniform, uniform sparse, normal, normal sparse. Color indicates
+    the set size $k$: orange means $k=2$, blue $k=3$, and violet $k=4$.}
+\end{figure}
+
+\begin{figure}[b]
+    \centering
+    \begin{tabular}{cccc}
+        {\bf synthetic 3} & {\bf synthetic 4} & {\bf synthetic 5} & {\bf synthetic 6}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_uniform_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_4_uniform_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_5_uniform_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_6_uniform_cv5_time}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_uniform_sparse_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_4_uniform_sparse_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_5_uniform_sparse_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_6_uniform_sparse_cv5_time}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_normal_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_4_normal_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_5_normal_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_6_normal_cv5_time}
+        \\
+        \includegraphics[width=12em]{figures/synthetic_3_normal_sparse_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_4_normal_sparse_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_5_normal_sparse_cv5_time} &
+        \includegraphics[width=12em]{figures/synthetic_6_normal_sparse_cv5_time}
+    \end{tabular}
+    \caption{Results on the synthetic dataset, with crossvalidation every 5 steps. Each row represents a different
+    setting: uniform, uniform sparse, normal, normal sparse. Color indicates
+    the set size $k$: orange means $k=2$, blue $k=3$, and violet $k=4$.}
 \end{figure}
 
 \twocolumn
