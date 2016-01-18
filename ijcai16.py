@@ -307,10 +307,13 @@ def run_pc(has_costs):
         infos = solve(dataset, config)
         dump_and_draw("pc_with_costs" if has_cost else "pc_no_costs", config, infos)
 
-def run_from_command_line():
+def main():
     import argparse
 
+    np.seterr(all="raise")
+
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("command", type=str, help="run")
     parser.add_argument("dataset", type=str, help="dataset")
     parser.add_argument("-T", "--num_trials", type=int, default=20,
                         help="number of trials")
@@ -362,7 +365,21 @@ def run_from_command_line():
 
     args = parser.parse_args()
 
+    if args.command == "run-synthetic":
+        run_synthetic(False)
+    elif args.command == "run-synthetic-variance":
+        run_synthetic(True)
+    elif args.command == "run-pc-no-costs":
+        run_pc(False)
+    elif args.command == "run-pc-with-costs":
+        run_pc(True)
+    elif args.command == "run":
+        pass
+    else:
+        raise ValueError("invalid IJCAI experiment name.")
+
     argsdict = vars(args)
+    del argsdict["command"]
     argsdict["dataset"] = args.dataset
     try:
         argsdict["tol"] = float(argsdict["tol"])
@@ -395,17 +412,4 @@ def run_from_command_line():
     dump_and_draw(dataset_name, config, infos)
 
 if __name__ == "__main__":
-    np.seterr(all="raise")
-    if len(sys.argv) == 2:
-        if sys.argv[1] == "synthetic":
-            run_synthetic(False)
-        elif sys.argv[1] == "synthetic-variance":
-            run_synthetic(True)
-        elif sys.argv[1] == "pc-no-costs":
-            run_pc(False)
-        elif sys.argv[1] == "pc-with-costs":
-            run_pc(True)
-        else:
-            raise ValueError("invalid IJCAI experiment name.")
-    else:
-        run_from_command_line()
+    main()
