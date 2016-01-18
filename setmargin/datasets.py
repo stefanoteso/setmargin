@@ -100,7 +100,7 @@ class DebugConstraintDataset(Dataset):
 class DebugCostDataset(Dataset):
     def __init__(self, domain_sizes, num_costs=2, rng=None):
         rng = check_random_state(rng)
-        costs = rng.uniform(-1, 1, size=(num_costs, sum(domain_sizes)))
+        costs = rng.uniform(0, 1, size=(num_costs, sum(domain_sizes)))
         super(DebugCostDataset, self).__init__(domain_sizes, costs, None)
 
 class PCDataset(Dataset):
@@ -138,8 +138,8 @@ class PCDataset(Dataset):
         self.domain_of = domain_of
 
         costs_of = {
-            "Manufacturer": [100, 0, 100, 50, 0, 0, 50, 50],
-            "CPU": map(int, [
+            "Manufacturer": map(float, [100, 0, 100, 50, 0, 0, 50, 50]),
+            "CPU": [
                 # AMD Athlon
                 1.4*100, 1.4*130,
                 # AMD Duron
@@ -156,31 +156,33 @@ class PCDataset(Dataset):
                 1.4*27, 1.4*30, 1.4*40, 1.4*45, 1.4*50, 1.4*55, 1.4*60, 1.4*70,
                 # PowerPC G4
                 1.6*70, 1.6*73
-            ]),
-            "Monitor": [
+            ],
+            "Monitor": map(float, [
                 0.6*100, 0.6*104, 0.6*120, 0.6*133, 0.6*140, 0.6*150, 0.6*170,
                 0.6*210
-            ],
-            "Type": [80, 0, 120],
+            ]),
+            "Type": map(float, [50, 0, 80]),
             "Memory": [
                 0.8*64, 0.8*128, 0.8*160, 0.8*192, 0.8*256, 0.8*320, 0.8*384,
                 0.8*512, 0.8*1024, 0.8*2048
             ],
-            "HDSize": [
+            "HDSize": map(float, [
                 4*8, 4*10, 4*12, 4*15, 4*20, 4*30, 4*40, 4*60, 4*80, 4*120
-            ],
+            ]),
         }
 
         self.attributes = sorted(domain_of.keys())
 
         domain_sizes = [len(domain_of[attr]) for attr in self.attributes]
 
-        cost = []
+        cost, max_cost = [], 0.0
         assert len(domain_of) == len(costs_of)
         for attr in self.attributes:
             assert len(domain_of[attr]) == len(costs_of[attr])
-            cost.extend(costs_of[attr])
-        costs = np.array([cost])
+            costs_for_attr = np.array(costs_of[attr])
+            max_cost += max(costs_for_attr)
+            cost.extend(costs_for_attr)
+        costs = np.array([cost]) / max_cost
 
         x_constraints = []
 
