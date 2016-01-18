@@ -14,12 +14,6 @@ from multiprocessing import cpu_count
 
 import setmargin
 
-ALL_ALPHAS = list(product(
-         [100.0, 20.0, 15.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.5, 5.0, 1.0],
-         [20.0, 10.0, 5.0, 1.0, 0.5, 0.1, 0.05, 0.01],
-         [20.0, 10.0, 5.0, 1.0, 0.5, 0.1, 0.05, 0.01],
-))
-
 class Grid(object):
     def __init__(self, d):
         self.__dict__.update(d)
@@ -146,42 +140,6 @@ def dump_and_draw(dataset_name, config, infos):
     del fig
     del ax
 
-def precrossvalidate(dataset, config, solver, users):
-    """Use the last 20 users for parameter selection."""
-    target_users = users[len(users) - 20:]
-    assert len(target_users) == 20
-
-    loss_alphas = []
-    for alphas in ALL_ALPHAS:
-
-        print "pre-crossvalidating", alphas
-
-        kfold = KFold(len(target_users), n_folds=5)
-
-        losses = []
-        for train_set, test_set in kfold:
-
-            for i in train_set:
-                infos = setmargin.run(dataset, target_users[i], solver,
-                                      config.set_size, alphas=alphas,
-                                      max_iterations=config.max_iterations,
-                                      max_answers=config.max_answers,
-                                      tol=config.tol, debug=config.debug)
-                # XXX we only consider the true utility loss at the last
-                # iteration
-                losses.append(infos[-1][1])
-
-        loss_alphas.append((sum(losses) / len(losses), alphas))
-
-    loss_alphas = sorted(loss_alphas)
-    best_alphas = loss_alphas[0][1]
-
-    print "pre-crossvalidation: best alphas = ", alphas
-    for loss, alphas in loss_alphas:
-        print alphas, ":", loss
-
-    return best_alphas
-
 def solve(dataset, config, ws=None):
     solver = setmargin.Solver(multimargin=config.multimargin,
                               threads=config.threads, debug=config.debug)
@@ -204,8 +162,6 @@ def solve(dataset, config, ws=None):
         for user in users:
             print user
 
-    if config.precrossval:
-        alphas = precrossvalidate(dataset, config, solver, users)
     if config.crossval:
         alphas = "auto"
     else:
@@ -238,7 +194,6 @@ def run_synthetic(same_user):
         "is_deterministic": False,
         "is_indifferent": True,
         "set_size": range(2, 4+1),
-        "precrossval": False,
         "crossval": True,
         "crossval_set_size": 1,
         "crossval_interval": 5,
@@ -283,7 +238,6 @@ def run_pc(has_costs):
         "is_deterministic": False,
         "is_indifferent": True,
         "set_size": range(2, 4+1),
-        "precrossval": False,
         "crossval": True,
         "crossval_set_size": 1,
         "crossval_interval": 5,
@@ -348,8 +302,6 @@ def main():
                        help="set_size for the hyperparameter crossvalidation.")
     group.add_argument("-I", "--crossval-interval", type=int, default=5,
                        help="crossvalidation interval.")
-    group.add_argument("-y", "--precrossval", action="store_true",
-                       help="do parameter selection using crossvalidation prior to learning")
     group.add_argument("-M", "--multimargin", action="store_true",
                        help="whether the example and generated object margins should be independent")
 
