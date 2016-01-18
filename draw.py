@@ -14,53 +14,68 @@ if len(sys.argv) != 3:
 fontP = FontProperties()
 fontP.set_size('small')
 
-fig, ax = plt.subplots(1, 1)
-ax.set_xlabel("Number of queries")
-ax.set_ylabel("Average loss over trials")
+figs, axs = {}, {}
 
-paths = sorted(glob(os.path.join(sys.argv[1], "results_*_loss_matrix.txt")))
+figs[True], axs[True] = plt.subplots(1, 1)
+axs[True].set_xlabel("Number of queries")
+axs[True].set_ylabel("Average loss per answer")
+
+figs[False], axs[False] = plt.subplots(1, 1)
+axs[False].set_xlabel("Number of queries")
+axs[False].set_ylabel("Average time per answer (in seconds)")
+
+paths = sorted(glob(os.path.join(sys.argv[1], "results_*_matrix.txt")))
 
 # Colors taken from http://tango.freedesktop.org/Tango_Icon_Theme_Guidelines
 COLOR_OF = {
-#    ("#EDD400", "#FCE94F"), # yellow
-    2: ("#CE5C00", "#F57900"), # orange
-#    ("#4E9A06", "#73D216"), # green
-    3: ("#204A87", "#3465A4"), # blue
-#    ("#5C3566", "#75507B"), # violet
-#    2: ("#A40000", "#CC0000"), # red
+    2: ("#CE5C00", "#F57900"),
+    3: ("#204A87", "#3465A4"),
+    4: ("#5C3566", "#75507B"),
 }
 
-max_max_x = 0
-max_max_y = 0
+max_max = {}
 for path in paths:
     parts = os.path.basename(path).split("__")
     set_size = int(parts[1].split("=")[1])
-    if not set_size in (2, 3):
+    if not set_size in (2, 3, 4):
         continue
+    is_loss = parts[-1].split("_")[1] == "loss"
 
-    loss_matrix = np.loadtxt(path)
-    if loss_matrix.shape[1] > 100:
-        loss_matrix = loss_matrix[:,:100]
-    num_trials, max_queries = loss_matrix.shape
+    matrix = np.loadtxt(path)
+    if matrix.shape[1] > 100:
+        matrix = matrix[:,:100]
+    num_trials, max_queries = matrix.shape
 
     xs = np.arange(max_queries)
-    ys = np.median(loss_matrix, axis=0)
-    yerrs = np.std(loss_matrix, axis=0)
-
-    if max_queries > max_max_x:
-        max_max_x = max_queries
+    ys = np.median(matrix, axis=0)
+    yerrs = np.std(matrix, axis=0)
     max_y = max(ys + yerrs)
-    if max_y > max_max_y:
-        max_max_y = max_y
+
+    key = (is_loss, "x")
+    if not key in max_max or max_queries > max_max[key]:
+        max_max[key] = max_queries
+
+    key = (is_loss, "y")
+    if not key in max_max or max_y > max_max[key]:
+        max_max[key] = max_y
 
     fg, bg = COLOR_OF[set_size]
 
+    ax = axs[is_loss]
     ax.plot(xs, ys, "k-", linewidth=2.0, color=fg)
     ax.fill_between(xs, ys - yerrs, ys + yerrs, color=bg, alpha=0.35, linewidth=0)
 
+for is_loss in (True, False):
+    try:
+        max_max_y = max(100 if is_loss else 1.0, max_max[(is_loss, "y")] + 0.1)
 
-max_max_y = max(0.5, max_max_y + 0.1)
-ax.set_xticks(np.arange(0, max_max_x, 10))
-ax.set_yticks(np.arange(0, max(0.5, max_max_y + 0.1), 0.1))
-ax.set_ylim([0.0, max_max_y])
-fig.savefig(sys.argv[2], bbox_inches="tight")
+        ax = axs[is_loss]
+        ax.set_xlim([0.0, max_max[(is_loss, "x")]])
+        ax.set_xticks(np.arange(0, max_max[(is_loss, "x")], 10))
+        ax.set_ylim([0.0, max_max_y])
+        ax.set_yticks(np.arange(0, max_max_y, 10))
+    except:
+        pass
+
+    path = sys.argv[2] + ("_loss" if is_loss else "_time") + ".png"
+    figs[is_loss].savefig(path, bbox_inches="tight")
