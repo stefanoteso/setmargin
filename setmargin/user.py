@@ -25,19 +25,20 @@ class User(object):
     def __init__(self, dataset, sampling_mode="uniform", ranking_mode="all_pairs",
                  is_deterministic=False, is_indifferent=False, w=None,
                  rng=None):
+        self.dataset = dataset
         self.ranking_mode = ranking_mode
         self.is_deterministic = is_deterministic
         self.is_indifferent = is_indifferent
         self._rng = check_random_state(rng)
-        self.w = self._sample(dataset, sampling_mode) if w is None else w
+        self.w = self._sample(sampling_mode) if w is None else w
 
     def __str__(self):
         return "User({} D={} I={} RM={})".format(self.w, self.is_deterministic,
                                                  self.is_indifferent,
                                                  self.ranking_mode)
 
-    def _sample(self, dataset, sampling_mode, sparsity=0.2):
-        num_vars = dataset.num_vars()
+    def _sample(self, sampling_mode, sparsity=0.2):
+        num_vars = self.dataset.num_vars()
         if sampling_mode in ("uniform", "uniform_sparse"):
             w = self._rng.uniform(1, 100, size=num_vars)
         elif sampling_mode in ("normal", "normal_sparse"):
@@ -46,7 +47,7 @@ class User(object):
             raise ValueError("invalid sampling_mode")
         if sampling_mode.endswith("sparse"):
             mask = np.zeros(w.shape)
-            for attr0, attr1 in dataset.get_domain_ranges():
+            for attr0, attr1 in self.dataset.get_domain_ranges():
                 domain_size = attr1 - attr0
                 domain_mask = np.zeros(domain_size)
                 num_ones = max(1, int(domain_size * sparsity))
@@ -55,12 +56,6 @@ class User(object):
             # XXX the cost weights are not masked at all
             w[mask == 0] = 0
         return w.reshape(1, -1)
-
-    def utility(self, dataset, x):
-        return np.dot(self.w.ravel(), x)
-
-    def utility_loss(self, dataset, xi, xj):
-        return self.utility(dataset, xi) - self.utility(dataset, xj)
 
     def query_diff(self, diff):
         """Queries the user about a single pairwise choice.
@@ -85,6 +80,10 @@ class User(object):
             return 1
         return -1
 
+    def utility(self, x):
+        assert x.shape == (self.dataset.num_bools(),)
+        return np.dot(self.w.ravel(), self.dataset.compose_item(x))
+
     def query(self, xi, xj):
         """Queries the user about a single pairwise choice.
 
@@ -93,7 +92,7 @@ class User(object):
         :returns: 0 if the user is indifferent, 1 if xi is better than xj,
             and -1 if xi is worse than xj.
         """
-        return self.query_diff(np.dot(self.w, xi.T - xj.T))
+        return self.query_diff(self.utility(xi) - self.utility(xj))
 
     def query_set(self, xs, old_best_item):
         """Queries the user about the provided set of items.
@@ -106,6 +105,7 @@ class User(object):
         num_items, num_features = xs.shape
 
         if num_items == 1:
+            raise NotImplementedError("very lightly tested")
             if old_best_item is None:
                 old_best_item = self._rng.random_integers(0, 1, size=(num_features,))
             answers = [(xs[0], old_best_item, self.query(xs[0], old_best_item))]
@@ -140,7 +140,7 @@ class User(object):
         return answers, num_queries
 
     def quicksort(self, xs, answers):
-        raise NotImplementedError("very roughly tested")
+        raise NotImplementedError("very lightly tested")
         lt, eq, gt = [], [], []
         if len(xs) > 1:
             pivot = xs[0]
