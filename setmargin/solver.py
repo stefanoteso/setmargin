@@ -8,7 +8,7 @@ from textwrap import dedent
 
 ENABLE_LP_DUMP = False
 
-status_to_reason = {
+STATUS_TO_REASON = {
     1: "LOADED",
     2: "OPTIMAL",
     3: "INFEASIBLE",
@@ -24,7 +24,7 @@ status_to_reason = {
     13: "SUBOPTIMAL",
 }
 
-def gudot(x, z):
+def _gudot(x, z):
     """
     :param x: a list of scalars or Gurobi expressions.
     :param z: a list of scalars or Gurobi expressions.
@@ -33,7 +33,7 @@ def gudot(x, z):
     assert len(x) == len(z)
     return grb.quicksum([x[i] * z[i] for i in range(len(x))])
 
-def gubilinear(x, a, z):
+def _gubilinear(x, a, z):
     """
     :param x: a list of scalars or Gurobi expressions.
     :param a: a numpy array.
@@ -42,8 +42,8 @@ def gubilinear(x, a, z):
     """
     assert len(x) == a.shape[0]
     assert len(z) == a.shape[1]
-    q = [gudot(a[i], z) for i in range(len(x))]
-    return gudot(x, q)
+    q = [_gudot(a[i], z) for i in range(len(x))]
+    return _gudot(x, q)
 
 class Solver(object):
     """Set-margin solver based on the Gurobi MILP solver.
@@ -71,9 +71,13 @@ class Solver(object):
             model.write(fp.name)
 
     def _add_item_constraints(self, model, dataset, x):
-        """Add one-hot and other item constraints."""
-        zs_in_domains = dataset.get_zs_in_domains()
-        for zs_in_domain in zs_in_domains:
+        """Add one-hot and Horn item constraints.
+
+        :param model: the Gurobi model.
+        :param dataset: the dataset.
+        :param x: a list of Guorbi expressions.
+        """
+        for zs_in_domain in dataset.get_zs_in_domains():
             model.addConstr(grb.quicksum([x[z] for z in zs_in_domain]) == 1)
 
         if dataset.x_constraints is not None:
@@ -90,7 +94,7 @@ class Solver(object):
 
         :param dataset: the dataset.
         :param user: the user.
-        :returns: the best score and the corresponding best item.
+        :returns: the best score and the corresponding best bool item.
         """
         num_bools, num_reals = dataset.num_bools(), dataset.num_reals()
 
@@ -107,10 +111,10 @@ class Solver(object):
         w = user.w.ravel()
         assert w.shape == (num_bools + num_reals,)
 
-        obj = gudot(w[:num_bools], x)
+        obj = _gudot(w[:num_bools], x)
         if num_reals > 0:
             assert dataset.costs.shape == (num_reals, num_bools)
-            obj += gubilinear(w[-num_reals:], dataset.costs, x)
+            obj += _gubilinear(w[-num_reals:], dataset.costs, x)
         model.setObjective(obj)
 
         self._add_item_constraints(model, dataset, x)
@@ -122,11 +126,10 @@ class Solver(object):
             model.optimize()
             best_score = model.objVal
         except:
-            raise RuntimeError("optimization failed! {}".format(status_to_reason[model.status]))
+            raise RuntimeError("optimization failed! {}".format(STATUS_TO_REASON[model.status]))
 
         best_item = np.array([x[z].x for z in range(num_bools)])
-        best_item = dataset.compose_item(best_item)
-        assert dataset.is_item_valid(best_item)
+        assert dataset.is_item_valid(dataset.compose_item(best_item))
 
         return best_score, best_item
 
@@ -137,7 +140,8 @@ class Solver(object):
         :param answers: the known user pairwise preferences.
         :param set_size: how many distinct solutions to look for.
         :param alphas: hyperparameters.
-        :returns: the value of the optimal ws, xs, scores, slacks and margin.
+        :returns: the value of the optimal ws, bool xs, scores, slacks and
+            margin.
         """
         if not len(alphas) == 3 or not all([alpha >= 0 for alpha in alphas]):
             raise ValueError("invalid hyperparameters '{}'".format(alphas))
@@ -223,6 +227,8 @@ class Solver(object):
         for i in range(set_size):
             for k in range(num_examples):
                 x1, x2, ans = answers[k]
+                assert x1.shape == (num_bools,)
+                assert x2.shape == (num_bools,)
                 assert ans in (-1, 0, 1)
 
                 diff = x1 - x2 if ans >= 0 else x2 - x1
@@ -314,7 +320,7 @@ class Solver(object):
                 set_size = {}
                 status = {}
                 alphas = {}
-                """).format(answers, set_size, status_to_reason[model.status], temp)
+                """).format(answers, set_size, STATUS_TO_REASON[model.status], temp)
             raise RuntimeError(message)
 
         output_ws = np.zeros((set_size, num_bools))
@@ -324,11 +330,9 @@ class Solver(object):
                 output_ws[i,z] = ws[i,z].x
                 output_xs[i,z] = xs[i,z].x
 
-        full_output_xs = []
         for i in range(set_size):
             x = np.array([xs[i,z].x for z in range(num_bools)])
-            full_output_xs.append(dataset.compose_item(x))
-        full_output_xs = np.array(full_output_xs)
+            assert dataset.is_item_valid(dataset.compose_item(x))
 
         output_ps = np.zeros((set_size, set_size, num_bools))
         output_scores = np.zeros((set_size, set_size))
@@ -356,8 +360,6 @@ class Solver(object):
             {}
             xs =
             {}
-            full xs =
-            {}
             ps =
             {}
             scores =
@@ -365,13 +367,11 @@ class Solver(object):
             slacks =
             {}
             margins = {}
-            """).format(set_size, output_ws, output_xs, full_output_xs,
-                        output_ps, output_scores, output_slacks, output_margins)
+            """).format(set_size, output_ws, output_xs, output_ps,
+                        output_scores, output_slacks, output_margins)
 
         if any(np.linalg.norm(w) == 0 for w in output_ws):
             print "Warning: null weight vector found!"
-
-        assert all(dataset.is_item_valid(x) for x in full_output_xs)
 
         debug_scores = np.dot(output_ws, output_xs.T)
         if (np.abs(output_scores - debug_scores) >= 1e-10).any():
@@ -383,4 +383,4 @@ class Solver(object):
                 {}
                 """).format(output_scores, debug_scores)
 
-        return output_ws, full_output_xs
+        return output_ws, output_xs
