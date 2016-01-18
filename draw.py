@@ -47,8 +47,10 @@ for path in paths:
     num_trials, max_queries = matrix.shape
 
     xs = np.arange(max_queries)
-    ys = np.median(matrix, axis=0)
     yerrs = np.std(matrix, axis=0)
+    if not is_loss:
+        matrix = matrix.cumsum(axis=1)
+    ys = np.median(matrix, axis=0)
     max_y = max(ys + yerrs)
 
     key = (is_loss, "x")
