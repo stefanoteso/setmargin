@@ -1,83 +1,115 @@
 #!/usr/bin/env python2
 
 import sys, os
+import cPickle as pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
-import itertools as it
 from glob import glob
-
-if len(sys.argv) != 3:
-    print "Usage: {} <results directory> <output image>".format(sys.argv[0])
-    sys.exit(1)
-
-fontP = FontProperties()
-fontP.set_size('small')
-
-figs, axs = {}, {}
-
-figs[True], axs[True] = plt.subplots(1, 1)
-axs[True].set_xlabel("Number of queries")
-axs[True].set_ylabel("Average loss per answer")
-
-figs[False], axs[False] = plt.subplots(1, 1)
-axs[False].set_xlabel("Number of queries")
-axs[False].set_ylabel("Average time per answer (in seconds)")
-
-paths = sorted(glob(os.path.join(sys.argv[1], "results_*_matrix.txt")))
 
 # Colors taken from http://tango.freedesktop.org/Tango_Icon_Theme_Guidelines
 COLOR_OF = {
     2: ("#CE5C00", "#F57900"),
     3: ("#204A87", "#3465A4"),
-    4: ("#5C3566", "#75507B"),
+#    4: ("#5C3566", "#75507B"),
+    4: ("#4E9A06", "#73D216"),
 }
 
-max_max = {}
-for path in paths:
-    parts = os.path.basename(path).split("__")
-    set_size = int(parts[1].split("=")[1])
-    if not set_size in (2, 3, 4):
-        continue
-    is_loss = parts[-1].split("_")[1] == "loss"
+def infos_to_matrices(infos, elongate=True):
+    num_trials = len(infos)
+    max_queries = max([sum(n for n, _, _ in info) for info in infos])
+    max_iterations = max(len(info) for info in infos)
 
-    matrix = np.loadtxt(path)
-    if matrix.shape[1] > 100:
-        matrix = matrix[:,:100]
-    num_trials, max_queries = matrix.shape
+    if elongate:
+        loss_matrix = np.zeros((num_trials, max_queries))
+        time_matrix = np.zeros((num_trials, max_queries))
+    else:
+        loss_matrix = np.zeros((num_trials, max_iterations))
+        time_matrix = np.zeros((num_trials, max_iterations))
 
-    xs = np.arange(max_queries)
-    yerrs = np.std(matrix, axis=0)
-    if not is_loss:
-        matrix = matrix.cumsum(axis=1)
-    ys = np.median(matrix, axis=0)
-    max_y = max(ys + yerrs)
+    for trial, info in enumerate(infos):
+        base = 0
+        prev_loss = max(max(l for _, l, _ in info) for info in infos)
+        for iteration, (num_queries, loss, time) in enumerate(info):
+            if elongate:
+                for j in range(num_queries):
+                    alpha = 1 - (j + 1) / float(num_queries)
+                    interpolated_loss = alpha*prev_loss + (1 - alpha)*loss
+                    loss_matrix[trial, base+j] = interpolated_loss
+                    time_matrix[trial, base+j] = time / num_queries
+                base += num_queries
+                prev_loss = loss
+            else:
+                loss_matrix[trial,iteration] = loss
+                time_matrix[trial,iteration] = time
 
-    key = (is_loss, "x")
-    if not key in max_max or max_queries > max_max[key]:
-        max_max[key] = max_queries
+    return max_queries if elongate else max_iterations, loss_matrix, time_matrix
 
-    key = (is_loss, "y")
-    if not key in max_max or max_y > max_max[key]:
-        max_max[key] = max_y
+def draw(paths, dest_path):
+    loss_fig, loss_ax = plt.subplots(1, 1)
+    time_fig, time_ax = plt.subplots(1, 1)
 
-    fg, bg = COLOR_OF[set_size]
+    max_max_x = None
+    max_loss_max_y = None
+    max_time_max_y = None
+    for path in paths:
+        with open(path, "rb") as fp:
+            infos = pickle.load(fp)
 
-    ax = axs[is_loss]
-    ax.plot(xs, ys, "k-", linewidth=2.0, color=fg)
-    ax.fill_between(xs, ys - yerrs, ys + yerrs, color=bg, alpha=0.35, linewidth=0)
+        max_x, loss_matrix, time_matrix = infos_to_matrices(infos, elongate=False)
 
-for is_loss in (True, False):
+        xs = np.arange(max_x)
+        if max_max_x is None or max_max_x < max_x:
+            max_max_x = max_x
+
+        loss_ys = np.median(loss_matrix, axis=0)
+        loss_yerrs = np.std(loss_matrix, axis=0) / np.sqrt(loss_matrix.shape[0])
+        loss_max_y = max(loss_ys + loss_yerrs)
+        if max_loss_max_y is None or max_loss_max_y < loss_max_y:
+            max_loss_max_y = loss_max_y
+
+        time_ys = np.median(time_matrix.cumsum(axis=1), axis=0)
+        time_yerrs = np.std(time_matrix.cumsum(axis=1), axis=0) / np.sqrt(loss_matrix.shape[0])
+        time_max_y = max(time_ys + time_yerrs)
+        if max_time_max_y is None or max_time_max_y < time_max_y:
+            max_time_max_y = time_max_y
+
+        parts = os.path.basename(path).split("__")
+        set_size = int(parts[1].split("=")[1])
+        fg, bg = COLOR_OF[set_size]
+
+        loss_ax.plot(xs, loss_ys, "o-", linewidth=2.0, color=fg)
+        loss_ax.fill_between(xs, loss_ys - loss_yerrs, loss_ys + loss_yerrs,
+                             color=bg, alpha=0.35, linewidth=0)
+
+        time_ax.plot(xs, time_ys, "o-", linewidth=2.0, color=fg)
+        time_ax.fill_between(xs, time_ys - time_yerrs, time_ys + time_yerrs,
+                             color=bg, alpha=0.35, linewidth=0)
+
+    loss_ax.set_xlabel("Number of queries")
+    loss_ax.set_ylabel("Median average utility loss")
     try:
-        max_max_y = max(100 if is_loss else 1.0, max_max[(is_loss, "y")] + 0.1)
-
-        ax = axs[is_loss]
-        ax.set_xlim([0.0, max_max[(is_loss, "x")]])
-        ax.set_xticks(np.arange(0, max_max[(is_loss, "x")], 10))
-        ax.set_ylim([0.0, max_max_y])
-        ax.set_yticks(np.arange(0, max_max_y, 10))
+        loss_ax.set_xlim([0.0, max_max_x])
+        loss_ax.set_xticks(np.arange(0, max_max_x, 10))
+        loss_ax.set_ylim([0.0, max(100.0, max_loss_max_y + 0.1)])
+        loss_ax.set_yticks(np.arange(0, max_loss_max_y, 10))
     except:
         pass
+    loss_fig.savefig(dest_path + "_loss.png", bbox_inches="tight")
 
-    path = sys.argv[2] + ("_loss" if is_loss else "_time") + ".png"
-    figs[is_loss].savefig(path, bbox_inches="tight")
+    time_ax.set_xlabel("Number of queries")
+    time_ax.set_ylabel("Cumulative average time (in seconds)")
+    try:
+        time_ax.set_xlim([0.0, max_max_x])
+        time_ax.set_xticks(np.arange(0, max_max_x, 10))
+        time_ax.set_ylim([0.0, max(1.0, max_time_max_y + 0.1)])
+        time_ax.set_yticks(np.arange(0, max_time_max_y, 10))
+    except:
+        pass
+    time_fig.savefig(dest_path + "_time.png", bbox_inches="tight")
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print "Usage: {} <results directory> <output image>".format(sys.argv[0])
+        sys.exit(1)
+    draw(sorted(glob(os.path.join(sys.argv[1], "results_*.pickle"))), sys.argv[2])
