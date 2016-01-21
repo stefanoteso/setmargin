@@ -3,24 +3,25 @@
 import sys, os
 import cPickle as pickle
 import numpy as np
+from scipy.io import loadmat
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 from glob import glob
 
 # Colors taken from http://tango.freedesktop.org/Tango_Icon_Theme_Guidelines
 COLOR_OF = {
+    1: ("#000000", "#000000"),
     2: ("#CE5C00", "#F57900"),
     3: ("#204A87", "#3465A4"),
-#    4: ("#5C3566", "#75507B"),
     4: ("#4E9A06", "#73D216"),
 }
 
-def infos_to_matrices(infos, elongate=True):
+def infos_to_matrices(infos, per_query):
     num_trials = len(infos)
     max_queries = max([sum(n for n, _, _ in info) for info in infos])
     max_iterations = max(len(info) for info in infos)
 
-    if elongate:
+    if per_query:
         loss_matrix = np.zeros((num_trials, max_queries))
         time_matrix = np.zeros((num_trials, max_queries))
     else:
@@ -31,7 +32,7 @@ def infos_to_matrices(infos, elongate=True):
         base = 0
         prev_loss = max(max(l for _, l, _ in info) for info in infos)
         for iteration, (num_queries, loss, time) in enumerate(info):
-            if elongate:
+            if per_query:
                 for j in range(num_queries):
                     alpha = 1 - (j + 1) / float(num_queries)
                     interpolated_loss = alpha*prev_loss + (1 - alpha)*loss
@@ -43,9 +44,12 @@ def infos_to_matrices(infos, elongate=True):
                 loss_matrix[trial,iteration] = loss
                 time_matrix[trial,iteration] = time
 
-    return max_queries if elongate else max_iterations, loss_matrix, time_matrix
+    if per_query:
+        return loss_matrix[:,:100], time_matrix[:,:100]
+    else:
+        return loss_matrix[:,:50], time_matrix[:,:50]
 
-def draw(paths, dest_path):
+def draw(paths, dest_path, per_query):
     loss_fig, loss_ax = plt.subplots(1, 1)
     time_fig, time_ax = plt.subplots(1, 1)
 
@@ -53,10 +57,34 @@ def draw(paths, dest_path):
     max_loss_max_y = None
     max_time_max_y = None
     for path in paths:
-        with open(path, "rb") as fp:
-            infos = pickle.load(fp)
 
-        max_x, loss_matrix, time_matrix = infos_to_matrices(infos, elongate=False)
+        try:
+            with open(path, "rb") as fp:
+                infos = pickle.load(fp)
+            loss_matrix, time_matrix = infos_to_matrices(infos, per_query=per_query)
+            # XXX we have multiple sets of experiments that end up being
+            # drawn together; remove this hack post-IJCAI
+            if per_query and not "100__100" in path:
+                continue
+            if not per_query and not "50__300" in path:
+                continue
+        except:
+            pass
+
+        assert loss_matrix.shape == time_matrix.shape
+        max_x = loss_matrix.shape[1]
+
+        try:
+            mat = loadmat(path, squeeze_me=True)
+            loss_matrix = mat["expectedLossMatrix"].reshape(1, -1)
+            time_matrix = mat["timeUsed"].reshape(1, -1)
+            print loss_matrix
+            print loss_matrix.shape
+            print time_matrix
+            print time_matrix.shape
+            max_x = 100 if per_query else 50
+        except:
+            pass
 
         xs = np.arange(max_x)
         if max_max_x is None or max_max_x < max_x:
@@ -74,8 +102,12 @@ def draw(paths, dest_path):
         if max_time_max_y is None or max_time_max_y < time_max_y:
             max_time_max_y = time_max_y
 
-        parts = os.path.basename(path).split("__")
-        set_size = int(parts[1].split("=")[1])
+        try:
+            parts = os.path.basename(path).split("__")
+            set_size = int(parts[1].split("=")[1])
+        except:
+            set_size = 1
+
         fg, bg = COLOR_OF[set_size]
 
         loss_ax.plot(xs, loss_ys, "o-", linewidth=2.0, color=fg)
@@ -86,7 +118,9 @@ def draw(paths, dest_path):
         time_ax.fill_between(xs, time_ys - time_yerrs, time_ys + time_yerrs,
                              color=bg, alpha=0.35, linewidth=0)
 
-    loss_ax.set_xlabel("Number of queries")
+    xlabel = "Number of queries" if per_query else "Number of iterations"
+
+    loss_ax.set_xlabel(xlabel)
     loss_ax.set_ylabel("Median average utility loss")
     try:
         loss_ax.set_xlim([0.0, max_max_x])
@@ -97,7 +131,7 @@ def draw(paths, dest_path):
         pass
     loss_fig.savefig(dest_path + "_loss.png", bbox_inches="tight")
 
-    time_ax.set_xlabel("Number of queries")
+    time_ax.set_xlabel(xlabel)
     time_ax.set_ylabel("Cumulative average time (in seconds)")
     try:
         time_ax.set_xlim([0.0, max_max_x])
@@ -109,7 +143,15 @@ def draw(paths, dest_path):
     time_fig.savefig(dest_path + "_time.png", bbox_inches="tight")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print "Usage: {} <results directory> <output image>".format(sys.argv[0])
+    if len(sys.argv) != 4:
+        print "Usage: {} <results directory> <output image> [per query?]".format(sys.argv[0])
         sys.exit(1)
-    draw(sorted(glob(os.path.join(sys.argv[1], "results_*.pickle"))), sys.argv[2])
+    paths = sorted(glob(os.path.join(sys.argv[1], "results_*.pickle")))
+    if len(paths) > 0:
+        draw(paths, sys.argv[2], int(sys.argv[3]))
+        quit()
+    paths = sorted(glob(os.path.join(sys.argv[1], "results_*.mat")))
+    print paths
+    if len(paths) > 0:
+        draw(paths, sys.argv[2], int(sys.argv[3]))
+        quit()
