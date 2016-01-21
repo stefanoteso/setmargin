@@ -232,7 +232,7 @@ def run_pc(has_costs):
     CONFIGS = Grid({
         "num_trials": 20,
         "max_iterations": 100,
-        "max_answers": 100,
+        "max_answers": 300,
         "sampling_mode": ("uniform_sparse", "normal_sparse", "uniform", "normal"),
         "ranking_mode": ("all_pairs",),
         "is_deterministic": False,
