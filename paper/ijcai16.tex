@@ -669,43 +669,44 @@ WRITEME
     {\footnotesize
     \begin{tabular}{cccc}
         \hline
-        {\sc synthetic 3} & {\sc synthetic 4} & {\sc synthetic 5} & {\sc synthetic 6}
+        {\sc synthetic 3 loss} & {\sc synthetic 4 loss} & {\sc synthetic 5 loss} & {\sc synthetic 5 time}
         \\
         \hline \hline
         \multicolumn{4}{c}{{\sc Uniform}}
         \\
-        \includegraphics[width=10em]{figures/synthetic_3_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_4_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_5_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_6_uniform_per_iter_loss}
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/time}
         \\
         \hline
         \multicolumn{4}{c}{{\sc Uniform Sparse}}
         \\
-        \includegraphics[width=10em]{figures/synthetic_3_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_4_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_5_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_6_uniform_sparse_per_iter_loss}
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/time}
         \\
         \hline
         \multicolumn{4}{c}{{\sc Normal}}
         \\
-        \includegraphics[width=10em]{figures/synthetic_3_normal_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_4_normal_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_5_normal_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_6_normal_per_iter_loss}
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/time}
         \\
         \hline
         \multicolumn{4}{c}{{\sc Normal Sparse}}
         \\
-        \includegraphics[width=10em]{figures/synthetic_3_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_4_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_5_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_6_normal_sparse_per_iter_loss}
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/time}
         \\
         \hline
     \end{tabular}
     }
+    \caption{\label{fig:comparison} {\sc SetMargin} vs Guo vs Viappiani.}
 \end{figure}
 
 \begin{figure}[b]
@@ -713,130 +714,49 @@ WRITEME
     {\footnotesize
     \begin{tabular}{cccc}
         \hline
-        {\sc synthetic 3} & {\sc synthetic 4} & {\sc synthetic 5} & {\sc synthetic 6}
+        \multicolumn{2}{c}{{\sc per query loss}} &
+        \multicolumn{2}{c}{{\sc per iter. loss}}
+        \\
+        {\sc synthetic 4} & {\sc synthetic 6} & {\sc synthetic 4} & {\sc synthetic 6}
         \\
         \hline \hline
         \multicolumn{4}{c}{{\sc Uniform}}
         \\
-        \includegraphics[width=10em]{figures/synthetic_3_uniform_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_4_uniform_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_5_uniform_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_6_uniform_per_query_loss}
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss}
         \\
         \hline
         \multicolumn{4}{c}{{\sc Uniform Sparse}}
         \\
-        \includegraphics[width=10em]{figures/synthetic_3_uniform_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_4_uniform_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_5_uniform_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_6_uniform_sparse_per_query_loss}
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss}
         \\
         \hline
         \multicolumn{4}{c}{{\sc Normal}}
         \\
-        \includegraphics[width=10em]{figures/synthetic_3_normal_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_4_normal_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_5_normal_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_6_normal_per_query_loss}
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss}
         \\
         \hline
         \multicolumn{4}{c}{{\sc Normal Sparse}}
         \\
-        \includegraphics[width=10em]{figures/synthetic_3_normal_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_4_normal_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_5_normal_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_6_normal_sparse_per_query_loss}
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/loss}
         \\
         \hline
     \end{tabular}
-    }
-\end{figure}
-
-\begin{figure}[b]
-    \centering
-    {\footnotesize
-    \begin{tabular}{cccc}
-        \hline
-        {\sc synthetic 3} & {\sc synthetic 4} & {\sc synthetic 5} & {\sc synthetic 6}
-        \\
-        \hline \hline
-        \multicolumn{4}{c}{{\sc Uniform}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_3_uniform_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_4_uniform_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_5_uniform_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_6_uniform_per_iter_time}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc Uniform Sparse}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_3_uniform_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_4_uniform_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_5_uniform_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_6_uniform_sparse_per_iter_time}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc Normal}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_3_normal_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_4_normal_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_5_normal_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_6_normal_per_iter_time}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc Normal Sparse}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_3_normal_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_4_normal_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_5_normal_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_6_normal_sparse_per_iter_time}
-        \\
-        \hline
-    \end{tabular}
-    }
-\end{figure}
-
-\begin{figure}[b]
-    \centering
-    {\footnotesize
-    \begin{tabular}{cccc}
-        \hline
-        {\sc synthetic 3} & {\sc synthetic 4} & {\sc synthetic 5} & {\sc synthetic 6}
-        \\
-        \hline \hline
-        \multicolumn{4}{c}{{\sc Uniform}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_3_uniform_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_4_uniform_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_5_uniform_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_6_uniform_per_query_time}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc Uniform Sparse}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_3_uniform_sparse_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_4_uniform_sparse_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_5_uniform_sparse_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_6_uniform_sparse_per_query_time}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc Normal}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_3_normal_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_4_normal_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_5_normal_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_6_normal_per_query_time}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc Normal Sparse}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_3_normal_sparse_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_4_normal_sparse_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_5_normal_sparse_per_query_time} &
-        \includegraphics[width=10em]{figures/synthetic_6_normal_sparse_per_query_time}
-        \\
-        \hline
-    \end{tabular}
+    \caption{\label{fig:selfcomparison} Self-comparison experiment. Only
+    losses, per-query and per-iteration. Runtime described in the text. Each
+    row is a user sampling mode. Three curves per plot: $k=2$ vs $k=3$ vs
+    $k=4$.}
     }
 \end{figure}
 
@@ -850,10 +770,10 @@ WRITEME
         \multicolumn{2}{c}{{\sc loss/time per iteration}} &
         \multicolumn{2}{c}{{\sc loss/time per query}}
         \\
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/time} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/time}
         \\
         \hline
         \multicolumn{4}{c}{{\sc normal sparse}}
@@ -861,10 +781,10 @@ WRITEME
         \multicolumn{2}{c}{{\sc loss/time per iteration}} &
         \multicolumn{2}{c}{{\sc loss/time per query}}
         \\
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_time}
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/time} &
+        \includegraphics[width=10em]{figures/loss} &
+        \includegraphics[width=10em]{figures/time}
         \\
         \hline
     \end{tabular}
