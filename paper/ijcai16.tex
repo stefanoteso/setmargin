@@ -201,15 +201,13 @@ a shorthand for the set $\{1, \ldots, n\}$. We write $\|\vx\|_1 := \sum_z |x_z|$
 to indicate the $\ell_1$ vector norm, and $\langle \cdot, \cdot \rangle$ to
 denote the usual dot product.
 
-\paragraph{Setting.} We assume to have a multi-attribute feature space $\calX$
-of configurations $\vx = (x_1, \ldots, x_n)$ over $n$ features. For the time
-being we will focus on binary features only, i.e. $x_z\in\{0,1\}$ for all
-$z\in[n]$, to keep matters simple. This is a common choice for preference
-elicitation methods~\cite{guo2010real,viappiani2010optimal}; discrete features
-can be handled for instance by means of a simple one-hot encoding. Support for
-linearly dependent continuous features will be discussed later on. 
-\andrea{mmh sembra che gestiamo solo booleani.. riscriverei che ci concentriamo solo su feature categoriche, e 
-che le rappresentiamo con one-hot encoding come tipico dei metodi preference elicitation..}
+\paragraph{Setting.} We assume to have a multi-attribute feature space
+$\calX$ of configurations $\vx = (x_1, \ldots, x_m)$ over $m$
+features. For the sake of simplicity we focus on binary features only,
+i.e. $x_z\in\{0,1\}$ for all $z\in[m]$, assuming a one-hot encoding of
+categorical features. This is a common choice for preference
+elicitation methods~\cite{guo2010real,viappiani2010optimal}. Support
+for linearly dependent continuous features will be discussed later on.
 
 We further assume that the set of {\em feasible} configurations, denoted by
 $\calX_\text{feasible}$, is expressed as
@@ -222,8 +220,8 @@ per scrivere vincoli logici}
 
 In adherence to previous work~\cite{guo2010real,viappiani2010optimal}, we model users by means
 of linear utility functions: the user's preferences are represented by a weight
-vector $\vw\in\bbR^n$, and the utility of a configuration $\vx$ is given by
-$\langle \vw, \vx \rangle = \sum_{z=1}^n w_z x_z$. In the remainder of the paper we
+vector $\vw\in\bbR^m$, and the utility of a configuration $\vx$ is given by
+$\langle \vw, \vx \rangle = \sum_{z=1}^m w_z x_z$. In the remainder of the paper we
 require all weights to be {\em non-negative} and {\em bounded}: the per-attribute
 weights $w_z$ must lie in a (constant but otherwise arbitrary) interval
 $[w^\bot_z, w^\top_z]$, with $w^\bot_z \ge 0$. Both requirements are quite
@@ -328,7 +326,7 @@ variables $M$, $\{ \vw^i \}$, $\{ \vx^i \}$: \andrea{dovremmo forse specificare 
     \\
         & \;\; M \ge 0 \nonumber
 \end{align}
-} \andrea{perche' un punto tra il quantificatore e la formula? inoltre mi sa che ``n'' e' usato per due cose, queries e features}
+} \andrea{perche' un punto tra il quantificatore e la formula?}
 %
 Let us illustrate the above piece by piece. The objective is composed of four
 parts: we maximize the shared margin $M$ (first part) and minimize the total
@@ -380,15 +378,15 @@ replace Eq.~(\ref{eq:wxconstr}) with a set of linear constraints through
 a suitable variable transformation.
 
 In order to do so, we introduce a set of fresh variables $p^{i,j}_z$ for every
-$i,j\in[k]$ and $z\in[n]$. Assuming for the time being that the new variables
+$i,j\in[k]$ and $z\in[m]$. Assuming for the time being that the new variables
 do satisfy the equation $p^{i,j}_z = w^i_z x^j_z$, we rewrite the fourth
 component of the objective function in terms of the new variables as:
 %
-$$ \gamma \sum_{i=1}^k \sum_{z=1}^n p^{i,i}_z $$
+$$ \gamma \sum_{i=1}^k \sum_{z=1}^m p^{i,i}_z $$
 %
 and, similarly, Eq.~(\ref{eq:wxconstr}) as:
 %
-\[ \forall \; i, j \in [k], i \neq j \;.\; \sum_{z=1}^n p^{i,i}_z - p^{i,j}_z \ge M \label{eq:pxconstr} \]
+\[ \forall \; i, j \in [k], i \neq j \;.\; \sum_{z=1}^m p^{i,i}_z - p^{i,j}_z \ge M \label{eq:pxconstr} \]
 %
 The fact that $p^{i,j}_z = w^{i}_z x^{j}_z$ is achieved by
 setting the following additional constraints. We distinguish between two cases:
@@ -430,7 +428,7 @@ formulation, we obtain the following mixed-integer linear problem:
 {\footnotesize
 \begin{align}
     \max
-        & \;\; M - \alpha \sum_{i=1}^k \| \veps^{i} \|_1 - \beta \sum_{i=1}^k \| \vw^{i} \|_1 + \gamma \sum_{i=1}^k \sum_{z=1}^n p^{i,i}_z
+        & \;\; M - \alpha \sum_{i=1}^k \| \veps^{i} \|_1 - \beta \sum_{i=1}^k \| \vw^{i} \|_1 + \gamma \sum_{i=1}^k \sum_{z=1}^m p^{i,i}_z
         \nonumber
     \\
     \text{s.t.}
@@ -438,11 +436,11 @@ formulation, we obtain the following mixed-integer linear problem:
     \\
         & \;\; \qquad \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge M - \varepsilon^{i}_h \nonumber
     \\
-        & \;\; \forall \; i, j \in [k], i \neq j \;.\; \sum_{z=1}^n p^{i,i}_z - p^{i,j}_z \ge M
+        & \;\; \forall \; i, j \in [k], i \neq j \;.\; \sum_{z=1}^m p^{i,i}_z - p^{i,j}_z \ge M
     \\
-    %     & \;\; \forall \; i \in [k], \forall \; z \in [n] \nonumber
+    %     & \;\; \forall \; i \in [k], \forall \; z \in [m] \nonumber
     % \\
-        & \;\; \forall \; i, j \in [k], i \neq j, \forall \; z \in [n] \nonumber
+        & \;\; \forall \; i, j \in [k], i \neq j, \forall \; z \in [m] \nonumber
     \\
         & \;\; \qquad p^{i,i}_z \le \min \{ w_\text{max} x^{i}_z, w^{i}_z \}
     \\
@@ -585,15 +583,15 @@ while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.
 in~\cite{guo2010real} and \cite{viappiani2010optimal}, in the first experiment
 we evaluate the behavior of the proposed method in a challenging artificial
 setting. We developed seven synthetic datasets: each dataset involves
-$n=2,\ldots,7$ attributes, where each attribute takes one of $n$ possible
-values. More explicitly, for $n=2$ the synthetic dataset is
-$\calX_\text{feasible} = [2] \times [2]$, for $n=3$ to $\calX_\text{feasible} =
+$m=2,\ldots,7$ attributes, where each attribute takes one of $m$ possible
+values. More explicitly, for $m=2$ the synthetic dataset is
+$\calX_\text{feasible} = [2] \times [2]$, for $m=3$ to $\calX_\text{feasible} =
 [3] \times [3] \times [3]$, and so on. The cardinality of
-$\calX_\text{feasible}$ is $n^n$, and grows (super) exponentially with $n$. For
-$n=3$, the dataset is comparable to the synthetic one used
+$\calX_\text{feasible}$ is $m^m$, and grows (super) exponentially with $m$. For
+$m=3$, the dataset is comparable to the synthetic one used
 in~\cite{guo2010real} and~\cite{viappiani2010optimal} (which have three domains
 of size of 2, 2 and 5, respectively, for a total of 20 feasible
-configurations), while for larger $n$ it grows much larger than those typically
+configurations), while for larger $m$ it grows much larger than those typically
 used in the Bayesian preference elicitation literature, and as such represents
 a good test bed for comparing the scalability of the various methods.
 The feasible configuration space was encoded in {\sc SetMargin} through
