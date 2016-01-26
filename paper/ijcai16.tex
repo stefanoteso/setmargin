@@ -368,7 +368,7 @@ influence of the various components.
 The third part of the objective does require a more in depth explanation. In
 many scenarios the user will have strong preferences about some attributes, but
 will be indifferent to most of them~\cite{} \stefano{@Paolo: add refs}. The $\ell_1$ penalty is frequently
-used to improve the sparsity of learned models~\cite{lasso}, with consequent gains
+used to improve the sparsity of learned models~\cite{lasso,zhang2008,Hensinger2010}, with consequent gains
 in generalization ability and efficiency, as confirmed by our empirical
 findings (see Section~\ref{sec:experiments}).
 
@@ -585,32 +585,10 @@ In all experiments we use an internal 5-fold cross-validation procedure to
 update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
 iterations. The hyperparameters are chosen as to minimize the ranking loss over
 the user responses collected so far. $\alpha$ is taken in $\{20, 10, 5, 1\}$,
-% <<<<<<< HEAD
-% while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.
-% \stefano{explain that we can't turn off $\gamma$}
-% 
-% \paragraph{Cognitive effort.} Contrarily to most other preference elicitation
-% methods, which generate a single candidate option per iteration, {\sc
-% SetMargin} constructs a whole {\em set} of options. We thus can not leverage
-% standard query selection strategies \stefano{which ones?}. 
-% \paolo{I would remove the last sentence}
-% 
-% The simplest solution is to query the user about all $k \choose 2$ pairs of
-% configurations in $\{\vx^i\}$. Since $k$ is a small constant, the resulting
-% number of queries does not grow large in practice.  An appealing alternative
-% involves using a modified sorting algorithm, such as merge-sort, to order the
-% set $\{\vx^i\}$ by asking only $O(n\log n)$ queries to the user. However, this
-% approach is very susceptible to noise: a single inconsistent user response may
-% affect all successive comparisons, leading to a cascading effect. While more
-% robust strategies may be conceived, empirically we found that the simpler
-% quadratic scheme tends to work reasonably well.
-% 
-% \andrea{rewrite as footnote}
-% =======
-while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$\footnote{Note
+while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.\footnote{Note
 that $\alpha$ can not be taken to be less than $1$, as in this case, the
 objective can be increased arbitrarily while keeping the right-hand side of
-Eq.~(\ref{eq:wyconstr}) constant, rendering the problem unbounded.}.
+Eq.~(\ref{eq:wyconstr}) constant, rendering the problem unbounded.}
 
 \paragraph{Synthetic Dataset.} Following the experimental protocol
 in~\cite{guo2010real} and \cite{viappiani2010optimal}, in the first
