@@ -543,15 +543,16 @@ how close their utilities are, as in:
 $$ \exp(\lambda_2 |\langle\vw,\vx^i - \vx^j\rangle|) $$
 %
 The parameters $\lambda_1$ and $\lambda_2$ were set to one for all
-simulatins, as in~\cite{guo2010real}. Please see the latter for more
-details. \stefano{The above does not satisfy me at all.}\andrea{sounds reasonable now, I would remove Please see..?}
+simulations, as in~\cite{guo2010real}.
 
 In all experiments we use an internal 5-fold cross-validation procedure to
 update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
 iterations. The hyperparameters are chosen as to minimize the ranking loss over
 the user responses collected so far. $\alpha$ is taken in $\{20, 10, 5, 1\}$,
-while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.
-\stefano{explain that we can't turn off $\gamma$}\andrea{not so needed, but explain why ranges are different}
+while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$\footnote{Note
+that $\alpha$ can not be taken to be less than $1$, as in this case, the
+objective can be increased arbitrarily while keeping the right-hand side of
+Eq.~(\ref{eq:wyconstr}) constant, rendering the problem unbounded.}.
 
 \paragraph{Synthetic Dataset.} Following the experimental protocol
 in~\cite{guo2010real} and \cite{viappiani2010optimal}, in the first
@@ -560,9 +561,9 @@ artificial setting with increasingly complex problems. We developed
 synthetic datasets with $r$ attributes, for increasing values of $r$.
 Each attribute takes one of $r$ possible values, so that the one-hot
 encoding of attributes results in $m=r^2$ features. In terms of space
-of configurations, for $r=2$ the synthetic dataset corresponds to 
-$\calX_\text{feasible} = [2] \times [2]$, for $r=3$ to
-$\calX_\text{feasible} = [3] \times [3] \times [3]$, and so on. The
+of configurations, for $r=3$ the synthetic dataset corresponds to 
+$\calX_\text{feasible} = [3] \times [3] \times [3]$, for $r=4$ to
+$\calX_\text{feasible} = [4] \times [4] \times [4] \times [4]$, and so on. The
 cardinality of $\calX_\text{feasible}$ is $r^r$, and grows (super)
 exponentially with $r$.
 % We developed
@@ -608,7 +609,7 @@ the user after the elicitation phase (see Algorithm~\ref{alg:setmargin}).
 
 The thick line is the median
 utility loss taken over all 20 users, while the shaded area represents the
-variance. \andrea{standard deviation?}
+standard deviation.
 
 \stefano{plot average utility loss at the increase of dataset size}
 
@@ -645,15 +646,14 @@ size, and price. See Table~\ref{tab:pcdataset} for an overivew of the
 attributes. The price attribute is defined as a linear combination of the other
 attributes: this is a fair modeling choice, as often the price of a PC is
 well approximated by sum of the price of its components plus an offset due to
-branding. Compared to the PC dataset in~\cite{guo2010real}, we combined the CPU
-type and CPU frequency attributes into a single CPU attribute (e.g. ``PowerPC
-G4 @733 MHz''), so to avoid multiplicative terms in the price function.
-\stefano{too detailed/handwavy?} \andrea{si'. irrilevante}
+branding.
 
 Interactions between attributes are expressed as Horn clauses. An example
 constraint might look like this: ``if the manufacturer is Apple, then the
-CPU must be either a PowerPC G3 or a PowerPC G4'', which can be encoded
-into MILP form as:\andrea{sbaglio o e' vecchiotto il dataset? footnote?}
+CPU must be either a PowerPC G3 or a PowerPC G4''\footnote{Despite the components
+included in the dataset, which are a bit outdated, the dataset itself is pretty
+realistic.}, which can be encoded
+into MILP form as:
 %
 $$ (1 - x_\text{Apple}) + x_\text{G3} + x_\text{G4} \ge 1 $$
 %
@@ -682,9 +682,7 @@ do not report the full list due to space limitations.
     \caption{\label{tab:pcdataset} Statistics for the PC dataset.}
 \end{table}
 
-- PC dataset without costs
-
-- PC dataset with costs
+\stefano{Add figures and comments.}
 
 \section{Conclusion}
 
