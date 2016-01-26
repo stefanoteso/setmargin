@@ -525,33 +525,96 @@ We compare {\sc SetMargin} against two strong Bayesian baselines:
 \cite{guo2010real} and \cite{viappiani2010optimal}.
 \stefano{Paolo, could you describe the baselines?}
 
-We adopt the {\em indifference-augmented} Bradley-Torr user response model
-introduced in~\cite{guo2010real}. When queried about a pair of configurations,
-the user replies with the true utility of the two items. According to the
-classical Bradley-Torr model, which does not attempt to model {\em indifference},
-the proabability that a user $\vw$ will prefer configuration $\vx^i$ over
-the alternative $\vx^j$, barring indifference, amounts to:
+We adopt the {\em indifference-augmented} Bradley-Terry user response
+model introduced in~\cite{guo2010real}. According to the classical
+(without indifference) Bradley-Terry model~\cite{BraTer52}, when queried about a pair
+of configurations, the probability that a user will prefer
+configuration $\vx^i$ over the alternative $\vx^j$ amounts to:
 %
-$$ (1 + \exp(-\alpha \langle\vw,\vx^i - \vx^j\rangle))^{-1} $$
+$$ (1 + \exp(-\lambda_1 \langle\vw,\vx^i - \vx^j\rangle))^{-1} $$
 %
-In other words, the probability grows with the difference between the utilities
-of the two items. Support for indifference has been introduced
-in~\cite{guo2010real} by postulating that the probability of the user being
-indifferent about the two configurations $\vx^i, \vx^j$ depends on how close
-the two utilities are, as in:
+where $\vw$ is the weight vector of the true underlying user utility.
+In other words, the probability grows with the difference between the
+utilities of the two items. Support for indifference has been
+introduced in~\cite{guo2010real} by postulating that the probability
+of the user being indifferent about the two configurations depends on
+how close their utilities are, as in:
 %
-$$ \exp(\beta |\langle\vw,\vx^i - \vx^j\rangle|) $$
+$$ \exp(\lambda_2 |\langle\vw,\vx^i - \vx^j\rangle|) $$
 %
-The parameters $\alpha$ and $\beta$ were set as in~\cite{guo2010real}. Please
-see the latter for more details
-\stefano{The above does not satisfy me at all.}
+The parameters $\lambda_1$ and $\lambda_2$ were set to one for all
+simulatins, as in~\cite{guo2010real}. Please see the latter for more
+details. \stefano{The above does not satisfy me at all.}\andrea{sounds reasonable now, I would remove Please see..?}
 
 In all experiments we use an internal 5-fold cross-validation procedure to
 update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
 iterations. The hyperparameters are chosen as to minimize the ranking loss over
 the user responses collected so far. $\alpha$ is taken in $\{20, 10, 5, 1\}$,
 while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.
-\stefano{explain that we can't turn off $\gamma$}
+\stefano{explain that we can't turn off $\gamma$}\andrea{not so needed, but explain why ranges are different}
+
+\paragraph{Synthetic Dataset.} Following the experimental protocol
+in~\cite{guo2010real} and \cite{viappiani2010optimal}, in the first
+experiment we evaluate the behavior of the proposed method in an
+artificial setting with increasingly complex problems. We developed
+synthetic datasets with $r$ attributes, for increasing values of $r$.
+Each attribute takes one of $r$ possible values, so that the one-hot
+encoding of attributes results in $m=r^2$ features. In terms of space
+of configurations, for $r=2$ the synthetic dataset corresponds to 
+$\calX_\text{feasible} = [2] \times [2]$, for $r=3$ to
+$\calX_\text{feasible} = [3] \times [3] \times [3]$, and so on. The
+cardinality of $\calX_\text{feasible}$ is $r^r$, and grows (super)
+exponentially with $r$.
+% We developed
+% seven synthetic datasets: each dataset involves $m=2,\ldots,7$
+% attributes, where each attribute takes one of $m$ possible
+% values. More explicitly, for $m=2$ the synthetic dataset is
+% $\calX_\text{feasible} = [2] \times [2]$, for $m=3$ to
+% $\calX_\text{feasible} = [3] \times [3] \times [3]$, and so on. The
+% cardinality of $\calX_\text{feasible}$ is $m^m$, and grows (super)
+% exponentially with $m$. 
+For $r=3$, the dataset is comparable to the synthetic one used
+in~\cite{guo2010real} and~\cite{viappiani2010optimal}, which have
+three attributes with 2, 2 and 5 values respectively, for a total of
+20 feasible configurations.  For larger $r$ the size of the space
+grows much larger than the one typically used in the Bayesian
+preference elicitation literature, and as such represents a good test
+bed for comparing the scalability of the various methods. The feasible
+configuration space was encoded in {\sc SetMargin} through appropriate
+MILP constraints, while the other methods require all datasets to be
+explicitly grounded.
+
+Users were simulated by drawing $20$ random utility vectors from each of four
+different distributions. The first two mimic those used
+in~\cite{guo2010real}\footnote{The normal distribution reported
+in~\cite{guo2010real} differs slightly from the one implemented in the code of
+their experimental setting. In this paper we use the latter.}:
+(1) a uniform distribution over $[1, 100]$ for each individual weight, and (2)
+a normal distribution with mean $25$ and covariance
+$\frac{25}{3}$.  We further produced two novel
+{\em sparse} sets of weight vectors by deleting $80\%$ of the entries of the
+vectors sampled in the uniform and normal settings uniformly at random
+\stefano{Paolo, is this correct?}. All methods were evaluated on the very same
+weight vectors.
+
+In Figure~\ref{fig:} we plot, for each setting, the behavior of the utility
+loss:
+%
+$$ \max_{\vx\in\calX_\text{feasible}} \left( u(\vx) - u(\vx^*) \right) $$
+%
+varying the number of collected user responses. Here $u(\cdot)$ is the
+true unknown user utility, and $\vx^*$ is the solution recommended to
+the user after the elicitation phase (see Algorithm~\ref{alg:setmargin}).
+
+The thick line is the median
+utility loss taken over all 20 users, while the shaded area represents the
+variance. \andrea{standard deviation?}
+
+\stefano{plot average utility loss at the increase of dataset size}
+
+\stefano{plot average runtime at the increase of dataset size}
+
+\stefano{comment on usefulness of sparse weights}
 
 \paragraph{Cognitive effort.} Contrarily to most other preference elicitation
 methods, which generate a single candidate option per iteration, {\sc
@@ -570,52 +633,6 @@ quadratic scheme tends to work reasonably well.
 
 \andrea{rewrite as footnote}
 
-\paragraph{Synthetic Dataset.} Following the experimental protocol
-in~\cite{guo2010real} and \cite{viappiani2010optimal}, in the first experiment
-we evaluate the behavior of the proposed method in a challenging artificial
-setting. We developed seven synthetic datasets: each dataset involves
-$m=2,\ldots,7$ attributes, where each attribute takes one of $m$ possible
-values. More explicitly, for $m=2$ the synthetic dataset is
-$\calX_\text{feasible} = [2] \times [2]$, for $m=3$ to $\calX_\text{feasible} =
-[3] \times [3] \times [3]$, and so on. The cardinality of
-$\calX_\text{feasible}$ is $m^m$, and grows (super) exponentially with $m$. For
-$m=3$, the dataset is comparable to the synthetic one used
-in~\cite{guo2010real} and~\cite{viappiani2010optimal} (which have three domains
-of size of 2, 2 and 5, respectively, for a total of 20 feasible
-configurations), while for larger $m$ it grows much larger than those typically
-used in the Bayesian preference elicitation literature, and as such represents
-a good test bed for comparing the scalability of the various methods.
-The feasible configuration space was encoded in {\sc SetMargin} through
-appropriate MILP constraints, while the other methods required all datasets to
-be explicitly grounded.
-
-Users were simulated by drawing $20$ random utility vectors from each of four
-different distributions. The first two mimic those used
-in~\cite{guo2010real}\footnote{The normal distribution reported
-in~\cite{guo2010real} differs slightly from the one implemented in the code of
-their experimental setting. In this paper we use the latter.}:
-(1) a uniform distribution over $[1, 100]$ for each individual weight, and (2)
-a normal distribution with mean $25$ and covariance
-$\frac{25}{3}$.  We further produced two novel
-{\em sparse} sets of weight vectors by deleting $80\%$ of the entries of the
-vectors sampled in the uniform and normal settings uniformly at random
-\stefano{Paolo, is this correct?}. All methods were evaluated on the very same
-weight vectors.
-
-In Figure~\ref{fig:} we plot, for each setting, the behavior of the utility
-loss:
-%
-$$ \left(\max_{\vx\in\calX_\text{feasible}} u(\vx)) - u(\vx^{i}) \right) $$
-%
-varying the number of collected user responses. The thick line is the median
-utility loss taken over all 20 users, while the shaded area represents the
-variance. 
-
-\stefano{plot average utility loss at the increase of dataset size}
-
-\stefano{plot average runtime at the increase of dataset size}
-
-\stefano{comment on usefulness of sparse weights}
 
 \paragraph{Constructive dataset.} Next, we tested {\sc SetMargin} on a truly
 constructive setting. We developed a constructive version of the PC dataset
@@ -631,22 +648,23 @@ well approximated by sum of the price of its components plus an offset due to
 branding. Compared to the PC dataset in~\cite{guo2010real}, we combined the CPU
 type and CPU frequency attributes into a single CPU attribute (e.g. ``PowerPC
 G4 @733 MHz''), so to avoid multiplicative terms in the price function.
-\stefano{too detailed/handwavy?}
+\stefano{too detailed/handwavy?} \andrea{si'. irrilevante}
 
 Interactions between attributes are expressed as Horn clauses. An example
-costraint might look like this: ``if the manufacturer is Apple, then the
+constraint might look like this: ``if the manufacturer is Apple, then the
 CPU must be either a PowerPC G3 or a PowerPC G4'', which can be encoded
-into MILP form as:
+into MILP form as:\andrea{sbaglio o e' vecchiotto il dataset? footnote?}
 %
 $$ (1 - x_\text{Apple}) + x_\text{G3} + x_\text{G4} \ge 1 $$
 %
-Note that mutual exclusivity between all binary variables corresponding to an
-attribute ensures that only one of $x_\text{G3}$ and $x_\text{G4}$ can be 1.
-The dataset includes constraints between the following attributes: manufacturer
-$\to$ type, manufacturer $\to$ CPU, type $\to$ RAM amount, type $\to$ storage
-size, type $\to$ monitor size. In total we encoded 16 Horn constraints, each
-with one head and multiple options in the body. We do not report the full
-list due to space limitations.
+Note that mutual exclusivity between all binary variables of the
+one-hot encoding of an attribute ensures that only one of
+$x_\text{G3}$ and $x_\text{G4}$ can be 1.  The dataset includes
+constraints between the following attributes: manufacturer $\to$ type,
+manufacturer $\to$ CPU, type $\to$ RAM amount, type $\to$ storage
+size, type $\to$ monitor size. In total we encoded 16 Horn
+constraints, each with one head and multiple options in the body. We
+do not report the full list due to space limitations.
 
 \begin{table}
     \centering
