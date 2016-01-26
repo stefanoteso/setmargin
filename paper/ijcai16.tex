@@ -124,24 +124,39 @@
 
 % ---------------------------------------------------------------------------
 
-\title{Constructive Preference Elicitation by Setwise Max-margin Learning}
-\author{}
+\title{Constructive Preference Elicitation by Setwise Max-margin Learning} %with?
+\author{ID xxxx}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-WRITEME
+In this paper we propose an approach to preference elicitation that is suitable to large
+configuration problem domains where stated preferences can be noisy.
+Our setwise max-margin method can be viewed as a generalization of max-margin learning to sets,
+and can produce a set of ``diverse'' items that can be used to ask informative queries to the user.
+Moreover, the approach can ensuring sparsity in the parameter space, in order to favor the assessment of utility towards combinations of weights that concentrate on just few features.
+We present an optimization formulation and show, with simulations, how our approach is able to efficiently elicit the user's utility function even in very large datasets.
+
+
 \end{abstract}
 
 \section{Introduction}
 
-WRITEME
+%The problem is that of learning or assessing the preferences of the user (or decision maker).
+Preferences \cite{Peintner2008} play an important role in artificial intelligence,
+including fields spanning from recommender systems to automatic planning, 
+from non monotonic reasoning to computational social choice and algorithmic decision theory.
+The elicitation of learning of preferences is therefore a crucial task, .
+The goal in preference elicitation is that of gaining enough information about the user's preferences (typically represented by an utility function $u$, unknown to the system) in order to recommend a decision.
 
-- importance of recommendation systems and preference elicitation
+While preference elicitation has been often cast as that of adapting using ad-hoc rules \cite{},
+recently a number of researchers have proposed principled methods that elicit utility in an adaptive way \cite{chajewska2000,boutilier2002,Wang2003,boutilier2006,braziunas-mmr:uai07,guo2010real,viappiani2010optimal}; the aims is that of focusing on learning the ``important'' part of the utility, allowing to recommend good (or even optimal) decision with only a partial information about the utility function.
+One option is to be Bayesian and to maintain a probability distribution over the possible realizations of the utility's parameters \cite{chajewska2000,boutilier2002,guo2010real,viappiani2010optimal}.
+Alternatively, when distribution information about the parameters is not available, one can reason about all feasible utility functions consistent with the currently known information about the user; from the user's response we are able to infer constraints on the parameters implicated in the utility model \cite{Wang2003,boutilier2006,braziunasmmr:uai07,viappiani2009}.
+This latter approach has also the advantage of avoiding the computationally demanding task of maintaining distribution information and performing Bayesian updates.
 
-- existing approaches and their limitations
 
 % constructive preference elicitation
 In this paper we take a {\em constructive} view on preference
@@ -154,7 +169,9 @@ utility function is learned over the feature representation of an
 instance, as customary in many preference elicitation approaches. The
 recommendation is then made by solving a constrained optimization
 problem in the space of feasible instances, guided by the learned
-utility. \andrea{other constructive preference elicitation approaches?}
+utility. 
+
+%\andrea{other constructive preference elicitation approaches?}
 
 % setwise max-margin formulation to deal with uncertainty in user utility
 Learning a user utility function requires setting a preference
@@ -170,23 +187,32 @@ weight vectors, each representing a candidate utility function,
 maximizing diversity between the vectors and consistency with the
 available feedback. These two conflicting objectives tend to generate
 equally plausible alternative hypotheses for the unknown
-utility. Preference elicitation works by combining weight vector
+utility. 
+Our approach to preference elicitation works by combining weight vector
 learning with instance generation, so that each iteration of the
 algorithm produces two outcomes: a set of weight vectors and a set of
 instances, each maximizing its score according to one of the weight
 vectors. 
 
+We evaluate the effectiveness of our approach by testing our elicitation method
+in both synthetic and configuration problems, and comparing it to state-of-the-art
+methods.
 
-- experimental results
-
-- paper structure
-
+The paper is structured as follows: after discussing related works in next Section,
+we present some brackground material in Section\ref{sec:background} 
+and then proceed to our setwise maxmargin method in Section\ref{sec:formulationm}; 
+we discuss experimental results in Section\ref{sec:experiments}
+and conclude with final remarks (Section\ref{sec:conclusions}).
 
 \section{Related Work}
 
+Preference elicitation for the customization of user interfaces \cite{gajos2005}.
+
 WRITEME
 
-\section{Preference Elicitation}
+\section{Background}
+\ref{sec:background}
+%\section{Preference Elicitation}
 
 \paragraph{Notation.} We use boldface letters $\vx$ to indicate vectors,
 uppercase letters $X$ for matrices, and calligraphic capital letters $\calX$
@@ -212,7 +238,7 @@ e.g. under the canonical mapping of $True$ to $1$ and $False$ to $0$, the
 Boolean disjunction of two binary variables $x_1 \lor x_2$ can be rewritten as
 $x_1 + x_2 \ge 1$.
 
-In adherence to previous work~\cite{guo2010real,viappiani2010optimal}, we model users by means
+Consistently with previous work~\cite{guo2010real,viappiani2010optimal}, we model users by means
 of linear utility functions: the user's preferences are represented by a weight
 vector $\vw\in\bbR^m$, and the utility of a configuration $\vx$ is given by
 $\langle \vw, \vx \rangle = \sum_{z=1}^m w_z x_z$. In the remainder of the paper we
@@ -224,12 +250,21 @@ mixed-integer linear problem (as done in Section~\ref{sec:formulation}).
 
 During learning, the actual weight vector $\vw$ is {\em unknown} to the
 learning system, and must be estimated from pairwise choices elicited from the
-user.\andrea{@PAOLO: qualche parola e reference per giustificare la scelta di pairwise queries?}  We consider three possible outcomes for a pairwise comparison between
+user.
+
+%\andrea{@PAOLO: qualche parola e reference per giustificare la scelta di pairwise queries?}  
+Comparison queries are especially natural, asking a user if she prefers one option x to another y;
+these comparisons can be extended to choice sets of more than two options \cite{viappiani2009,viappiani2010optimal}.
+Comparison and choice queries are common in conjoint analysis \cite{louviere2000,toubia2004}.
+
+
+We consider three possible outcomes for a pairwise comparison between
 two configurations $\vx$ and $\vx'$: either $\vx$ is preferred to $\vx'$ (written
 $\vx \succ \vx'$), $\vx'$ is preferred to $\vx$ ($\vx \prec \vx'$), or there is
 no clear preference between the two items ($\vx \approx \vx'$). We write
-$\calD$ to denote the full set of answers elicited from the user. Queries are
-typically selected so as to maximize some measure of informativeness of the
+$\calD$ to denote the set of preferences (answers to comparison queries) 
+elicited from the user. Queries are typically selected so as to maximize 
+some measure of informativeness of the
 resulting responses.  Details on our actual query selection strategy will be
 provided in Section~\ref{sec:formulation}.
 
@@ -248,7 +283,7 @@ weight vectors are consistent with respect to the user responses
 $\calD$, modulo inconsistencies) and so that they are maximally
 diverse.  Second, we want to construct a {\em set} of $k$
 configurations $\vx^{1}, \ldots, \vx^{k}$, so that each configuration
-$\vx^{i}$ is the ``best'' possible option when evaluated according to
+$\vx^{i}$ is the ``best'' possref:keeney-mautible option when evaluated according to
 the corresponding $\vw^{i}$ and configurations are maximally diverse
 among each other. These options will be later employed to formulate
 the user queries.
@@ -361,9 +396,9 @@ Figure~\ref{fig:setmargin} for a depiction of this intuition.\andrea{@Paolo: mmh
     \caption{\label{fig:setmargin} Intuition.}
 \end{figure}
 
-\paragraph{MILP Formulation.} This initial formulation is problematic,
-as Eq.~(\ref{eq:wxconstr}) involves quadratic terms over mixed
-continuous integer variables. Here we show how to reformulate the
+\paragraph{MILP Formulation.} This initial formulation is problematic to solve,
+as Eq.~(\ref{eq:wxconstr}) involves quadratic terms over mixed continuous integer variables. 
+Here we show how to reformulate the
 problem as a mixed integer linear program (MILP). Our goal is to
 replace Eq.~(\ref{eq:wxconstr}) with a set of linear constraints through
 a suitable variable transformation.
@@ -529,7 +564,7 @@ We adopt the {\em indifference-augmented} Bradley-Torr user response model
 introduced in~\cite{guo2010real}. When queried about a pair of configurations,
 the user replies with the true utility of the two items. According to the
 classical Bradley-Torr model, which does not attempt to model {\em indifference},
-the proabability that a user $\vw$ will prefer configuration $\vx^i$ over
+the probability that a user $\vw$ will prefer configuration $\vx^i$ over
 the alternative $\vx^j$, barring indifference, amounts to:
 %
 $$ (1 + \exp(-\alpha \langle\vw,\vx^i - \vx^j\rangle))^{-1} $$
@@ -557,6 +592,7 @@ while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.
 methods, which generate a single candidate option per iteration, {\sc
 SetMargin} constructs a whole {\em set} of options. We thus can not leverage
 standard query selection strategies \stefano{which ones?}. 
+\paolo{I would remove the last sentence}
 
 The simplest solution is to query the user about all $k \choose 2$ pairs of
 configurations in $\{\vx^i\}$. Since $k$ is a small constant, the resulting
@@ -672,9 +708,8 @@ list due to space limitations.
 
 WRITEME
 
-\section*{Acknowledgments}
-
-WRITEME
+%\section*{Acknowledgments}
+%WRITEME
 
 \bibliographystyle{named}
 \bibliography{ijcai16}
