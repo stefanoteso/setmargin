@@ -144,42 +144,49 @@ We present an optimization formulation and show, with simulations, how our appro
 
 \section{Introduction}
 
-%The problem is that of learning or assessing the preferences of the user (or decision maker).
 Preferences \cite{Peintner2008} play an important role in artificial intelligence,
 including fields spanning from recommender systems to automatic planning, 
 from non monotonic reasoning to computational social choice and algorithmic decision theory.
-The elicitation of learning of preferences is therefore a crucial task, .
-The goal in preference elicitation is that of gaining enough information about the user's preferences (typically represented by an utility function $u$, unknown to the system) in order to recommend a decision.
+The task of eliciting or learning preferences is therefore a crucial; typically only limited information about the user's preferences will be available and the cost of obtaining additional preference information will be usually high (from a cognitive and/or computational point of view).
+The goal in preference elicitation is that of gaining enough information about the user's preferences (typically represented by an utility function $u$, unknown to the system) in order to recommend a decision or a course of action.
 
-While preference elicitation has been often cast as that of adapting using ad-hoc rules \cite{},
+The assessment of preferences have received considerable attention in the literature, with early works confined to the operation research and management literature mostly \cite{}.
+In the past decade a number of researchers have considered elicitation of preferences from an artificial intelligence perspective; within the machine learning field the term preference learning has been catching up.
+While preferences are often assessed using some ad-hoc rules \cite{},
 recently a number of researchers have proposed principled methods that elicit utility in an adaptive way \cite{chajewska2000,boutilier2002,Wang2003,boutilier2006,braziunas-mmr:uai07,guo2010real,viappiani2010optimal}; the aims is that of focusing on learning the ``important'' part of the utility, allowing to recommend good (or even optimal) decision with only a partial information about the utility function.
-One option is to be Bayesian and to maintain a probability distribution over the possible realizations of the utility's parameters \cite{chajewska2000,boutilier2002,guo2010real,viappiani2010optimal}.
-Alternatively, when distribution information about the parameters is not available, one can reason about all feasible utility functions consistent with the currently known information about the user; from the user's response we are able to infer constraints on the parameters implicated in the utility model \cite{Wang2003,boutilier2006,braziunasmmr:uai07,viappiani2009}.
-This latter approach has also the advantage of avoiding the computationally demanding task of maintaining distribution information and performing Bayesian updates.
 
+%One option is to be Bayesian and to maintain a probability distribution over the possible realizations of the utility's parameters \cite{chajewska2000,boutilier2002,guo2010real,viappiani2010optimal}.
+%Alternatively, when distribution information about the parameters is not available, one can reason about all feasible utility functions consistent with the currently known information about the user; from the user's response we are able to infer constraints on the parameters implicated in the utility model \cite{Wang2003,boutilier2006,braziunasmmr:uai07,viappiani2009}.
+%This latter approach has also the advantage of avoiding the computationally demanding task of maintaining distribution information and performing Bayesian updates.
 
 % constructive preference elicitation
-In this paper we take a {\em constructive} view on preference
+While most works assume that items or decisions are available in a (possibly large)
+dataset, in this paper we propose an adaptive elicitation framework that takes a {\em constructive} view on preference
 elicitation, enlarging its scope from the selection of items among a
-set of candidates to the synthesis of entirely novel
-instances. Instances are represented as combinations of basic elements
+set of candidates to the synthesis of entirely novelinstances. 
+Instances are solutions to a given optimization problem; they are represented as combinations of basic elements
 (e.g. the components of a laptop) subject to a set of constraints
-(e.g. the laptop model determines the set of available CPUs). A
-utility function is learned over the feature representation of an
-instance, as customary in many preference elicitation approaches. The
-recommendation is then made by solving a constrained optimization
-problem in the space of feasible instances, guided by the learned
+(e.g. the laptop model determines the set of available CPUs). 
+A utility function is learned over the feature representation of an
+instance, as customary in many preference elicitation approaches. 
+The recommendation is then made by solving a constrained optimization
+ problem in the space of feasible instances, guided by the learned
 utility. 
 
-%\andrea{other constructive preference elicitation approaches?}
+Our approach is related to \cite{boutilier2006}, where minimax regret is used both
+as a robust recommendation criterion and as a technique to drive elicitation in configuration problems.
+The main limitation of the minimax regret approach is the lack of tolerance with respect to user inconsistency (the user might state that item x is preferred to y, even though the latter has higher utility).
 
 % setwise max-margin formulation to deal with uncertainty in user utility
-Learning a user utility function requires setting a preference
+Indeed, learning a user utility function requires setting a preference
 elicitation strategy and dealing with uncertain and possibly
-inconsistent user feedback. Bayesian preference elicitation approaches
+inconsistent user feedback. 
+Bayesian preference elicitation approaches
 deal with both problems by building a probability distribution on
-candidate functions and asking queries maximizing informativeness
-measures such as expected value of information (EVOI)~\cite{}. These
+candidate functions (endowed with a response or error model to be used for inference) and asking queries maximizing informativeness
+measures such as expected value of information (EVOI)~\cite{chajewska2000,viappiani2010optimal}. 
+
+These
 approaches are however computationally expensive and cannot scale to
 fully constructive scenarios, as shown in our experimental results.
 We take a space decomposition perspective and jointly learn a set of
@@ -199,19 +206,19 @@ in both synthetic and configuration problems, and comparing it to state-of-the-a
 methods.
 
 The paper is structured as follows: after discussing related works in next Section,
-we present some brackground material in Section\ref{sec:background} 
-and then proceed to our setwise maxmargin method in Section\ref{sec:formulationm}; 
-we discuss experimental results in Section\ref{sec:experiments}
-and conclude with final remarks (Section\ref{sec:conclusions}).
+we present some brackground material in Section \ref{sec:background} 
+and then proceed to our setwise maxmargin method in Section \ref{sec:formulation}; 
+we discuss experimental results in Section \ref{sec:experiments}
+and conclude with final remarks (Section \ref{sec:conclusions}).
 
-\section{Related Work}
+%\section{Related Work}
 
-Preference elicitation for the customization of user interfaces \cite{gajos2005}.
+%Preference elicitation for the customization of user interfaces \cite{gajos2005}.
 
-WRITEME
+%WRITEME
 
 \section{Background}
-\ref{sec:background}
+\label{sec:background}
 %\section{Preference Elicitation}
 
 \paragraph{Notation.} We use boldface letters $\vx$ to indicate vectors,
@@ -393,7 +400,7 @@ Figure~\ref{fig:setmargin} for a depiction of this intuition.\andrea{@Paolo: mmh
     \begin{center}
         \includegraphics[width=16em]{figures/setmargin}
     \end{center}
-    \caption{\label{fig:setmargin} Intuition.}
+    \caption{\label{fig:setmargin} The intuition behind setwise max-margin; the red points are utilty vectors $\vw^{i}$ $\vw^{j}$, the red line corresponds to the constraint $\langle \vw, \vx^{1} - \vx^{2} \rangle \ge 0$.}
 \end{figure}
 
 \paragraph{MILP Formulation.} This initial formulation is problematic to solve,
@@ -496,7 +503,11 @@ possible, are then employed to formulate a set of user queries. The
 new replies are added to $\calD$ and the whole procedure is
 repeated. The algorithm terminates after a fixed number of iterations,
 or once another suitable condition is met. \andrea{@Paolo: what termination
-condition for pref elicitation?}  The procedure is sketched in
+condition for pref elicitation?}  
+Termination might be left to the user to decide (see for example \ref{} for discussion on user-involved recommender systems); the system can however propose
+to terminate when the difference between the utility weights is small enough.
+
+The procedure is sketched in
 Algorithm~\ref{alg:setmargin}. Note that at the end of the preference
 elicitation procedure, a final recommendation is made by solving the
 MILP problem for $k=1$.
@@ -723,8 +734,15 @@ do not report the full list due to space limitations.
 \stefano{Add figures and comments.}
 
 \section{Conclusion}
+\label{sec:conclusions}
 
-WRITEME
+This paper presented a maxmargin approach to generating a set of diverse examples.
+Our approach, that can be seen as an extension of maxmargin learning to sets, is effective in the generation of a diverse set of items that can be used to ask informative queries to the user.
+The main advantages of our elicitation method are 1) its aptitude for eliciting preferences and providing recommendations in large configuration problems  2) robustness with respect to erroneous preference input, and 3) its ability to support sparse utility functions.
+In a number of experiments we showed how our method compare with state-of-the-art approaches.
+
+\paolo{any idea about possible future works?}
+% FUTURE WORKS
 
 %\section*{Acknowledgments}
 %WRITEME
