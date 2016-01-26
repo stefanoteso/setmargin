@@ -531,7 +531,7 @@ becomes:
 $$ \langle \vw, \vx \rangle = \langle \vw_B, \vx_B \rangle + \langle \vw_R, C \vx_B \rangle = \langle \vw_B + C^\top \vw_B, \vx_B \rangle $$
 %
 The generalized problem is obtained by substituting $\vw^i$ with $\vv^i := \vw_B^i + C^\top \vv_B^i$ and $p^{i,j}_z$
-with $q^{i,j}_z := (\vw^i_B + C^\top \vw^i_R)_z x^j_z$ in the MILP problem.
+with $q^{i,j}_z := \vv^i_z x^j_z$ in the MILP problem.
 All constraints remain the same, except Eq.~\ref{eq:wbounds2}, which must be
 rewritten in terms of $\vv^i$:
 %
