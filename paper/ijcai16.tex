@@ -186,20 +186,15 @@ vectors.
 
 WRITEME
 
-\section{Setwise Max-margin Learning}
-
-\stefano{Paolo, Andrea, feel free to improve the text and especially the
-citations as you see fit.}
-
-\andrea{manca un titolo a questa sezione?}
+\section{Preference Elicitation}
 
 \paragraph{Notation.} We use boldface letters $\vx$ to indicate vectors,
 uppercase letters $X$ for matrices, and calligraphic capital letters $\calX$
 for sets. We frequently abbreviate the set $\{ x^i \}_{i=1}^n$ as $\{ x^i \}$
 whenever the range of the index $i$ is clear from the context, and use $[n]$ as
 a shorthand for the set $\{1, \ldots, n\}$. We write $\|\vx\|_1 := \sum_z |x_z|$
-to indicate the $\ell_1$ vector norm, and $\langle \cdot, \cdot \rangle$ to
-denote the usual dot product.
+to indicate the $\ell_1$ vector norm, $\langle \cdot, \cdot \rangle$ to
+denote the usual dot product, and $X'$ to denote matrix transposition.
 
 \paragraph{Setting.} We assume to have a multi-attribute feature space
 $\calX$ of configurations $\vx = (x_1, \ldots, x_m)$ over $m$
@@ -211,12 +206,11 @@ for linearly dependent continuous features will be discussed later on.
 
 We further assume that the set of {\em feasible} configurations, denoted by
 $\calX_\text{feasible}$, is expressed as
-a conjunction of linear constraints. This is not a severe restriction:
-arbitrary propositional constraints can be trivially encoded in this setting,
+a conjunction of linear constraints. This allows to formulate both arithmetic
+and logical constraints,
 e.g. under the canonical mapping of $True$ to $1$ and $False$ to $0$, the
 Boolean disjunction of two binary variables $x_1 \lor x_2$ can be rewritten as
-$x_1 + x_2 \ge 1$. \andrea{mmh cosa ci da in piu'? altrimenti non e' una restrizione ma un modo 
-per scrivere vincoli logici}
+$x_1 + x_2 \ge 1$.
 
 In adherence to previous work~\cite{guo2010real,viappiani2010optimal}, we model users by means
 of linear utility functions: the user's preferences are represented by a weight
@@ -239,7 +233,7 @@ typically selected so as to maximize some measure of informativeness of the
 resulting responses.  Details on our actual query selection strategy will be
 provided in Section~\ref{sec:formulation}.
 
-\subsection{Problem Formulation}
+\section{Setwise Max-margin Learning}
 \label{sec:formulation}
 
 \paragraph{Non-linear Formulation.} We first introduce the problem
@@ -262,14 +256,14 @@ the user queries.
 The first goal is achieved by translating all pairwise preferences
 $\calD$ into ranking constraints: preferences of the form
 $\vy^h_+ \succ \vy^h_-$ become linear inequalities of the form
-$\langle \vw^i, \vy^h_+ - \vy^h_- \rangle \geq M$, where $M$ is the
+$\langle \vw^i, \vy^h_+ - \vy^h_- \rangle \geq \mu$, where $\mu$ is the
 {\em margin} variable (which we aim at maximizing) and $h$ ranges over
 the responses.  Non-separable datasets, which occur in practice due to
 occasional inconsistencies in user feedback, are handled by
 introducing slack variables (whose sum we aim at minimizing). When
 augmented with the slacks, the above inequalities take the form:
 %
-$$ \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge M - \varepsilon^{i}_h $$
+$$ \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h $$
 %
 where $\varepsilon^{i}_h$ is the penalty incurred by weight vector $\vw^{i}$
 for violating the margin separation of pair $h$. Indifference preferences, i.e.
@@ -283,7 +277,7 @@ scoring difference with respect to the other configurations $\vx^j$ in
 the set. We achieve this by maximizing the sum of utilities
 $\sum_{i=1}^k \langle \vw^{i}, \vx^{i} \rangle$ and adding ranking
 constraints of the form
-$\langle \vw^{i}, \vx^{i} - \vx^{j} \rangle \geq M$ for all
+$\langle \vw^{i}, \vx^{i} - \vx^{j} \rangle \geq \mu$ for all
 $i,j\in[k]$, $i \ne j$.
 
 
@@ -294,7 +288,7 @@ $i,j\in[k]$, $i \ne j$.
 % However this formulation is highly impractical. We therefore only require 
 % each option $\vx^{i}$ to be the best {\em among} the configurations
 % $\{ \vx^i \}$. This can be accomplished by imposing
-% constraints of the form $\langle \vw^{i}, \vx^{i} - \vx^{j} \rangle \geq M$
+% constraints of the form $\langle \vw^{i}, \vx^{i} - \vx^{j} \rangle \geq \mu$
 % for all $i,j\in[k]$, $i \ne j$.
 % This however does not guarantee that the produced $\{ \vx^{i} \}$ have a high
 % {\em absolute} utility. We therefore favor high-quality configurations by
@@ -303,33 +297,33 @@ $i,j\in[k]$, $i \ne j$.
 
 A straightforward encoding of the above desiderata leads to the
 following mixed integer {\em non-linear} optimization problem over the
-variables $M$, $\{ \vw^i \}$, $\{ \vx^i \}$: \andrea{dovremmo forse specificare i domini delle variabili per chiarire la natura mixed}
+variables $\mu \in \bbR$, $\{ \vw^i \in \bbR^m \}$, $\{ \vx^i \in \{0,1\}^m \}$:
 %
 {\footnotesize
 \begin{align}
     \max
-        & \;\; M - \alpha \sum_{i=1}^k \| \veps^{i} \|_1 - \beta \sum_{i=1}^k \| \vw^{i} \|_1 + \gamma \sum_{i=1}^k \langle \vw^{i}, \vx^{i} \rangle
+        & \;\; \mu - \alpha \sum_{i=1}^k \| \veps^{i} \|_1 - \beta \sum_{i=1}^k \| \vw^{i} \|_1 + \gamma \sum_{i=1}^k \langle \vw^{i}, \vx^{i} \rangle
         \nonumber
     \\
     \text{s.t.}
         & \;\; \forall \; i \in [k], \forall \; h \in [n] \nonumber
     \\
-        & \;\; \qquad \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge M - \varepsilon^{i}_h \label{eq:wyconstr}
+        & \;\; \qquad \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h \label{eq:wyconstr}
     \\
-        & \;\; \forall \; i, j \in [k], i \neq j \;.\; \langle \vw^{i}, \vx^{i} - \vx^{j} \rangle \ge M \label{eq:wxconstr}
+        & \;\; \forall \; i, j \in [k], i \neq j \quad \langle \vw^{i}, \vx^{i} - \vx^{j} \rangle \ge \mu \label{eq:wxconstr}
     \\
-        & \;\; \forall \; i \in [k] \;.\; \vw^\bot \le \vw^{i} \le \vw^\top \label{eq:wbounds}
+        & \;\; \forall \; i \in [k] \quad \vw^\bot \le \vw^{i} \le \vw^\top \label{eq:wbounds}
     \\
-        & \;\; \forall \; i \in [k] \;.\; \vx^{i} \in \calX_{\text{feasible}} \label{eq:xbounds}
+        & \;\; \forall \; i \in [k] \quad \vx^{i} \in \calX_{\text{feasible}} \label{eq:xbounds}
     \\
-        & \;\; \forall \; i \in [k] \;.\; \veps^{i} \ge 0 \nonumber
+        & \;\; \forall \; i \in [k] \quad \veps^{i} \ge 0 \nonumber
     \\
-        & \;\; M \ge 0 \nonumber
+        & \;\; \mu \ge 0 \nonumber
 \end{align}
-} \andrea{perche' un punto tra il quantificatore e la formula?}
+}
 %
 Let us illustrate the above piece by piece. The objective is composed of four
-parts: we maximize the shared margin $M$ (first part) and minimize the total
+parts: we maximize the shared margin $\mu$ (first part) and minimize the total
 sum of the ranking errors $\veps^i$ incurred by each weight vector $\vw^{i}$
 (second part), while at the same time regularizing the magnitude of the
 weights (third part) and the quality of the configurations $\{ \vx^{i} \}$ (last
@@ -338,10 +332,10 @@ influence of the various components.
 
 The third part of the objective does require a more in depth explanation. In
 many scenarios the user will have strong preferences about some attributes, but
-will be indifferent to most of them~\cite{}. The $\ell_1$ penalty is frequently
+will be indifferent to most of them~\cite{} \stefano{@Paolo: add refs}. The $\ell_1$ penalty is frequently
 used to improve the sparsity of learned models~\cite{lasso}, with consequent gains
 in generalization ability and efficiency, as confirmed by our empirical
-findings (see Section~\ref{sec:experiments}). \stefano{add refs}
+findings (see Section~\ref{sec:experiments}).
 
 The two core constraints are Equations~(\ref{eq:wyconstr}) and~(\ref{eq:wxconstr}),
 which are taken directly from the discussion above. The former enforces the
@@ -354,14 +348,11 @@ Since we require $\vw^\bot \ge 0$, Eq.~(\ref{eq:wbounds}) also enforces the
 weights to be non-negative.
 
 Note that we are choosing the configurations $\{ \vx^i \}$ and the weight vectors $\{
-\vw^i \}$ {\em simultaneously}. Since we maximize the margin $M$, the optimizer
+\vw^i \}$ {\em simultaneously}. Since we maximize the margin $\mu$, the optimizer
 will prefer a set of configurations $\{ \vx^{i} \}$ that partitions the weight space
 roughly equally, and corresponding utility functions such that each $\vw^{i}$
 lies (intuitively) close to the centre of each subregion. See
-Figure~\ref{fig:setmargin} for a depiction of this intuition.\andrea{mmh non chiarissimo, da rivedere insieme, legenda inclusa}
-
-\stefano{for $k=1$, setting $\alpha < 1$  renders the problem unbounded, as
-Eq.~\ref{eq:wxconstr} vanishes.}
+Figure~\ref{fig:setmargin} for a depiction of this intuition.\andrea{@Paolo: mmh non chiarissimo, da rivedere insieme, legenda inclusa}
 
 \begin{figure}[t]
     \begin{center}
@@ -372,7 +363,7 @@ Eq.~\ref{eq:wxconstr} vanishes.}
 
 \paragraph{MILP Formulation.} This initial formulation is problematic,
 as Eq.~(\ref{eq:wxconstr}) involves quadratic terms over mixed
-continuous integer variables.\andrea{check} Here we show how to reformulate the
+continuous integer variables. Here we show how to reformulate the
 problem as a mixed integer linear program (MILP). Our goal is to
 replace Eq.~(\ref{eq:wxconstr}) with a set of linear constraints through
 a suitable variable transformation.
@@ -386,12 +377,12 @@ $$ \gamma \sum_{i=1}^k \sum_{z=1}^m p^{i,i}_z $$
 %
 and, similarly, Eq.~(\ref{eq:wxconstr}) as:
 %
-\[ \forall \; i, j \in [k], i \neq j \;.\; \sum_{z=1}^m p^{i,i}_z - p^{i,j}_z \ge M \label{eq:pxconstr} \]
+\[ \forall \; i, j \in [k], i \neq j \;.\; \sum_{z=1}^m p^{i,i}_z - p^{i,j}_z \ge \mu \label{eq:pxconstr} \]
 %
 The fact that $p^{i,j}_z = w^{i}_z x^{j}_z$ is achieved by
 setting the following additional constraints. We distinguish between two cases:
 (i) $p^{i,i}_z$ and (ii) $p^{i,j}_z$ for $i \ne j$.  Recall that we are
-maximizing the margin $M$. Now, due to Eq.~(\ref{eq:pxconstr}), the optimizer will
+maximizing the margin $\mu$. Now, due to Eq.~(\ref{eq:pxconstr}), the optimizer will
 try to keep $p^{i,i}_z$ as large as possible and $p^{i,j}_z$ as small as
 possible.
 
@@ -417,10 +408,11 @@ due to the non-negativity of $w^i_z$. Otherwise, if $x^j_z = 0$
 then the lower bound becomes $\max \{ 0, w^{i}_z - w_\text{max} \}$, where
 the second term is at most $0$. Since $p^{i,j}_z$ is being minimized, in both
 cases it will attain the lower bound, and thus satisfy $p^{i,j}_z = w^i_z
-x^j_z$.\footnote{Since $M$ is upper-bounded by Eq.~(\ref{eq:wyconstr}), in some
+x^j_z$.\footnote{Since $\mu$ is upper-bounded by Eq.~(\ref{eq:wyconstr}), in some
 cases the $p^{i,j}_z$ variables do not attain the lower bound. As a
-consequence, the MILP reformulation of Eq.~(\ref{eq:wxconstr}) is marginally
-inexact. Despite this issue, the MILP formulation acceptably in practice. \andrea{acceptably what?}}
+consequence, the MILP reformulation of Eq.~(\ref{eq:wxconstr}) is a (tight)
+approximation of the original one. This has no impact on the quality of the
+solutions.}
 
 Substituting the above MILP constraints into the original non-linear
 formulation, we obtain the following mixed-integer linear problem:
@@ -428,15 +420,15 @@ formulation, we obtain the following mixed-integer linear problem:
 {\footnotesize
 \begin{align}
     \max
-        & \;\; M - \alpha \sum_{i=1}^k \| \veps^{i} \|_1 - \beta \sum_{i=1}^k \| \vw^{i} \|_1 + \gamma \sum_{i=1}^k \sum_{z=1}^m p^{i,i}_z
+        & \;\; \mu - \alpha \sum_{i=1}^k \| \veps^{i} \|_1 - \beta \sum_{i=1}^k \| \vw^{i} \|_1 + \gamma \sum_{i=1}^k \sum_{z=1}^m p^{i,i}_z
         \nonumber
     \\
     \text{s.t.}
         & \;\; \forall \; i \in [k], \forall \; h \in [n] \nonumber
     \\
-        & \;\; \qquad \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge M - \varepsilon^{i}_h \nonumber
+        & \;\; \qquad \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h \nonumber
     \\
-        & \;\; \forall \; i, j \in [k], i \neq j \;.\; \sum_{z=1}^m p^{i,i}_z - p^{i,j}_z \ge M
+        & \;\; \forall \; i, j \in [k], i \neq j \quad \sum_{z=1}^m p^{i,i}_z - p^{i,j}_z \ge \mu
     \\
     %     & \;\; \forall \; i \in [k], \forall \; z \in [m] \nonumber
     % \\
@@ -446,13 +438,13 @@ formulation, we obtain the following mixed-integer linear problem:
     \\
         & \;\; \qquad p^{i,j}_z \ge \max \{ 0, w^{i}_z - w_\text{max}(1 - x^{j}_z) \}
     \\
-        & \;\; \forall \; i \in [k] \;.\; \vw^\bot \le \vw^{i} \le \vw^\top \label{eq:wbounds2}
+        & \;\; \forall \; i \in [k] \quad \vw^\bot \le \vw^{i} \le \vw^\top \label{eq:wbounds2}
     \\
-        & \;\; \forall \; i \in [k] \;.\; \vx^{i} \in \calX_{\text{feasible}} \nonumber
+        & \;\; \forall \; i \in [k] \quad \vx^{i} \in \calX_{\text{feasible}} \nonumber
     \\
-        & \;\; \forall \; i \in [k] \;.\; \veps^{i}_h \ge 0 \nonumber
+        & \;\; \forall \; i \in [k] \quad \veps^{i}_h \ge 0 \nonumber
     \\
-        & \;\; M \ge 0 \nonumber
+        & \;\; \mu \ge 0 \nonumber
 \end{align}
 }
 %
@@ -468,8 +460,8 @@ with respect to the estimated user preferences, and as diverse as
 possible, are then employed to formulate a set of user queries. The
 new replies are added to $\calD$ and the whole procedure is
 repeated. The algorithm terminates after a fixed number of iterations,
-or once another suitable condition is met. \andrea{another suitable
-  condition like?}  The procedure is sketched in
+or once another suitable condition is met. \andrea{@Paolo: what termination
+condition for pref elicitation?}  The procedure is sketched in
 Algorithm~\ref{alg:setmargin}. Note that at the end of the preference
 elicitation procedure, a final recommendation is made by solving the
 MILP problem for $k=1$.
@@ -496,23 +488,6 @@ number of iterations. The values of $\calX_\text{feasible}$, $\vw^\top$ and
 $\vw^\bot$ are left implicit.}
 \end{algorithm}
 
-\paragraph{Query selection.} Contrarily to most other preference elicitation
-methods, which generate a single candidate option per iteration, {\sc
-SetMargin} constructs a whole {\em set} of options. We thus can not leverage
-standard query selection strategies \stefano{which ones?}. 
-
-The simplest solution is to query the user about all $k \choose 2$ pairs of
-configurations in $\{\vx^i\}$. Since $k$ is a small constant, the resulting
-number of queries does not grow large in practice.  An appealing alternative
-involves using a modified sorting algorithm, such as merge-sort, to order the
-set $\{\vx^i\}$ by asking only $O(n\log n)$ queries to the user. However, this
-approach is very susceptible to noise: a single inconsistent user response may
-affect all successive comparisons, leading to a cascading effect. While more
-robust strategies may be conceived, empirically we found that the simpler
-quadratic scheme tends to work reasonably well.
-
-\andrea{questa sezione e' da rivedere, con query selection si itende un'altra cosa di solito}
-
 \paragraph{Linearly dependent real attributes.} In many domains of interest,
 items are composed of both Boolean and real-valued attributes, where the latter
 depend linearly  on the former. This is for instance the case for the price,
@@ -528,17 +503,16 @@ straightforward to extend the MILP formulation to this setting, as follows.
 First, we rewrite the weight vector as $\vw = (\vw_B;\vw_R)$. The utility
 becomes:
 %
-$$ \langle \vw, \vx \rangle = \langle \vw_B, \vx_B \rangle + \langle \vw_R, C \vx_B \rangle = \langle \vw_B + C^\top \vw_B, \vx_B \rangle $$
+$$ \langle \vw, \vx \rangle = \langle \vw_B, \vx_B \rangle + \langle \vw_R, C \vx_B \rangle = \langle \vw_B + C' \vw_R, \vx_B \rangle $$
 %
-The generalized problem is obtained by substituting $\vw^i$ with $\vv^i := \vw_B^i + C^\top \vv_B^i$ and $p^{i,j}_z$
-with $q^{i,j}_z := \vv^i_z x^j_z$ in the MILP problem.
-All constraints remain the same, except Eq.~\ref{eq:wbounds2}, which must be
-rewritten in terms of $\vv^i$:
+The generalized problem is obtained by substituting $\vw^i$ with $\vv^i :=
+\vw_B^i + C' \vw_R^i$.  All constraints remain the same. The only notable
+change occurs in Eq.~(\ref{eq:wbounds2}), which becomes:
 %
-$$ \forall \; i \in [k] \;.\; (\vw_B^\bot + C^\bot \vw_R) \le \vv^i \le (\vw_B^\top + C^\top \vw_R^\top)$$
+$$ \forall \; i \in [k] \;.\; (\vw_B^\bot + C' \vw_R^\bot) \le \vv^i \le (\vw_B^\top + C' \vw_R^\top)$$
 %
 As can be seen, non-negativity of $C$ is required for the weights $\{\vv^i\}$
-to be non-negative. \andrea{check formulation}
+to be non-negative.
 
 \section{Experiments}
 \label{sec:experiments}
@@ -578,6 +552,23 @@ iterations. The hyperparameters are chosen as to minimize the ranking loss over
 the user responses collected so far. $\alpha$ is taken in $\{20, 10, 5, 1\}$,
 while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.
 \stefano{explain that we can't turn off $\gamma$}
+
+\paragraph{Cognitive effort.} Contrarily to most other preference elicitation
+methods, which generate a single candidate option per iteration, {\sc
+SetMargin} constructs a whole {\em set} of options. We thus can not leverage
+standard query selection strategies \stefano{which ones?}. 
+
+The simplest solution is to query the user about all $k \choose 2$ pairs of
+configurations in $\{\vx^i\}$. Since $k$ is a small constant, the resulting
+number of queries does not grow large in practice.  An appealing alternative
+involves using a modified sorting algorithm, such as merge-sort, to order the
+set $\{\vx^i\}$ by asking only $O(n\log n)$ queries to the user. However, this
+approach is very susceptible to noise: a single inconsistent user response may
+affect all successive comparisons, leading to a cascading effect. While more
+robust strategies may be conceived, empirically we found that the simpler
+quadratic scheme tends to work reasonably well.
+
+\andrea{rewrite as footnote}
 
 \paragraph{Synthetic Dataset.} Following the experimental protocol
 in~\cite{guo2010real} and \cite{viappiani2010optimal}, in the first experiment
