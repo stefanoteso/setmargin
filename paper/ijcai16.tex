@@ -163,7 +163,7 @@ recently a number of researchers have proposed principled methods that elicit ut
 While most works assume that items or decisions are available in a (possibly large)
 dataset, in this paper we propose an adaptive elicitation framework that takes a {\em constructive} view on preference
 elicitation, enlarging its scope from the selection of items among a
-set of candidates to the synthesis of entirely novelinstances. 
+set of candidates to the synthesis of entirely novel instances. 
 Instances are solutions to a given optimization problem; they are represented as combinations of basic elements
 (e.g. the components of a laptop) subject to a set of constraints
 (e.g. the laptop model determines the set of available CPUs). 
@@ -206,7 +206,7 @@ in both synthetic and configuration problems, and comparing it to state-of-the-a
 methods.
 
 The paper is structured as follows: after discussing related works in next Section,
-we present some brackground material in Section \ref{sec:background} 
+we present some background material in Section \ref{sec:background} 
 and then proceed to our setwise maxmargin method in Section \ref{sec:formulation}; 
 we discuss experimental results in Section \ref{sec:experiments}
 and conclude with final remarks (Section \ref{sec:conclusions}).
@@ -400,7 +400,7 @@ Figure~\ref{fig:setmargin} for a depiction of this intuition.\andrea{@Paolo: mmh
     \begin{center}
         \includegraphics[width=16em]{figures/setmargin}
     \end{center}
-    \caption{\label{fig:setmargin} The intuition behind setwise max-margin; the red points are utilty vectors $\vw^{i}$ $\vw^{j}$, the red line corresponds to the constraint $\langle \vw, \vx^{1} - \vx^{2} \rangle \ge 0$.}
+    \caption{\label{fig:setmargin} The intuition behind setwise max-margin; the red points are utility vectors $\vw^{i}$ $\vw^{j}$, the red line corresponds to the constraint $\langle \vw, \vx^{1} - \vx^{2} \rangle \ge 0$.}
 \end{figure}
 
 \paragraph{MILP Formulation.} This initial formulation is problematic to solve,
@@ -685,7 +685,7 @@ quadratic scheme tends to work reasonably well.
 \paragraph{Constructive dataset.} Next, we tested {\sc SetMargin} on a truly
 constructive setting. We developed a constructive version of the PC dataset
 used in~\cite{guo2010real}: instead of explicitly enumerating all possible PC
-item, we definined the set of feasible configurations through MILP constraints.
+item, we defined the set of feasible configurations through MILP constraints.
 
 A PC configurations is defined by eight attributes: computer type (laptop,
 desktop, or tower), manufacturer (8 choices), CPU model (37), monitor size (8), RAM amount (10), storage (10)
