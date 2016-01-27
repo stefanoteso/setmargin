@@ -705,29 +705,29 @@ $$ \max_{\vx\in\calX_\text{feasible}} \left( u(\vx) - u(\vx^*) \right) $$
 where $u(\cdot)$ is the true unknown user utility, and $\vx^*$ is the
 solution recommended to the user after the elicitation phase (see
 Algorithm~\ref{alg:setmargin}). Computational cost is measured in
-terms of cumulative time. Given that Guo and Viappiani (both QI and EUS) are
-single-threaded, we disabled multi-threading when running our
-algorithm in these comparisons. All experiments were run on a XXXXXX.
+terms of cumulative time. Given that Guo and Viappiani (both QI and
+EUS) are single-threaded, we disabled multi-threading when running our
+algorithm in these comparisons. All experiments were run on a XXXXXX\andrea{@stefano}.
 In all figures, thick lines indicate median values over the different
-users, shaded areas indicate standard deviations. \andrea{@stefano:
-  possiamo riportare la mediana anche per i tempi?}  Our {\sc
-  SetMargin} algorithm for $k=2$ is reported in orange, Guo in blue,
-Viappiani QI in green and Viappiani EUS in gray. For all algorithms,
-one iteration corresponds to a single pairwise query to the user.
-Results for $r=3$ and $r=4$ are reported.  For dense weight vector
-distributions (first two rows), our approach achieves results which
-are indistinguishable from the competitors in a fraction of their
-time.  Indeed, all Bayesian approaches cannot scale over $r=4$ (for
-$r=5$, Guo did not finish a single user after 24 hours for, Viappiani
-QI takes 20 minutes per user), \andrea{20 minuti mi paiono pochi, sei
-  sicuro?}  while our algorithm can easily scale to much larger
-datasets, as will be shown later on. For sparse weight vector
-distributions (last two rows) our approach, in addition to being
-substantially faster on each iteration, requires less queries in order
-to reach optimal solutions. This is an expected result as the
-sparsification norm in our formulation ($\| \vw^{i} \|_1$) is
-enforcing sparsity in the weight vectors, while none of the other
-approaches are explicitly designed to favour sparse functions.
+users, shaded areas indicate standard deviations. Our {\sc SetMargin}
+algorithm for $k=2$ is reported in orange, Guo in blue, Viappiani QI
+in green and Viappiani EUS in gray. For all algorithms, one iteration
+corresponds to a single pairwise query to the user.  Results for $r=3$
+and $r=4$ are reported.  For dense weight vector distributions (first
+two rows), our approach achieves results which are indistinguishable
+from the competitors in a fraction of their time.  Indeed, all
+Bayesian approaches become quickly intractable for growing values of $r$,
+%cannot scale over $r=4$ (for $r=5$, Guo did not
+%finish a single user after 24 hours for, Viappiani QI takes 20 minutes
+%per user), \andrea{20 minuti mi paiono pochi, sei sicuro?}  
+while our algorithm can easily scale to much larger datasets, as will
+be shown later on. For sparse weight vector distributions (last two
+rows) our approach, in addition to being substantially faster on each
+iteration, requires less queries in order to reach optimal
+solutions. This is an expected result as the sparsification norm in
+our formulation ($\| \vw \|_1$) is enforcing sparsity in the weight
+vectors, while none of the other approaches are explicitly designed to
+favour sparse functions.
 
 
 % Guo e' piantato al primo utente da tre giorni su synthetic 5.
@@ -855,10 +855,16 @@ discarded.
 \section{Conclusion}
 \label{sec:conclusions}
 
-This paper presented a maxmargin approach to generating a set of diverse examples.
-Our approach, that can be seen as an extension of maxmargin learning to sets, is effective in the generation of a diverse set of items that can be used to ask informative queries to the user.
-The main advantages of our elicitation method are 1) its aptitude for eliciting preferences and providing recommendations in large configuration problems  2) robustness with respect to erroneous preference input, and 3) its ability to support sparse utility functions.
-In a number of experiments we showed how our method compare with state-of-the-art approaches.
+We presented a max-margin approach for generating a set of diverse
+examples.  Our approach, that can be seen as an extension of maxmargin
+learning to sets, is effective in the generation of a diverse set of
+items that can be used to ask informative queries to the user.  The
+main advantages of our elicitation method are 1) its aptitude for
+eliciting preferences and providing recommendations in large
+configuration problems 2) robustness with respect to erroneous
+preference input, and 3) its ability to support sparse utility
+functions.  In a number of experiments we showed how our method
+compare with state-of-the-art approaches.
 
 \paolo{any idea about possible future works?}
 % FUTURE WORKS
@@ -923,7 +929,7 @@ In a number of experiments we showed how our method compare with state-of-the-ar
       columns). Thick lines indicate median values over all users,
       while standard deviations are shown as shaded areas. Curves
       represent {\sc SetMargin} (orange), Guo (blue), Viappiani QI
-      (green) and Viappiani EUS (gray) respectively. \andrea{@stefano remove median and average from y-axis}}
+      (green) and Viappiani EUS (gray) respectively.}
 \end{figure}
 
 \begin{figure}[b]
