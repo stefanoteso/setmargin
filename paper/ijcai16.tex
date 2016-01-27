@@ -663,7 +663,7 @@ $$ \max_{\vx\in\calX_\text{feasible}} \left( u(\vx) - u(\vx^*) \right) $$
 where $u(\cdot)$ is the true unknown user utility, and $\vx^*$ is the
 solution recommended to the user after the elicitation phase (see
 Algorithm~\ref{alg:setmargin}). Computational cost is measured in
-terms of cumulative time. Given that Guo and Viappiani are
+terms of cumulative time. Given that Guo and Viappiani (both QI and EUS) are
 single-threaded, we disabled multi-threading when running our
 algorithm in these comparisons. All experiments were run on a XXXXXX.
 In all figures, thick lines indicate median values over the different
@@ -697,7 +697,7 @@ approaches are explicitly designed to favour sparse functions.
 In order to study the effect of increasing the number of weight
 vectors in our formulation, we also ran {\sc SetMargin} varying the
 parameter $k$. Figure~\ref{fig:selfcomparison} reports utility loss
-results on $r=4$ and $r=5$ datasets for the uniform and normal sparse
+results on $r=4$ and $r=5$ datasets for the uniform and sparse normal
 distributions\footnote{We picked the most difficult dense distribution
   (uniform) and the simplest sparse distribution (normal) to provide
   the broadest possible picture, as space constraints prevent us from
@@ -764,20 +764,32 @@ one-hot encoding of an attribute ensures that only one of
 $x_\text{G3}$ and $x_\text{G4}$ can be 1.  The dataset includes
 constraints between the following attributes: manufacturer $\to$ type,
 manufacturer $\to$ CPU, type $\to$ RAM amount, type $\to$ storage
-size, type $\to$ monitor size, for 16 Horn constraints total. We
-do not report the full list due to space limitations.
+size, type $\to$ monitor size, for 16 Horn constraints total. We do
+not report the full list due to space limitations. Note that the
+search space is of the order of hundreds of thousands of candidate
+configurations, and is far beyond reach of existing Bayesian
+approaches. Furthermore, existing Bayesian preference elicitation
+approaches are designed for categorical attributes and cannot deal
+with (even dependent) continuous features like the price. \andrea{@andrea: mention Bonilla}
 
-% 76 features (somma)
-% >>> 3*8*37*8*10*10
-% 710400
-
-la crossval ogni 5 iterazioni richiede tempo considerevole, che nel
-grafico cumulativo del tempo si assomma alle crossval successivie, ampliando
-la varianza; in alcuni casi degeneri per alcuni parametri la cosa prende
-tempi biblici. in tali casi i risultati sono tipicamente indecente, quindi mettendo
-un timeout sui tempi di cross validation e' possibile ridurre questo problema.
-
-\ref{fig:pc}
+Figure~\ref{fig:pc} reports results of {\sc SetMargin} for $k=2$
+(red), $k=3$ (blue) and $k=4$ (green) using the sparse uniform (top
+row) and sparse normal (bottom row) distributions. The first and third
+column report utility loss for increasing number of iterations and
+queries respectively, showing a behaviour which is similar to the one
+in Figure~\ref{fig:selfcomparison}. Overall, between 50 and 70 queries
+on average are needed in order to find out a solution which is only
+10\% worse than the optimal one, out of the more than 700,000
+thousands available. \andrea{something about the lack of smart
+  constraints, as a vendor would have..}  The second and fourth
+columns report cumulative times. Note that in some cases, standard
+deviations have a bump. This is due to cases in which some of the
+hyperparameters of the internal cross validation result in
+ill-conditioned optimization problems which are hard to solve. These
+exceptions can be easily dealt with by setting an appropriate timeout
+on the cross validation without affecting the results, as these
+hyperparameters typically end up having bad performance and being
+discarded.
 
 % \begin{table}
 %     \centering
@@ -795,7 +807,6 @@ un timeout sui tempi di cross validation e' possibile ridurre questo problema.
 %     \caption{\label{tab:pcdataset} Statistics for the PC dataset.}
 % \end{table}
 
-\stefano{Add figures and comments.}
 
 \section{Conclusion}
 \label{sec:conclusions}
@@ -840,7 +851,7 @@ In a number of experiments we showed how our method compare with state-of-the-ar
         \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_per_iter_time}
         \\
         \hline
-        \multicolumn{4}{c}{{\sc Uniform Sparse}}
+        \multicolumn{4}{c}{{\sc Sparse Uniform}}
         \\
         \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_loss} &
         \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_time} &
@@ -848,7 +859,7 @@ In a number of experiments we showed how our method compare with state-of-the-ar
         \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_time}
         \\
         \hline
-        \multicolumn{4}{c}{{\sc Normal Sparse}}
+        \multicolumn{4}{c}{{\sc Sparse Normal}}
         \\
         \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_loss} &
         \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_time} &
@@ -858,10 +869,17 @@ In a number of experiments we showed how our method compare with state-of-the-ar
         \hline
     \end{tabular}
     }
-    \caption{\label{fig:comparison} Comparison between {\sc SetMargin} and the
-    Bayesian competitors. The thick lines represent the median utility loss
-    over all users, while the shaded area is the standard deviation. {\sc
-    SetMargin} orange, Guo blue, Viappiani QI green, Viappiani EUS gray.}
+    \caption{\label{fig:comparison} Comparison between {\sc SetMargin}
+      and the Bayesian competitors on the $r=3$ (left) and $r=4$
+      (right) datasets. Each row represents a different distribution
+      for sampling the underlying user utility.  The x-axis reports
+      the number of iterations (i.e. pairwise queries), while the
+      y-axis reports the utility loss (first and third columns) and
+      the cumulative time in seconds (second and fourth
+      columns). Thick lines indicate median values over all users,
+      while standard deviations are shown as shaded areas. Curves
+      represent {\sc SetMargin} (orange), Guo (blue), Viappiani QI
+      (green) and Viappiani EUS (gray) respectively. \andrea{@stefano remove median and average from y-axis}}
 \end{figure}
 
 \begin{figure}[b]
@@ -883,7 +901,7 @@ In a number of experiments we showed how our method compare with state-of-the-ar
         \includegraphics[width=10em]{figures/synthetic_vs_self_5_uniform_per_query_loss}
         \\
         \hline
-        \multicolumn{4}{c}{{\sc normal sparse}}
+        \multicolumn{4}{c}{{\sc sparse normal}}
         \\
         \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_iter_loss} &
         \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_query_loss} &
@@ -893,8 +911,9 @@ In a number of experiments we showed how our method compare with state-of-the-ar
         \hline
      \end{tabular}
     }
-    \caption{\label{fig:selfcomparison} Comparison for {\sc SetMargin} with
-    $k=2,3,4$, in orange, blue and green respectively.}
+    \caption{\label{fig:selfcomparison} Comparison for {\sc SetMargin}
+      with $k=2,3,4$, in orange, blue and green respectively for the
+      $r=4$ (left) and $r=5$ (right) datasets using uniform (top row) and sparse normal (bottom row) distributions for user utility. Median (thick lines) and standard deviation (shaded areas) utility loss values are reported for increasing number of iterations (first and third columns) and pairwise queries (second and fourth columns).}
 \end{figure}
 
 % times for the figure above
@@ -915,7 +934,7 @@ In a number of experiments we showed how our method compare with state-of-the-ar
         \multicolumn{2}{c}{{\sc loss/time per iter.}} &
         \multicolumn{2}{c}{{\sc loss/time per query}}
         \\
-        \multicolumn{4}{c}{{\sc uniform sparse}}
+        \multicolumn{4}{c}{{\sc sparse uniform}}
         \\
         \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
         \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
@@ -923,7 +942,7 @@ In a number of experiments we showed how our method compare with state-of-the-ar
         \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
         \\
         \hline
-        \multicolumn{4}{c}{{\sc normal sparse}}
+        \multicolumn{4}{c}{{\sc sparse normal}}
         \\
         \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_loss} &
         \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_time} &
