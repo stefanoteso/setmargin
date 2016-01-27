@@ -1,19 +1,71 @@
 #!/bin/bash
 
-for sampling_mode in uniform uniform_sparse normal normal_sparse; do
-    for domain_size in `seq 3 6`; do
-        ipath="results/ijcai16/synthetic_${domain_size}/${sampling_mode}"
-        opath="paper/figures/synthetic_${domain_size}_${sampling_mode}"
-        echo "drawing $ipath -> $opath"
-        ./draw.py $ipath ${opath}_per_iter 0
-        ./draw.py $ipath ${opath}_per_query 1
+# setmargin vs guo vs viappiani
+
+for domain_size in `seq 3 4`; do # XXX 5
+    for sampling_mode in uniform uniform_sparse normal normal_sparse; do
+        echo "setmargin vs guo vs viappiani, per iteration, $domain_size $sampling_mode"
+        setmargin_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=2*50__300*.pickle`
+        guo_files=`ls results/ijcai16/guo/synthetic_${domain_size}/${sampling_mode}/*.mat`
+        viappiani_qi_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*QI*.txt`
+        viappiani_eus_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*EUS*.txt`
+        output="paper/figures/synthetic_vs_others_${domain_size}_${sampling_mode}_per_iter"
+        ./draw.py 0 $output "$setmargin_files" "$guo_files" "$viappiani_qi_files" "$viappiani_eus_files"
     done
 done
 
+for domain_size in `seq 3 4`; do # XXX 5
+    for sampling_mode in uniform uniform_sparse normal normal_sparse; do
+        echo "setmargin vs guo vs viappiani, per query, $domain_size $sampling_mode"
+        setmargin_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=2*100__100*.pickle`
+        guo_files=`ls results/ijcai16/guo/synthetic_${domain_size}/${sampling_mode}/*.mat`
+        viappiani_qi_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*QI*.txt`
+        viappiani_eus_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*EUS*.txt`
+        output="paper/figures/synthetic_vs_others_${domain_size}_${sampling_mode}_per_iter"
+        ./draw.py 1 $output "$setmargin_files" "$guo_files" "$viappiani_qi_files" "$viappiani_eus_files"
+    done
+done
+
+# setmargin k=2 vs k=3 vs k=4
+
+for domain_size in `seq 3 5`; do
+    for sampling_mode in uniform uniform_sparse normal normal_sparse; do
+        echo "setmargin vs self, per iteration, $domain_size $sampling_mode"
+        k2_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=2*50__300*.pickle`
+        k3_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=3*50__300*.pickle`
+        k4_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=4*50__300*.pickle`
+        output="paper/figures/synthetic_vs_self_${domain_size}_${sampling_mode}_per_iter"
+        ./draw.py 0 $output "$k2_files" "$k3_files" "$k4_files"
+    done
+done
+
+for domain_size in `seq 3 5`; do
+    for sampling_mode in uniform uniform_sparse normal normal_sparse; do
+        echo "setmargin vs self, per query, $domain_size $sampling_mode"
+        k2_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=2*100__100*.pickle`
+        k3_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=3*100__100*.pickle`
+        k4_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=4*100__100*.pickle`
+        output="paper/figures/synthetic_vs_self_${domain_size}_${sampling_mode}_per_query"
+        ./draw.py 1 $output "$k2_files" "$k3_files" "$k4_files"
+    done
+done
+
+# PC
+
 for sampling_mode in uniform_sparse normal_sparse; do
-    ipath="results/ijcai16/pc_with_costs/${sampling_mode}"
-    opath="paper/figures/pc_with_costs_${sampling_mode}"
-    echo "drawing $ipath -> $opath"
-    ./draw.py $ipath ${opath}_per_iter 0
-    ./draw.py $ipath ${opath}_per_query 1
+    echo "PC, per iteration, $sampling_mode"
+    k2_files=`ls results/ijcai16/pc_with_costs/${sampling_mode}/*k=2*50__300*.pickle`
+    k3_files=`ls results/ijcai16/pc_with_costs/${sampling_mode}/*k=3*50__300*.pickle`
+    k4_files=`ls results/ijcai16/pc_with_costs/${sampling_mode}/*k=4*50__300*.pickle`
+    output="paper/figures/pc_with_costs_${sampling_mode}_per_iter"
+    ./draw.py 0 $output "$k2_files" "$k3_files" "$k4_files"
+done
+
+for sampling_mode in uniform_sparse normal_sparse; do
+    echo "PC, per query, $sampling_mode"
+    k2_files=`ls results/ijcai16/pc_with_costs/${sampling_mode}/*k=2*100__100*.pickle`
+    k3_files=`ls results/ijcai16/pc_with_costs/${sampling_mode}/*k=3*100__100*.pickle`
+    k4_files=`ls results/ijcai16/pc_with_costs/${sampling_mode}/*k=4*100__100*.pickle`
+    output="paper/figures/pc_with_costs_${sampling_mode}_per_query"
+    ./draw.py 1 $output "$k2_files" "$k3_files" "$k4_files"
 done

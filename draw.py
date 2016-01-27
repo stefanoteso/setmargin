@@ -6,15 +6,16 @@ import numpy as np
 from scipy.io import loadmat
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
+from collections import defaultdict
 from glob import glob
 
 # Colors taken from http://tango.freedesktop.org/Tango_Icon_Theme_Guidelines
-COLOR_OF = {
-    1: ("#000000", "#000000"),
-    2: ("#CE5C00", "#F57900"),
-    3: ("#204A87", "#3465A4"),
-    4: ("#4E9A06", "#73D216"),
-}
+COLORS = [
+    ("#CE5C00", "#F57900"), # orange
+    ("#204A87", "#3465A4"), # sky blue
+    ("#4E9A06", "#73D216"), # chameleon
+    ("#2E3436", "#555753"), # aluminium
+]
 
 def infos_to_matrices(infos, per_query):
     num_trials = len(infos)
@@ -49,109 +50,110 @@ def infos_to_matrices(infos, per_query):
     else:
         return loss_matrix[:,:50], time_matrix[:,:50]
 
-def draw(paths, dest_path, per_query):
-    loss_fig, loss_ax = plt.subplots(1, 1)
-    time_fig, time_ax = plt.subplots(1, 1)
+def load_setmargin(path):
+    with open(path, "rb") as fp:
+        infos = pickle.load(fp)
+    return infos
 
-    max_max_x = None
-    max_loss_max_y = None
-    max_time_max_y = None
-    for path in paths:
+def load_viappiani(path):
+    with open(path, "rb") as fp:
+        lines = map(str.strip, fp.readlines())
+    infos = defaultdict(dict)
+    for line in lines[1:]:
+        trial, iteration, loss, time = line.split(", ")
+        infos[int(trial) - 1][int(iteration)] = (1, float(loss), float(time))
+    info_list = []
+    assert infos.keys() == range(20)
+    for trial in range(20):
+        assert infos[trial].keys() == range(101)
+        info_list.append([infos[trial][iteration] for iteration in range(100)])
+    return info_list
 
-        try:
-            with open(path, "rb") as fp:
-                infos = pickle.load(fp)
-            loss_matrix, time_matrix = infos_to_matrices(infos, per_query=per_query)
-            # XXX we have multiple sets of experiments that end up being
-            # drawn together; remove this hack post-IJCAI
-            if per_query and not "100__100" in path:
-                continue
-            if not per_query and not "50__300" in path:
-                continue
-        except:
-            pass
+def load_guo(paths):
+    infos = []
+    assert len(paths) == 20
+    for trial, path in enumerate(sorted(paths)):
+        mat = loadmat(path, squeeze_me=True)
+        losses = map(float, mat["expectedLossMatrix"].ravel())
+        times = map(float, mat["timeUsed"].ravel())
+        assert len(losses) == len(times) == 100
+        infos.append(zip([1] * 100, losses, times))
+    return infos
 
-        assert loss_matrix.shape == time_matrix.shape
-        max_x = loss_matrix.shape[1]
+def draw_matrices(ax, matrices, cumulative):
+    max_x, max_y = None, None
+    for i, matrix in enumerate(matrices):
+        cur_max_x = matrix.shape[1]
+        if max_x is None or cur_max_x > max_x:
+            max_x = cur_max_x
 
-        try:
-            mat = loadmat(path, squeeze_me=True)
-            loss_matrix = mat["expectedLossMatrix"].reshape(1, -1)
-            time_matrix = mat["timeUsed"].reshape(1, -1)
-            print loss_matrix
-            print loss_matrix.shape
-            print time_matrix
-            print time_matrix.shape
-            max_x = 100 if per_query else 50
-        except:
-            pass
+        assert matrix.shape[0] == 20
 
-        xs = np.arange(max_x)
-        if max_max_x is None or max_max_x < max_x:
-            max_max_x = max_x
+        xs = np.arange(cur_max_x)
+        if cumulative:
+            matrix = matrix.cumsum(axis=1)
+        ys = np.median(matrix, axis=0)
+        yerrs = np.std(matrix, axis=0) / np.sqrt(matrix.shape[0])
 
-        loss_ys = np.median(loss_matrix, axis=0)
-        loss_yerrs = np.std(loss_matrix, axis=0) / np.sqrt(loss_matrix.shape[0])
-        loss_max_y = max(loss_ys + loss_yerrs)
-        if max_loss_max_y is None or max_loss_max_y < loss_max_y:
-            max_loss_max_y = loss_max_y
+        cur_max_y = max(ys + yerrs)
+        if max_y is None or cur_max_y > max_y:
+            max_y = cur_max_y
 
-        time_ys = np.median(time_matrix.cumsum(axis=1), axis=0)
-        time_yerrs = np.std(time_matrix.cumsum(axis=1), axis=0) / np.sqrt(loss_matrix.shape[0])
-        time_max_y = max(time_ys + time_yerrs)
-        if max_time_max_y is None or max_time_max_y < time_max_y:
-            max_time_max_y = time_max_y
+        fg, bg = COLORS[i]
 
-        try:
-            parts = os.path.basename(path).split("__")
-            set_size = int(parts[1].split("=")[1])
-        except:
-            set_size = 1
+        ax.plot(xs, ys, "o-", linewidth=2.5, color=fg)
+        ax.fill_between(xs, ys - yerrs, ys + yerrs, color=bg, alpha=0.35, linewidth=0)
 
-        fg, bg = COLOR_OF[set_size]
+    return max_x, max_y
 
-        loss_ax.plot(xs, loss_ys, "o-", linewidth=2.0, color=fg)
-        loss_ax.fill_between(xs, loss_ys - loss_yerrs, loss_ys + loss_yerrs,
-                             color=bg, alpha=0.35, linewidth=0)
-
-        time_ax.plot(xs, time_ys, "o-", linewidth=2.0, color=fg)
-        time_ax.fill_between(xs, time_ys - time_yerrs, time_ys + time_yerrs,
-                             color=bg, alpha=0.35, linewidth=0)
+def draw_groups(basename, groups, per_query=False):
+    loss_matrices, time_matrices = [], []
+    for group in groups:
+        paths = group.split()
+        if len(paths) == 1 and paths[0].endswith(".pickle"):
+            infos = load_setmargin(paths[0])
+        elif len(paths) == 1 and paths[0].endswith(".txt"):
+            infos = load_viappiani(paths[0])
+        elif len(paths) >= 1 and paths[0].endswith(".mat"):
+            infos = load_guo(paths)
+        else:
+            raise ValueError()
+        loss_matrix, time_matrix = infos_to_matrices(infos, per_query)
+        loss_matrices.append(loss_matrix)
+        time_matrices.append(time_matrix)
 
     xlabel = "Number of queries" if per_query else "Number of iterations"
 
-    loss_ax.set_xlabel(xlabel)
-    loss_ax.set_ylabel("Median average utility loss")
-    try:
-        loss_ax.set_xlim([0.0, max_max_x])
-        loss_ax.set_xticks(np.arange(0, max_max_x, 10))
-        loss_ax.set_ylim([0.0, max(100.0, max_loss_max_y + 0.1)])
-        loss_ax.set_yticks(np.arange(0, max_loss_max_y, 10))
-    except:
-        pass
-    loss_fig.savefig(dest_path + "_loss.png", bbox_inches="tight")
+    # Loss
+    fig, ax = plt.subplots(1, 1)
+    max_x, max_y = draw_matrices(ax, loss_matrices, False)
 
-    time_ax.set_xlabel(xlabel)
-    time_ax.set_ylabel("Cumulative average time (in seconds)")
-    try:
-        time_ax.set_xlim([0.0, max_max_x])
-        time_ax.set_xticks(np.arange(0, max_max_x, 10))
-        time_ax.set_ylim([0.0, max(1.0, max_time_max_y + 0.1)])
-        time_ax.set_yticks(np.arange(0, max_time_max_y, 10))
-    except:
-        pass
-    time_fig.savefig(dest_path + "_time.png", bbox_inches="tight")
+    ax.set_xlabel(xlabel)
+    ax.set_xlim([0.0, max_x])
+    ax.set_xticks(np.arange(0, max_x, 10))
+
+    ax.set_ylabel("Median utility loss")
+    ax.set_ylim([0.0, max_y + 0.1])
+    ax.set_yticks(np.arange(0, max_y, 10))
+
+    fig.savefig(basename + "_loss.png", bbox_inches="tight")
+
+    # Time
+    fig, ax = plt.subplots(1, 1)
+    max_x, max_y = draw_matrices(ax, time_matrices, True)
+
+    ax.set_xlabel(xlabel)
+    ax.set_xlim([0.0, max_x])
+    ax.set_xticks(np.arange(0, max_x, 10))
+
+    ax.set_ylabel("Cumulative average time (in seconds)")
+    ax.set_ylim([0.0, max_y + 0.1])
+    ax.set_yticks(np.arange(0, max_y, 50))
+
+    fig.savefig(basename + "_time.png", bbox_inches="tight")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print "Usage: {} <results directory> <output image> [per query?]".format(sys.argv[0])
-        sys.exit(1)
-    paths = sorted(glob(os.path.join(sys.argv[1], "results_*.pickle")))
-    if len(paths) > 0:
-        draw(paths, sys.argv[2], int(sys.argv[3]))
+    if len(sys.argv) < 4:
+        print "Usage: {} <per query?> <output basename> (<group>)+".format(sys.argv[0])
         quit()
-    paths = sorted(glob(os.path.join(sys.argv[1], "results_*.mat")))
-    print paths
-    if len(paths) > 0:
-        draw(paths, sys.argv[2], int(sys.argv[3]))
-        quit()
+    draw_groups(sys.argv[2], sys.argv[3:], per_query=bool(int(sys.argv[1])))
