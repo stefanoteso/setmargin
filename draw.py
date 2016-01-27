@@ -45,10 +45,7 @@ def infos_to_matrices(infos, per_query):
                 loss_matrix[trial,iteration] = loss
                 time_matrix[trial,iteration] = time
 
-    if per_query:
-        return loss_matrix[:,:100], time_matrix[:,:100]
-    else:
-        return loss_matrix[:,:50], time_matrix[:,:50]
+    return loss_matrix, time_matrix
 
 def load_setmargin(path):
     with open(path, "rb") as fp:
@@ -106,7 +103,7 @@ def draw_matrices(ax, matrices, cumulative):
 
     return max_x, max_y
 
-def draw_groups(basename, groups, per_query=False):
+def draw_groups(basename, groups, upper_max_x, per_query=False):
     loss_matrices, time_matrices = [], []
     for group in groups:
         paths = group.split()
@@ -119,8 +116,8 @@ def draw_groups(basename, groups, per_query=False):
         else:
             raise ValueError()
         loss_matrix, time_matrix = infos_to_matrices(infos, per_query)
-        loss_matrices.append(loss_matrix)
-        time_matrices.append(time_matrix)
+        loss_matrices.append(loss_matrix[:,:upper_max_x])
+        time_matrices.append(time_matrix[:,:upper_max_x])
 
     xlabel = "Number of queries" if per_query else "Number of iterations"
 
@@ -153,7 +150,7 @@ def draw_groups(basename, groups, per_query=False):
     fig.savefig(basename + "_time.png", bbox_inches="tight")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
-        print "Usage: {} <per query?> <output basename> (<group>)+".format(sys.argv[0])
+    if len(sys.argv) < 5:
+        print "Usage: {} <per query?> <max x> <output basename> (<group>)+".format(sys.argv[0])
         quit()
-    draw_groups(sys.argv[2], sys.argv[3:], per_query=bool(int(sys.argv[1])))
+    draw_groups(sys.argv[2], sys.argv[4:], int(sys.argv[3]), per_query=bool(int(sys.argv[1])))

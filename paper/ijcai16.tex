@@ -158,7 +158,9 @@ The goal in preference elicitation is that of gaining enough information about t
 The assessment of preferences have received considerable attention in the literature, with early works confined to the operation research and management literature mostly \cite{}.
 In the past decade a number of researchers have considered elicitation of preferences from an artificial intelligence perspective; within the machine learning field the term preference learning has been catching up.
 While preferences are often assessed using some ad-hoc rules \cite{},
-recently a number of researchers have proposed principled methods that elicit utility in an adaptive way \cite{chajewska2000,boutilier2002,Wang2003,boutilier2006,braziunas-mmr:uai07,guo2010real,viappiani2010optimal}; the aims is that of focusing on learning the ``important'' part of the utility, allowing to recommend good (or even optimal) decision with only a partial information about the utility function.
+recently a number of researchers have proposed principled methods that elicit utility in an adaptive way \cite{chajewska2000,boutilier2002,Wang2003,boutilier2006,braziunas2007,guo2010real,viappiani2010optimal}; the aims is that of focusing on learning the ``important'' part of the utility, allowing to recommend good (or even optimal) decision with only a partial information about the utility function.
+
+%braziunas-mmr:uai07,
 
 %One option is to be Bayesian and to maintain a probability distribution over the possible realizations of the utility's parameters \cite{chajewska2000,boutilier2002,guo2010real,viappiani2010optimal}.
 %Alternatively, when distribution information about the parameters is not available, one can reason about all feasible utility functions consistent with the currently known information about the user; from the user's response we are able to infer constraints on the parameters implicated in the utility model \cite{Wang2003,boutilier2006,braziunasmmr:uai07,viappiani2009}.
@@ -178,7 +180,7 @@ The recommendation is then made by solving a constrained optimization
  problem in the space of feasible instances, guided by the learned
 utility. 
 
-Our approach is related to \cite{boutilier2006}, where minimax regret is used both
+Preference elicitation in configuration problems has been previously tackled with regret-based elicitation \cite{boutilier2006,braziunas2007}, where minimax regret is used both
 as a robust recommendation criterion and as a technique to drive elicitation in configuration problems.
 The main limitation of the minimax regret approach is the lack of tolerance with respect to user inconsistency (the user might state that item x is preferred to y, even though the latter has higher utility).
 
@@ -189,7 +191,7 @@ inconsistent user feedback.
 Bayesian preference elicitation approaches
 deal with both problems by building a probability distribution on
 candidate functions (endowed with a response or error model to be used for inference) and asking queries maximizing informativeness
-measures such as expected value of information (EVOI)~\cite{chajewska2000,viappiani2010optimal}. 
+measures such as expected value of information (EVOI)~\cite{chajewska2000,guo2010real,viappiani2010optimal}. 
 
 These
 approaches are however computationally expensive and can not scale to
@@ -250,14 +252,18 @@ e.g. under the canonical mapping of $True$ to $1$ and $False$ to $0$, the
 Boolean disjunction of two binary variables $x_1 \lor x_2$ can be rewritten as
 $x_1 + x_2 \ge 1$.
 
-Consistently with previous work~\cite{guo2010real,viappiani2010optimal}, we model users by means
-of linear utility functions: the user's preferences are represented by a weight
-vector $\vw\in\bbR^m$, and the utility of a configuration $\vx$ is given by
-$\langle \vw, \vx \rangle = \sum_{z=1}^m w_z x_z$. In the remainder of the paper we
+Consistently with previous work~\cite{guo2010real,viappiani2010optimal}, 
+we model users by means of utility functions of a given structure; the user's preferences are represented by a latent weight
+vector $\vw\in\bbR^m$.
+We assume linear utility functions; the utility of a configuration $\vx$ is given by
+$\langle \vw, \vx \rangle = \sum_{z=1}^m w_z x_z$
+(see \cite{keeney1976} for theoretical conditions justifying additive utility functions). 
+In the remainder of the paper we
 require all weights to be {\em non-negative} and {\em bounded}: the per-attribute
 weights $w_z$ must lie in a (constant but otherwise arbitrary) interval
-$[w^\bot_z, w^\top_z]$, with $w^\bot_z \ge 0$. Both requirements are quite
-natural, and enable the translation of our core optimization problem into a
+$[w^\bot_z, w^\top_z]$, with $w^\bot_z \ge 0$. 
+Both requirements are quite natural\footnote{Utility values are defined on an
+interval scale, therefore the assumption of non negativity is not restrictive as it is always possible to scale the values appropriately (see for instance \cite{Torra2007} and \cite{keeney1976}).}, and enable the translation of our core optimization problem into a
 mixed-integer linear problem (as done in Section~\ref{sec:formulation}).
 
 During learning, the actual weight vector $\vw$ is {\em unknown} to the
@@ -642,10 +648,12 @@ Users were simulated by drawing $20$ random utility vectors from each of four
 different distributions. The first two mimic those used
 in~\cite{guo2010real}\footnote{The normal distribution reported
 in~\cite{guo2010real} differs slightly from the one implemented in the code of
-their experimental setting. In this paper we use the latter.}:
+their experimental setting. 
+In our experiments we use the latter.}:
 (1) a uniform distribution over $[1, 100]$ for each individual weight, and (2)
-a normal distribution with mean $25$ and covariance
-$\frac{25}{3}$.  We further produced two novel
+a normal distribution with mean $25$ and %covariance
+standard deviation $\frac{25}{3}$ (each attribute is sample i.i.d).  
+We further produced two novel
 {\em sparse} sets of weight vectors by deleting $80\%$ of the entries of the
 vectors sampled in the uniform and normal settings uniformly at random
 \stefano{Paolo, is this correct?}. All methods were evaluated on the very same
@@ -660,6 +668,40 @@ distributions. Solution quality is measured in terms of utility loss:
 %
 $$ \max_{\vx\in\calX_\text{feasible}} \left( u(\vx) - u(\vx^*) \right) $$
 %
+%<<<<<<< HEAD
+%varying the number of collected user responses. Here $u(\cdot)$ is the
+%true unknown user utility, and $\vx^*$ is the solution recommended to
+%the user after the elicitation phase (see Algorithm~\ref{alg:setmargin}).
+%
+%The thick line is the median
+%utility loss taken over all 20 users, while the shaded area represents the
+%standard deviation.
+%
+%\stefano{plot average utility loss at the increase of dataset size}
+%
+%\stefano{plot average runtime at the increase of dataset size}
+%
+%\stefano{comment on usefulness of sparse weights}
+%
+%\paolo{Maybe a plot of an experiment with increased noise in user reponse? (for example, $\beta=0.1$ instead of $1$.}
+%
+%\paragraph{Cognitive effort.} Contrarily to most other preference elicitation
+%methods, which generate a single candidate option per iteration, {\sc
+%SetMargin} constructs a whole {\em set} of options. We thus can not leverage
+%standard query selection strategies \stefano{which ones?}. 
+%
+%The simplest solution is to query the user about all $k \choose 2$ pairs of
+%configurations in $\{\vx^i\}$. Since $k$ is a small constant, the resulting
+%number of queries does not grow large in practice.  An appealing alternative
+%involves using a modified sorting algorithm, such as merge-sort, to order the
+%set $\{\vx^i\}$ by asking only $O(n\log n)$ queries to the user. However, this
+%approach is very susceptible to noise: a single inconsistent user response may
+%affect all successive comparisons, leading to a cascading effect. While more
+%robust strategies may be conceived, empirically we found that the simpler
+%quadratic scheme tends to work reasonably well.
+%
+%\andrea{rewrite as footnote}
+%=======
 where $u(\cdot)$ is the true unknown user utility, and $\vx^*$ is the
 solution recommended to the user after the elicitation phase (see
 Algorithm~\ref{alg:setmargin}). Computational cost is measured in
@@ -734,6 +776,8 @@ effect of inconsistence feedback. \andrea{@stefano: l'ho rifrasato un
 % affect all successive comparisons, leading to a cascading effect. While more
 % robust strategies may be conceived, empirically we found that the simpler
 % quadratic scheme tends to work reasonably well.
+
+\paolo{Maybe a plot of an experiment with increased noise in user response? (for example, $\beta=0.1$ instead of $1$.}
 
 
 \paragraph{Constructive dataset.} Next, we tested {\sc SetMargin} on a truly
