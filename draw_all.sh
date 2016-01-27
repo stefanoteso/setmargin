@@ -5,7 +5,7 @@
 for domain_size in `seq 3 4`; do # XXX 5
     for sampling_mode in uniform uniform_sparse normal normal_sparse; do
         echo "setmargin vs guo vs viappiani, per iteration, $domain_size $sampling_mode"
-        setmargin_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=2*50__300*.pickle`
+        setmargin_files=`ls results/ijcai16/threads\=1/synthetic_${domain_size}/${sampling_mode}/*k=2*.pickle`
         guo_files=`ls results/ijcai16/guo/synthetic_${domain_size}/${sampling_mode}/*.mat`
         viappiani_qi_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*QI*.txt`
         viappiani_eus_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*EUS*.txt`
@@ -17,7 +17,7 @@ done
 for domain_size in `seq 3 4`; do # XXX 5
     for sampling_mode in uniform uniform_sparse normal normal_sparse; do
         echo "setmargin vs guo vs viappiani, per query, $domain_size $sampling_mode"
-        setmargin_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=2*100__100*.pickle`
+        setmargin_files=`ls results/ijcai16/threads\=1/synthetic_${domain_size}/${sampling_mode}/*k=2*.pickle`
         guo_files=`ls results/ijcai16/guo/synthetic_${domain_size}/${sampling_mode}/*.mat`
         viappiani_qi_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*QI*.txt`
         viappiani_eus_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*EUS*.txt`
