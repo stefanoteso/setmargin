@@ -21,7 +21,7 @@ for domain_size in `seq 3 4`; do # XXX 5
         guo_files=`ls results/ijcai16/guo/synthetic_${domain_size}/${sampling_mode}/*.mat`
         viappiani_qi_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*QI*.txt`
         viappiani_eus_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*EUS*.txt`
-        output="paper/figures/synthetic_vs_others_${domain_size}_${sampling_mode}_per_iter"
+        output="paper/figures/synthetic_vs_others_${domain_size}_${sampling_mode}_per_query"
         ./draw.py 1 $output "$setmargin_files" "$guo_files" "$viappiani_qi_files" "$viappiani_eus_files"
     done
 done
