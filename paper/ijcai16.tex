@@ -687,47 +687,47 @@ constructive setting. We developed a constructive version of the PC dataset
 used in~\cite{guo2010real}: instead of explicitly enumerating all possible PC
 item, we definined the set of feasible configurations through MILP constraints.
 
-A PC configurations is defined by seven attributes: computer type (laptop,
-desktop, or tower), manufacturer, CPU model, monitor size, RAM amount, storage
-size, and price. See Table~\ref{tab:pcdataset} for an overivew of the
-attributes. The price attribute is defined as a linear combination of the other
+A PC configurations is defined by eight attributes: computer type (laptop,
+desktop, or tower), manufacturer (8 choices), CPU model (37), monitor size (8), RAM amount (10), storage (10)
+size, and price.
+%See Table~\ref{tab:pcdataset} for an overivew of the attributes.
+The price attribute is defined as a linear combination of the other
 attributes: this is a fair modeling choice, as often the price of a PC is
 well approximated by sum of the price of its components plus an offset due to
 branding.
-
+%
 Interactions between attributes are expressed as Horn clauses. An example
 constraint might look like this: ``if the manufacturer is Apple, then the
 CPU must be either a PowerPC G3 or a PowerPC G4''\footnote{Despite the components
 included in the dataset, which are a bit outdated, the dataset itself is pretty
 realistic.}, which can be encoded
-into MILP form as:
+into MILP form as
 %
-$$ (1 - x_\text{Apple}) + x_\text{G3} + x_\text{G4} \ge 1 $$
+$ (1 - x_\text{Apple}) + x_\text{G3} + x_\text{G4} \ge 1 $.
 %
 Note that mutual exclusivity between all binary variables of the
 one-hot encoding of an attribute ensures that only one of
 $x_\text{G3}$ and $x_\text{G4}$ can be 1.  The dataset includes
 constraints between the following attributes: manufacturer $\to$ type,
 manufacturer $\to$ CPU, type $\to$ RAM amount, type $\to$ storage
-size, type $\to$ monitor size. In total we encoded 16 Horn
-constraints, each with one head and multiple options in the body. We
+size, type $\to$ monitor size, for 16 Horn constraints total. We
 do not report the full list due to space limitations.
 
-\begin{table}
-    \centering
-    \begin{tabular}{ccc}
-        {\bf Attribute} & {\bf Type} & {\bf Values} \\
-        \hline \hline
-        Type & discrete & 3 \\
-        Manufacturer & discrete & 8 \\
-        CPU model & discrete & 37 \\
-        RAM amount & discrete & 10 \\
-        HD size & discrete & 10 \\
-        Monitor size & discrete & 8 \\
-        Price & continuous & --
-    \end{tabular}
-    \caption{\label{tab:pcdataset} Statistics for the PC dataset.}
-\end{table}
+% \begin{table}
+%     \centering
+%     \begin{tabular}{ccc}
+%         {\bf Attribute} & {\bf Type} & {\bf Values} \\
+%         \hline \hline
+%         Type & discrete & 3 \\
+%         Manufacturer & discrete & 8 \\
+%         CPU model & discrete & 37 \\
+%         RAM amount & discrete & 10 \\
+%         HD size & discrete & 10 \\
+%         Monitor size & discrete & 8 \\
+%         Price & continuous & --
+%     \end{tabular}
+%     \caption{\label{tab:pcdataset} Statistics for the PC dataset.}
+% \end{table}
 
 \stefano{Add figures and comments.}
 
