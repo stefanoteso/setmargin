@@ -659,6 +659,97 @@ All methods were evaluated on the very same weight vectors.
 
 \andrea{give names to competitors}
 
+%\onecolumn
+
+\begin{figure*}[h!]
+    \centering
+    {\footnotesize
+    \begin{tabular}{cccc}
+        \hline
+        {\sc synthetic 3 loss} & {\sc synthetic 3 time} & {\sc synthetic 4 loss} & {\sc synthetic 4 time}
+        \\
+        \hline \hline
+        \multicolumn{4}{c}{{\sc Uniform}}
+        \\
+        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_time} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_time}
+        \\
+        \hline
+        \multicolumn{4}{c}{{\sc Normal}}
+        \\
+        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_per_iter_time} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_per_iter_time}
+        \\
+        \hline
+        \multicolumn{4}{c}{{\sc Sparse Uniform}}
+        \\
+        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_time} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_time}
+        \\
+        \hline
+        \multicolumn{4}{c}{{\sc Sparse Normal}}
+        \\
+        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_time} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_time}
+        \\
+        \hline
+    \end{tabular}
+    }
+    \caption{\label{fig:comparison} Comparison between {\sc SetMargin}
+      (orange), Guo (blue), Viappiani QI (green) and Viappiani EUS
+      (gray) on the $r=3$ (left) and $r=4$ (right) datasets. Each row
+      represents a different distribution for sampling the underlying
+      user utility.  The number of iterations is plotted against the
+      utility loss (first and third columns) and the cumulative time
+      (second and fourth columns).  Thick lines indicate median values
+      over users, while standard deviations are shown as shaded
+      areas.}
+\end{figure*}
+
+\begin{figure*}[h!]
+    \centering
+    {\footnotesize
+    \begin{tabular}{cccc}
+        \hline
+        \multicolumn{2}{c}{{\sc synthetic 4}} &
+        \multicolumn{2}{c}{{\sc synthetic 5}}
+        \\
+        {\sc loss per iter.} & {\sc loss per query} & {\sc loss per iter.} & {\sc loss per query}
+        \\
+        \hline \hline
+        \multicolumn{4}{c}{{\sc uniform}}
+        \\
+        \includegraphics[width=10em]{figures/synthetic_vs_self_4_uniform_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_4_uniform_per_query_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_5_uniform_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_5_uniform_per_query_loss}
+        \\
+        \hline
+        \multicolumn{4}{c}{{\sc sparse normal}}
+        \\
+        \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_query_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_query_loss}
+        \\
+        \hline
+     \end{tabular}
+    }
+    \caption{\label{fig:selfcomparison} Comparison for {\sc SetMargin}
+      with $k=2,3,4$, in orange, blue and green respectively for the
+      $r=4$ (left) and $r=5$ (right) datasets using uniform (top row) and sparse normal (bottom row) distributions. Median and standard deviation utility loss values are reported for increasing number of iterations ($1^{st}$ and $3^{rd}$ columns) and pairwise queries ($2^{nd}$ and $4^{th}$ columns).}
+\end{figure*}
+
+%\twocolumn
+
 In Figure~\ref{fig:comparison} we report solution quality and timing
 values for increasing number of collected user responses, for the
 different competitors on each of the four different utility vector
@@ -873,96 +964,6 @@ compare with state-of-the-art approaches.
 \bibliographystyle{named}
 \bibliography{ijcai16}
 
-\onecolumn
-
-\begin{figure}[b]
-    \centering
-    {\footnotesize
-    \begin{tabular}{cccc}
-        \hline
-        {\sc synthetic 3 loss} & {\sc synthetic 3 time} & {\sc synthetic 4 loss} & {\sc synthetic 4 time}
-        \\
-        \hline \hline
-        \multicolumn{4}{c}{{\sc Uniform}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_time}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc Normal}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_per_iter_time}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc Sparse Uniform}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_time}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc Sparse Normal}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_time}
-        \\
-        \hline
-    \end{tabular}
-    }
-    \caption{\label{fig:comparison} Comparison between {\sc SetMargin}
-      and the Bayesian competitors on the $r=3$ (left) and $r=4$
-      (right) datasets. Each row represents a different distribution
-      for sampling the underlying user utility.  The x-axis reports
-      the number of iterations (i.e. pairwise queries), while the
-      y-axis reports the utility loss (first and third columns) and
-      the cumulative time in seconds (second and fourth
-      columns). Thick lines indicate median values over all users,
-      while standard deviations are shown as shaded areas. Curves
-      represent {\sc SetMargin} (orange), Guo (blue), Viappiani QI
-      (green) and Viappiani EUS (gray) respectively.}
-\end{figure}
-
-\begin{figure}[b]
-    \centering
-    {\footnotesize
-    \begin{tabular}{cccc}
-        \hline
-        \multicolumn{2}{c}{{\sc synthetic 4}} &
-        \multicolumn{2}{c}{{\sc synthetic 5}}
-        \\
-        {\sc loss per iter.} & {\sc loss per query} & {\sc loss per iter.} & {\sc loss per query}
-        \\
-        \hline \hline
-        \multicolumn{4}{c}{{\sc uniform}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_uniform_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_uniform_per_query_loss}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc sparse normal}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_query_loss}
-        \\
-        \hline
-     \end{tabular}
-    }
-    \caption{\label{fig:selfcomparison} Comparison for {\sc SetMargin}
-      with $k=2,3,4$, in orange, blue and green respectively for the
-      $r=4$ (left) and $r=5$ (right) datasets using uniform (top row) and sparse normal (bottom row) distributions for user utility. Median (thick lines) and standard deviation (shaded areas) utility loss values are reported for increasing number of iterations (first and third columns) and pairwise queries (second and fourth columns).}
-\end{figure}
 
 % times for the figure above
 % synthetic_vs_self_4_normal_sparse_per_iter_time
@@ -974,35 +975,35 @@ compare with state-of-the-art approaches.
 % synthetic_vs_self_5_uniform_per_iter_time
 % synthetic_vs_self_5_uniform_per_query_time
 
-\begin{figure}[b]
-    \centering
-    {\footnotesize
-    \begin{tabular}{cccc}
-        \hline
-        \multicolumn{2}{c}{{\sc loss/time per iter.}} &
-        \multicolumn{2}{c}{{\sc loss/time per query}}
-        \\
-        \multicolumn{4}{c}{{\sc sparse uniform}}
-        \\
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc sparse normal}}
-        \\
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_time}
-        \\
-        \hline
-    \end{tabular}
-    }
-    \caption{\label{fig:pc} Results for {\sc SetMargin} on the constructive PC
-    dataset.}
-\end{figure}
+% \begin{figure}[b]
+%     \centering
+%     {\footnotesize
+%     \begin{tabular}{cccc}
+%         \hline
+%         \multicolumn{2}{c}{{\sc loss/time per iter.}} &
+%         \multicolumn{2}{c}{{\sc loss/time per query}}
+%         \\
+%         \multicolumn{4}{c}{{\sc sparse uniform}}
+%         \\
+%         \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
+%         \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
+%         \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
+%         \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
+%         \\
+%         \hline
+%         \multicolumn{4}{c}{{\sc sparse normal}}
+%         \\
+%         \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_loss} &
+%         \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_time} &
+%         \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_loss} &
+%         \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_time}
+%         \\
+%         \hline
+%     \end{tabular}
+%     }
+%     \caption{\label{fig:pc} Results for {\sc SetMargin} on the constructive PC
+%     dataset.}
+% \end{figure}
 
 \twocolumn
 
