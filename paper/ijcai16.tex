@@ -126,7 +126,7 @@
 % ---------------------------------------------------------------------------
 
 \title{Constructive Preference Elicitation by Setwise Max-margin Learning} %with?
-\author{ID xxxx}
+\author{ID 2243}
 
 \begin{document}
 
@@ -393,11 +393,10 @@ The two core constraints are Equations~(\ref{eq:wyconstr}) and~(\ref{eq:wxconstr
 which are taken directly from the discussion above. The former enforces the
 correct ranking of the observed user preferences, while the latter ensures that
 the generated configurations are diverse in terms of the weight vectors they
-maximize. Equations~(\ref{eq:wbounds}) and~(\ref{eq:xbounds})
+maximize. Equation~(\ref{eq:wbounds}), where the inequality is intended to be component-wise, and Eq.~(\ref{eq:xbounds})
 ensure that the weights and configurations are in fact feasible, while the
 remaining two guarantee the non-negativity of the slack and margin variables.
-Since we require $\vw^\bot \ge 0$, Eq.~(\ref{eq:wbounds}) also enforces the
-weights to be non-negative.
+Since we require $\vw^\bot \ge (0,\ldots,0)$, Eq.~(\ref{eq:wbounds}) also enforces the weights to be non-negative.
 
 Note that we are choosing the configurations $\{ \vx^i \}$ and the weight vectors $\{
 \vw^i \}$ {\em simultaneously}. Since we maximize the margin $\mu$, the optimizer
@@ -425,7 +424,7 @@ $i,j\in[k]$ and $z\in[m]$. Assuming for the time being that the new variables
 do satisfy the equation $p^{i,j}_z = w^i_z x^j_z$, we rewrite the fourth
 component of the objective function in terms of the new variables as:
 %
-$$ \gamma \sum_{i=1}^k \sum_{z=1}^m p^{i,i}_z $$
+$$ \gamma \sum_{i=1}^k \sum_{z=1}^m p^{i,i}_z$$
 %
 and, similarly, Eq.~(\ref{eq:wxconstr}) as:
 %
@@ -486,9 +485,9 @@ formulation, we obtain the following mixed-integer linear problem:
     % \\
         & \;\; \forall \; i, j \in [k], i \neq j, \forall \; z \in [m] \nonumber
     \\
-        & \;\; \qquad p^{i,i}_z \le \min \{ w_\text{max} x^{i}_z, w^{i}_z \}
+        & \;\; \qquad p^{i,i}_z \le \min \{ w_\text{max} x^{i}_z, \, w^{i}_z \}
     \\
-        & \;\; \qquad p^{i,j}_z \ge \max \{ 0, w^{i}_z - w_\text{max}(1 - x^{j}_z) \}
+        & \;\; \qquad p^{i,j}_z \ge \max \{ 0, \, w^{i}_z - w_\text{max}(1 - x^{j}_z) \}
     \\
         & \;\; \forall \; i \in [k] \quad \vw^\bot \le \vw^{i} \le \vw^\top \label{eq:wbounds2}
     \\
@@ -512,8 +511,8 @@ with respect to the estimated user preferences, and as diverse as
 possible, are then employed to formulate a set of user queries. The
 new replies are added to $\calD$ and the whole procedure is
 repeated. The algorithm terminates after a fixed number of iterations,
-or once another suitable condition is met. \andrea{@Paolo: what termination
-condition for pref elicitation?}  
+or once another suitable condition is met. 
+%\andrea{@Paolo: what termination condition for pref elicitation?}  
 Termination might be left to the user to decide (see for example \ref{} for discussion on user-involved recommender systems); the system can however propose
 to terminate when the difference between the utility weights is small enough.
 
@@ -604,7 +603,7 @@ $$ \exp(\lambda_2 |\langle\vw,\vx^i - \vx^j\rangle|) $$
 The parameters $\lambda_1$ and $\lambda_2$ were set to one for all
 simulations, as in~\cite{guo2010real}.
 
-In all experiments we use an internal 5-fold cross-validation procedure to
+In all experiments {\sc SetMargin} uses an internal 5-fold cross-validation procedure to
 update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
 iterations. The hyperparameters are chosen as to minimize the ranking loss over
 the user responses collected so far. $\alpha$ is taken in $\{20, 10, 5, 1\}$,
@@ -654,10 +653,9 @@ In our experiments we use the latter.}:
 a normal distribution with mean $25$ and %covariance
 standard deviation $\frac{25}{3}$ (each attribute is sample i.i.d).  
 We further produced two novel
-{\em sparse} sets of weight vectors by deleting $80\%$ of the entries of the
-vectors sampled in the uniform and normal settings uniformly at random
-\stefano{Paolo, is this correct?}. All methods were evaluated on the very same
-weight vectors.
+{\em sparse} sets of weight vectors by setting to zero $80\%$ of the entries of the
+vectors sampled in the uniform and normal settings uniformly at random. 
+All methods were evaluated on the very same weight vectors.
 
 \andrea{give names to competitors}
 
@@ -783,7 +781,7 @@ effect of inconsistence feedback. \andrea{@stefano: l'ho rifrasato un
 \paragraph{Constructive dataset.} Next, we tested {\sc SetMargin} on a truly
 constructive setting. We developed a constructive version of the PC dataset
 used in~\cite{guo2010real}: instead of explicitly enumerating all possible PC
-item, we defined the set of feasible configurations through MILP constraints.
+items, we defined the set of feasible configurations with MILP constraints.
 
 A PC configurations is defined by eight attributes: computer type (laptop,
 desktop, or tower), manufacturer (8 choices), CPU model (37), monitor size (8), RAM amount (10), storage (10)
@@ -827,7 +825,7 @@ on average are needed in order to find out a solution which is only
 thousands available. \andrea{something about the lack of smart
   constraints, as a vendor would have..}  The second and fourth
 columns report cumulative times. Note that in some cases, standard
-deviations have a bump. This is due to cases in which some of the
+deviations have a bump; this is due to cases in which some of the
 hyperparameters of the internal cross validation result in
 ill-conditioned optimization problems which are hard to solve. These
 exceptions can be easily dealt with by setting an appropriate timeout
@@ -862,7 +860,7 @@ items that can be used to ask informative queries to the user.  The
 main advantages of our elicitation method are 1) its aptitude for
 eliciting preferences and providing recommendations in large
 configuration problems 2) robustness with respect to erroneous
-preference input, and 3) its ability to support sparse utility
+preference input, and 3) its ability to encourage sparse utility
 functions.  In a number of experiments we showed how our method
 compare with state-of-the-art approaches.
 
