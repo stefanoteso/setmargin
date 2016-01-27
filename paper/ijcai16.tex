@@ -227,7 +227,7 @@ for sets. We frequently abbreviate the set $\{ x^i \}_{i=1}^n$ as $\{ x^i \}$
 whenever the range of the index $i$ is clear from the context, and use $[n]$ as
 a shorthand for the set $\{1, \ldots, n\}$. We write $\|\vx\|_1 := \sum_z |x_z|$
 to indicate the $\ell_1$ vector norm, $\langle \cdot, \cdot \rangle$ to
-denote the usual dot product, and $X'$ to denote matrix transposition.
+denote the usual dot product, and $X'$ for matrix transposition.
 
 \paragraph{Setting.} We assume to have a multi-attribute feature space
 $\calX$ of configurations $\vx = (x_1, \ldots, x_m)$ over $m$
@@ -258,7 +258,6 @@ mixed-integer linear problem (as done in Section~\ref{sec:formulation}).
 During learning, the actual weight vector $\vw$ is {\em unknown} to the
 learning system, and must be estimated from pairwise choices elicited from the
 user.
-
 %\andrea{@PAOLO: qualche parola e reference per giustificare la scelta di pairwise queries?}  
 Comparison queries are especially natural, asking a user if she prefers one option x to another y;
 these comparisons can be extended to choice sets of more than two options \cite{viappiani2009,viappiani2010optimal}.
@@ -277,10 +276,10 @@ provided in Section~\ref{sec:formulation}.
 
 \section{Setwise Max-margin Learning}
 \label{sec:formulation}
-
 \paragraph{Non-linear Formulation.} We first introduce the problem
-formulation as a mixed integer non-linear optimization problem, and
-then show how to reduce it to a mixed integer linear optimization one.
+formulation as a %mixed integer 
+non-linear optimization problem, and
+then show how to reduce it to a mixed integer linear program.% optimization one.
 
 The goal of our setwise max-margin approach is twofold. First, for any
 given set size $k\geq 1$, we want to find a {\em set} of $k$ weight
@@ -290,7 +289,7 @@ weight vectors are consistent with respect to the user responses
 $\calD$, modulo inconsistencies) and so that they are maximally
 diverse.  Second, we want to construct a {\em set} of $k$
 configurations $\vx^{1}, \ldots, \vx^{k}$, so that each configuration
-$\vx^{i}$ is the ``best'' possref:keeney-mautible option when evaluated according to
+$\vx^{i}$ is the ``best'' possible option when evaluated according to
 the corresponding $\vw^{i}$ and configurations are maximally diverse
 among each other. These options will be later employed to formulate
 the user queries.
@@ -304,9 +303,9 @@ the responses.  Non-separable datasets, which occur in practice due to
 occasional inconsistencies in user feedback, are handled by
 introducing slack variables (whose sum we aim at minimizing). When
 augmented with the slacks, the above inequalities take the form:
-%
-$$ \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h $$
-%
+\begin{align*}
+\langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h 
+\end{align*}
 where $\varepsilon^{i}_h$ is the penalty incurred by weight vector $\vw^{i}$
 for violating the margin separation of pair $h$. Indifference preferences, i.e.
 $\vy^h_1 \approx \vy^h_2$, are translated as $|\langle \vw^i, \vy^h_1 - \vy^h_2 \rangle| < \varepsilon^i_h$;
