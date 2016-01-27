@@ -7,6 +7,7 @@
 \usepackage{times}
 %\usepackage{latexsym}
 \usepackage{graphicx}
+\usepackage{hyperref}
 
 \RequirePackage{amsmath,amssymb,amsfonts,amsthm}
 \usepackage{algorithm}
@@ -132,14 +133,18 @@
 \maketitle
 
 \begin{abstract}
-In this paper we propose an approach to preference elicitation that is suitable to large
-configuration problem domains where stated preferences can be noisy.
-Our setwise max-margin method can be viewed as a generalization of max-margin learning to sets,
-and can produce a set of ``diverse'' items that can be used to ask informative queries to the user.
-Moreover, the approach can encourage sparsity in the parameter space, in order to favor the assessment of utility towards combinations of weights that concentrate on just few features.
-We present an optimization formulation and show, with simulations, how our approach is able to efficiently elicit the user's utility function even in very large datasets.
-
-
+  In this paper we propose an approach to preference elicitation that
+  is suitable to large configuration spaces beyond the reach of
+  existing state-of-the-art approaches. Our setwise max-margin method
+  can be viewed as a generalization of max-margin learning to sets,
+  and can produce a set of ``diverse'' items that can be used to ask
+  informative queries to the user.  Moreover, the approach can
+  encourage sparsity in the parameter space, in order to favor the
+  assessment of utility towards combinations of weights that
+  concentrate on just few features.  We present a mixed integer linear
+  programming formulation and show how our approach compares
+  favourably with Bayesian preference elicitation alternatives and
+  easily scales to realistic datasets.
 \end{abstract}
 
 \section{Introduction}
@@ -517,6 +522,8 @@ Algorithm~\ref{alg:setmargin}. Note that at the end of the preference
 elicitation procedure, a final recommendation is made by solving the
 MILP problem for $k=1$.
 
+\stefano{add early stopping in algorithm and description and experiments.}
+
 \begin{algorithm}
 {\footnotesize
 \begin{algorithmic}[1]
@@ -570,7 +577,7 @@ to be non-negative.
 
 We implemented the {\sc SetMargin} algorithm using Python, leveraging Gurobi
 6.5.0 for solving the core MILP problem. Both the {\sc SetMargin} source code
-and the full experimental setup are available at {\tt https://db.tt/oqY62odW}.
+and the full experimental setup are available at \url{https://db.tt/oqY62odW}.
 
 We compare {\sc SetMargin} against two strong Bayesian baselines:
 \cite{guo2010real} and \cite{viappiani2010optimal}.
@@ -652,43 +659,125 @@ vectors sampled in the uniform and normal settings uniformly at random
 \stefano{Paolo, is this correct?}. All methods were evaluated on the very same
 weight vectors.
 
-In Figure~\ref{fig:} we plot, for each setting, the behavior of the utility
-loss:
+\andrea{give names to competitors}
+
+In Figure~\ref{fig:comparison} we report solution quality and timing
+values for increasing number of collected user responses, for the
+different competitors on each of the four different utility vector
+distributions. Solution quality is measured in terms of utility loss:
 %
 $$ \max_{\vx\in\calX_\text{feasible}} \left( u(\vx) - u(\vx^*) \right) $$
 %
-varying the number of collected user responses. Here $u(\cdot)$ is the
-true unknown user utility, and $\vx^*$ is the solution recommended to
-the user after the elicitation phase (see Algorithm~\ref{alg:setmargin}).
+%<<<<<<< HEAD
+%varying the number of collected user responses. Here $u(\cdot)$ is the
+%true unknown user utility, and $\vx^*$ is the solution recommended to
+%the user after the elicitation phase (see Algorithm~\ref{alg:setmargin}).
+%
+%The thick line is the median
+%utility loss taken over all 20 users, while the shaded area represents the
+%standard deviation.
+%
+%\stefano{plot average utility loss at the increase of dataset size}
+%
+%\stefano{plot average runtime at the increase of dataset size}
+%
+%\stefano{comment on usefulness of sparse weights}
+%
+%\paolo{Maybe a plot of an experiment with increased noise in user reponse? (for example, $\beta=0.1$ instead of $1$.}
+%
+%\paragraph{Cognitive effort.} Contrarily to most other preference elicitation
+%methods, which generate a single candidate option per iteration, {\sc
+%SetMargin} constructs a whole {\em set} of options. We thus can not leverage
+%standard query selection strategies \stefano{which ones?}. 
+%
+%The simplest solution is to query the user about all $k \choose 2$ pairs of
+%configurations in $\{\vx^i\}$. Since $k$ is a small constant, the resulting
+%number of queries does not grow large in practice.  An appealing alternative
+%involves using a modified sorting algorithm, such as merge-sort, to order the
+%set $\{\vx^i\}$ by asking only $O(n\log n)$ queries to the user. However, this
+%approach is very susceptible to noise: a single inconsistent user response may
+%affect all successive comparisons, leading to a cascading effect. While more
+%robust strategies may be conceived, empirically we found that the simpler
+%quadratic scheme tends to work reasonably well.
+%
+%\andrea{rewrite as footnote}
+%=======
+where $u(\cdot)$ is the true unknown user utility, and $\vx^*$ is the
+solution recommended to the user after the elicitation phase (see
+Algorithm~\ref{alg:setmargin}). Computational cost is measured in
+terms of cumulative time. Given that Guo and Viappiani are
+single-threaded, we disabled multi-threading when running our
+algorithm in these comparisons. All experiments were run on a XXXXXX.
+In all figures, thick lines indicate median values over the different
+users, shaded areas indicate standard deviations. \andrea{@stefano:
+  possiamo riportare la mediana anche per i tempi?}  Our {\sc
+  SetMargin} algorithm for $k=2$ is reported in orange, Guo in blue,
+Viappiani QI in green and Viappiani EUS in gray. For all algorithms,
+one iteration corresponds to a single pairwise query to the user.
+Results for $r=3$ and $r=4$ are reported.  For dense weight vector
+distributions (first two rows), our approach achieves results which
+are indistinguishable from the competitors in a fraction of their
+time.  Indeed, all Bayesian approaches cannot scale over $r=4$ (for
+$r=5$, Guo did not finish a single user after 24 hours for, Viappiani
+QI takes 20 minutes per user), \andrea{20 minuti mi paiono pochi, sei
+  sicuro?}  while our algorithm can easily scale to much larger
+datasets, as will be shown later on. For sparse weight vector
+distributions (last two rows) our approach, in addition to being
+substantially faster on each iteration, requires less queries in order
+to reach optimal solutions. This is an expected result as the
+sparsification norm in our formulation ($\| \vw^{i} \|_1$) is
+enforcing sparsity in the weight vectors, while none of the other
+approaches are explicitly designed to favour sparse functions.
 
-The thick line is the median
-utility loss taken over all 20 users, while the shaded area represents the
-standard deviation.
 
-\stefano{plot average utility loss at the increase of dataset size}
+% Guo e' piantato al primo utente da tre giorni su synthetic 5.
+% Paolo procede su S-5 da qualche ora (~8) (1290s su synthetic-5
+% uniforme per completamento di un utente).
 
-\stefano{plot average runtime at the increase of dataset size}
+%\stefano{@Paolo: varianza tempi?}
 
-\stefano{comment on usefulness of sparse weights}
+In order to study the effect of increasing the number of weight
+vectors in our formulation, we also ran {\sc SetMargin} varying the
+parameter $k$. Figure~\ref{fig:selfcomparison} reports utility loss
+results on $r=4$ and $r=5$ datasets for the uniform and normal sparse
+distributions\footnote{We picked the most difficult dense distribution
+  (uniform) and the simplest sparse distribution (normal) to provide
+  the broadest possible picture, as space constraints prevent us from
+  including all results. Results for the other distributions are
+  however qualitative similar to the ones reported.}, for $k=2$
+(orange), $k=3$ (blue) and k=4 (green). The first and third columns
+report results in terms of number of iterations. It can be seen that
+increasing the number of weight vectors tends to favour earlier
+convergence, especially for the more complex dataset ($r=5$). However,
+as in each iteration the user is asked to compare $k$ items, different
+values of $k$ imply a different cognitive effort for the user. The
+second and fourth columns report results in terms of number of
+queries, where we count all $k \choose 2$ pairs of queries when
+comparing $k$ items. In this case, $k=2$ seems to be the best
+option. The cognitive cost for the user will likely lay in between
+these two extremes, but formalizing this concept in an efficient query
+ordering strategy needs to face the effect of noise.  A modified
+sorting algorithm asking only $O(k\log k)$ queries to the user
+resulted in a performance worsening, likely because of a cascading
+effect of inconsistence feedback. \andrea{@stefano: l'ho rifrasato un
+  po', vediamo se ci piace}
 
-\paolo{Maybe a plot of an experiment with increased noise in user reponse? (for example, $\beta=0.1$ instead of $1$.}
+% \paragraph{Cognitive effort.} Contrarily to most other preference elicitation
+% methods, which generate a single candidate option per iteration, {\sc
+% SetMargin} constructs a whole {\em set} of options. We thus can not leverage
+% standard query selection strategies \stefano{which ones?}. 
 
-\paragraph{Cognitive effort.} Contrarily to most other preference elicitation
-methods, which generate a single candidate option per iteration, {\sc
-SetMargin} constructs a whole {\em set} of options. We thus can not leverage
-standard query selection strategies \stefano{which ones?}. 
+% The simplest solution is to query the user about all $k \choose 2$ pairs of
+% configurations in $\{\vx^i\}$. Since $k$ is a small constant, the resulting
+% number of queries does not grow large in practice.  An appealing alternative
+% involves using a modified sorting algorithm, such as merge-sort, to order the
+% set $\{\vx^i\}$ by asking only $O(n\log n)$ queries to the user. However, this
+% approach is very susceptible to noise: a single inconsistent user response may
+% affect all successive comparisons, leading to a cascading effect. While more
+% robust strategies may be conceived, empirically we found that the simpler
+% quadratic scheme tends to work reasonably well.
 
-The simplest solution is to query the user about all $k \choose 2$ pairs of
-configurations in $\{\vx^i\}$. Since $k$ is a small constant, the resulting
-number of queries does not grow large in practice.  An appealing alternative
-involves using a modified sorting algorithm, such as merge-sort, to order the
-set $\{\vx^i\}$ by asking only $O(n\log n)$ queries to the user. However, this
-approach is very susceptible to noise: a single inconsistent user response may
-affect all successive comparisons, leading to a cascading effect. While more
-robust strategies may be conceived, empirically we found that the simpler
-quadratic scheme tends to work reasonably well.
-
-\andrea{rewrite as footnote}
+\paolo{Maybe a plot of an experiment with increased noise in user response? (for example, $\beta=0.1$ instead of $1$.}
 
 
 \paragraph{Constructive dataset.} Next, we tested {\sc SetMargin} on a truly
@@ -721,6 +810,18 @@ constraints between the following attributes: manufacturer $\to$ type,
 manufacturer $\to$ CPU, type $\to$ RAM amount, type $\to$ storage
 size, type $\to$ monitor size, for 16 Horn constraints total. We
 do not report the full list due to space limitations.
+
+% 76 features (somma)
+% >>> 3*8*37*8*10*10
+% 710400
+
+la crossval ogni 5 iterazioni richiede tempo considerevole, che nel
+grafico cumulativo del tempo si assomma alle crossval successivie, ampliando
+la varianza; in alcuni casi degeneri per alcuni parametri la cosa prende
+tempi biblici. in tali casi i risultati sono tipicamente indecente, quindi mettendo
+un timeout sui tempi di cross validation e' possibile ridurre questo problema.
+
+\ref{fig:pc}
 
 % \begin{table}
 %     \centering
@@ -802,7 +903,9 @@ In a number of experiments we showed how our method compare with state-of-the-ar
     \end{tabular}
     }
     \caption{\label{fig:comparison} Comparison between {\sc SetMargin} and the
-    Bayesian competitors.}
+    Bayesian competitors. The thick lines represent the median utility loss
+    over all users, while the shaded area is the standard deviation. {\sc
+    SetMargin} orange, Guo blue, Viappiani QI green, Viappiani EUS gray.}
 \end{figure}
 
 \begin{figure}[b]
@@ -835,7 +938,7 @@ In a number of experiments we showed how our method compare with state-of-the-ar
      \end{tabular}
     }
     \caption{\label{fig:selfcomparison} Comparison for {\sc SetMargin} with
-    $k=2,3,4$.}
+    $k=2,3,4$, in orange, blue and green respectively.}
 \end{figure}
 
 % times for the figure above
