@@ -1,7 +1,7 @@
 Preference Elicitation via Set-wise Max-margin
 ==============================================
 
-**TODO**: add description.
+WRITEME
 
 ## Requirements
 
@@ -10,12 +10,14 @@ This package requires the following packages:
 - [numpy](http://www.numpy.org/)
 - [gurobi](http://www.gurobi.com/)
 - [matplotlib](http://matplotlib.org/)
+- [scikit-learn](http://scikit-learn.org/)
 
 ## Usage
 
 To run the IJCAI-16 experiments, simply type:
 ```
-    python ijcai16.py
+    python ijcai16.py run-synthetic
+    python ijcai16.py run-pc-with-costs
 ```
 To perform preference elicitation on a specific dataset with given parameters,
 type:
@@ -25,7 +27,7 @@ type:
 For instance, to run 20 trials of length 10 with set size 3 on the synthetic
 dataset, write:
 ```
-    python ijcai16.py synthetic -N 20 -n 10 -m 3
+    python ijcai16.py synthetic -T 20 -n 10 -k 3
 ```
 See:
 ```
