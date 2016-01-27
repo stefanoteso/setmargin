@@ -512,6 +512,8 @@ Algorithm~\ref{alg:setmargin}. Note that at the end of the preference
 elicitation procedure, a final recommendation is made by solving the
 MILP problem for $k=1$.
 
+\stefano{add early stopping in algorithm and description and experiments.}
+
 \begin{algorithm}
 {\footnotesize
 \begin{algorithmic}[1]
@@ -654,15 +656,20 @@ varying the number of collected user responses. Here $u(\cdot)$ is the
 true unknown user utility, and $\vx^*$ is the solution recommended to
 the user after the elicitation phase (see Algorithm~\ref{alg:setmargin}).
 
-The thick line is the median
-utility loss taken over all 20 users, while the shaded area represents the
-standard deviation.
+\begin{itemize}
 
-\stefano{plot average utility loss at the increase of dataset size}
+    \item \ref{fig:comparison} setmargin vs Bayes. similar loss wrt Bayes.
+    variance slighly higher on synthetic 4. funzioniamo meglio su sparso al
+    contrario degli altri. Guo e' piantato al primo utente da tre giorni
+    su synthetic 5.  Paolo procede su S-5 da qualche ora (~8) (1290s su
+    synthetic-5 uniforme per completamento di un utente).
 
-\stefano{plot average runtime at the increase of dataset size}
+    \stefano{@Paolo: varianza tempi?}
 
-\stefano{comment on usefulness of sparse weights}
+    \item \ref{fig:selfcomparison} crossval ogni 5 iterazioni, il che vuol
+    dire diverso numero di queri per $k$ diversi.
+
+\end{itemize}
 
 \paragraph{Cognitive effort.} Contrarily to most other preference elicitation
 methods, which generate a single candidate option per iteration, {\sc
@@ -712,6 +719,18 @@ constraints between the following attributes: manufacturer $\to$ type,
 manufacturer $\to$ CPU, type $\to$ RAM amount, type $\to$ storage
 size, type $\to$ monitor size, for 16 Horn constraints total. We
 do not report the full list due to space limitations.
+
+% 76 features (somma)
+% >>> 3*8*37*8*10*10
+% 710400
+
+la crossval ogni 5 iterazioni richiede tempo considerevole, che nel
+grafico cumulativo del tempo si assomma alle crossval successivie, ampliando
+la varianza; in alcuni casi degeneri per alcuni parametri la cosa prende
+tempi biblici. in tali casi i risultati sono tipicamente indecente, quindi mettendo
+un timeout sui tempi di cross validation e' possibile ridurre questo problema.
+
+\ref{fig:pc}
 
 % \begin{table}
 %     \centering
@@ -793,7 +812,9 @@ In a number of experiments we showed how our method compare with state-of-the-ar
     \end{tabular}
     }
     \caption{\label{fig:comparison} Comparison between {\sc SetMargin} and the
-    Bayesian competitors.}
+    Bayesian competitors. The thick lines represent the median utility loss
+    over all users, while the shaded area is the standard deviation. {\sc
+    SetMargin} orange, Guo blue, Viappiani QI green, Viappiani EUS gray.}
 \end{figure}
 
 \begin{figure}[b]
@@ -826,7 +847,7 @@ In a number of experiments we showed how our method compare with state-of-the-ar
      \end{tabular}
     }
     \caption{\label{fig:selfcomparison} Comparison for {\sc SetMargin} with
-    $k=2,3,4$.}
+    $k=2,3,4$, in orange, blue and green respectively.}
 \end{figure}
 
 % times for the figure above
