@@ -385,7 +385,8 @@ influence of the various components.
 
 The third part of the objective does require a more in depth explanation. In
 many scenarios the user will have strong preferences about some attributes, but
-will be indifferent to most of them~\cite{} \stefano{@Paolo: add refs}. The $\ell_1$ penalty is frequently
+will be indifferent to most of them. %~\cite{} \stefano{@Paolo: add refs}. 
+The $\ell_1$ penalty is frequently
 used to improve the sparsity of learned models~\cite{lasso,zhang2008,Hensinger2010}, with consequent gains
 in generalization ability and efficiency, as confirmed by our empirical
 findings (see Section~\ref{sec:experiments}).
@@ -583,9 +584,10 @@ We compare {\sc SetMargin} against the following competitive Bayesian baselines:
 
 \paolo{Se bisogno di spazio, posso accorciare la descrizione.}
 \begin{itemize}
- \item The Bayesian approach from \cite{guo2010real}, selecting queries according to 
- {\em restricted uninformed VOI}, an heuristic approximation of value-of-information a query, and performing inference using  TrueSkill$^{TM}$ \cite{HerbrichMG06} (an inference scheme based on expectation propagation \cite{Minka01}).
+ \item The Bayesian approach from \cite{guo2010real}, selecting queries according to {\em restricted uninformed VOI} (ruVOI), an heuristic approximation of value-of-information a query, and performing inference using  TrueSkill$^{TM}$ \cite{HerbrichMG06} (an inference scheme based on expectation propagation \cite{Minka01}).
+ 
  \item The Bayesian framework of \cite{viappiani2010optimal}, using Monte Carlo methods for Bayesian inference and asking choice queries (asking the user to select its preferred item among a set of diplayed ones); the next query is computed by performing a greedy optimization of {\em Expected Utility of a Selection} (hereafter just called EUS), a submodular quantity that can be used as a proxy for value of information (giving strong approximate guarantees).
+ 
  \item {\em Query Iteration} (referred as QI below), also from \cite{viappiani2010optimal}, an even faster query selection method based on sampling a set of utility vectors, selecting the items that maximize utility for each of the vector, forming a first proposal for a query set. Then, a new set is computed by considering the optimal items in the associated  beliefs, and the process is repeated until convergence.
 \end{itemize}
 
@@ -603,12 +605,14 @@ In other words, the probability grows with the difference between the
 utilities of the two items. Support for indifference has been
 introduced in~\cite{guo2010real} by postulating that the probability
 of the user being indifferent about the two configurations depends on
-how close their utilities are, as in:
+how close their utilities are, as in the exponential distribution:
 %
-$$ \exp(-\lambda_2 |\langle\vw,\vx^i - \vx^j\rangle|) $$
+$$ \exp(-\lambda_2 |\langle\vw,\vx^i - \vx^j\rangle|). $$
 %
 The parameters $\lambda_1$ and $\lambda_2$ were set to one for all
-simulations, as in~\cite{guo2010real}.
+simulations\footnote{When experiment with EUS and QI, the user is forced to select
+its preffered item, so indifference is not possible. While support for indifference
+could be added, we chose to .}, as in~\cite{guo2010real}.
 
 In all experiments {\sc SetMargin} uses an internal 5-fold cross-validation procedure to
 update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
@@ -644,8 +648,8 @@ in~\cite{guo2010real} and~\cite{viappiani2010optimal}, which have
 three attributes with 2, 2 and 5 values respectively, for a total of
 20 feasible configurations.  For larger $r$ the size of the space
 grows much larger than the one typically used in the Bayesian
-preference elicitation literature, and as such represents a good test
-bed for comparing the scalability of the various methods. The feasible
+preference elicitation literature, and as such represents a good testbed
+for comparing the scalability of the various methods. The feasible
 configuration space was encoded in {\sc SetMargin} through appropriate
 MILP constraints, while the other methods require all datasets to be
 explicitly grounded.
@@ -747,8 +751,8 @@ algorithm in these comparisons. All experiments were run on a 2.8 GHz Intel
 Xeon CPU with 8 cores and 32 GiB of RAM.
 In all figures, thick lines indicate median values over the different
 users, shaded areas indicate standard deviations. Our {\sc SetMargin}
-algorithm for $k=2$ is reported in orange, Guo in blue, Viappiani QI
-in green and Viappiani EUS in gray. For all algorithms, one iteration
+algorithm for $k=2$ is reported in orange, Guo's ruVOI in blue, Viappiani's QI
+in green and EUS in gray. For all algorithms, one iteration
 corresponds to a single pairwise query to the user.  Results for $r=3$
 and $r=4$ are reported.  For dense weight vector distributions (first
 two rows), our approach achieves results which are indistinguishable
