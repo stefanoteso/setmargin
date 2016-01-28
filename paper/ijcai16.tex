@@ -407,7 +407,7 @@ Figure~\ref{fig:setmargin} for a depiction of this intuition.\andrea{@Paolo: mmh
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=16em]{figures/setmargin}
+        \includegraphics[width=10em]{figures/setmargin}
     \end{center}
     \caption{\label{fig:setmargin} The intuition behind setwise max-margin; the red points are utility vectors $\vw^{i}$ $\vw^{j}$, the red line corresponds to the constraint $\langle \vw, \vx^{1} - \vx^{2} \rangle \ge 0$.}
 \end{figure}
@@ -595,7 +595,7 @@ introduced in~\cite{guo2010real} by postulating that the probability
 of the user being indifferent about the two configurations depends on
 how close their utilities are, as in:
 %
-$$ \exp(\lambda_2 |\langle\vw,\vx^i - \vx^j\rangle|) $$
+$$ \exp(-\lambda_2 |\langle\vw,\vx^i - \vx^j\rangle|) $$
 %
 The parameters $\lambda_1$ and $\lambda_2$ were set to one for all
 simulations, as in~\cite{guo2010real}.
