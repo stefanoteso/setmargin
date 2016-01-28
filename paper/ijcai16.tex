@@ -652,7 +652,11 @@ standard deviation $\frac{25}{3}$ (each attribute is sample i.i.d).
 We further produced two novel
 {\em sparse} sets of weight vectors by setting to zero $80\%$ of the entries of the
 vectors sampled in the uniform and normal settings uniformly at random. 
-All methods were evaluated on the very same weight vectors.
+All methods were evaluated on the very same weight vectors. All users had
+a budget of 100 iterations; for {\sc SetMargin} we used a $0.01$
+threshold on the utility loss for early stopping (that does not affect the
+cross-validation procedure). \stefano{I have no idea if the other methods
+have any kind of early stopping logic.}
 
 \andrea{give names to competitors}
 
