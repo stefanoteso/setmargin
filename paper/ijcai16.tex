@@ -846,7 +846,7 @@ size, and price.
 %See Table~\ref{tab:pcdataset} for an overivew of the attributes.
 The price attribute is defined as a linear combination of the other
 attributes: this is a fair modeling choice, as often the price of a PC is
-well approximated by sum of the price of its components plus an offset due to
+well approximated by the sum of the price of its components plus a bias due to
 branding.
 %
 Interactions between attributes are expressed as Horn clauses. An example
@@ -867,7 +867,7 @@ size, type $\to$ monitor size, for 16 Horn constraints total. We do
 not report the full list due to space limitations. Note that the
 search space is of the order of hundreds of thousands of candidate
 configurations, and is far beyond reach of existing Bayesian
-approaches. 
+approaches.
 
 Figure~\ref{fig:pc} reports results of {\sc SetMargin} for $k=2$
 (red), $k=3$ (blue) and $k=4$ (green) using the sparse uniform (top
@@ -877,8 +877,11 @@ queries respectively, showing a behaviour which is similar to the one
 in Figure~\ref{fig:selfcomparison}. Overall, between 50 and 70 queries
 on average are needed in order to find out a solution which is only
 10\% worse than the optimal one, out of the more than 700,000
-thousands available. \andrea{something about the lack of smart
-  constraints, as a vendor would have..}  The second and fourth
+thousands available. Note that a vendor may ensure a considerably smaller
+number of queries by cleverly constraining the feasible configuration space;
+since our primary aim is benchmarking, we chose not to pursue this direction
+further.
+The second and fourth
 columns report cumulative times. Note that in some cases, standard
 deviations have a bump; this is due to cases in which some of the
 hyperparameters of the internal cross validation result in
