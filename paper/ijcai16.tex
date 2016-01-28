@@ -149,17 +149,29 @@
 
 \section{Introduction}
 
-Preferences \cite{Peintner2008} play an important role in artificial intelligence,
-including fields spanning from recommender systems to automatic planning, 
-from non monotonic reasoning to computational social choice and algorithmic decision theory.
-The task of eliciting or learning preferences is therefore a crucial; typically only limited information about the user's preferences will be available and the cost of obtaining additional preference information will be high (from a cognitive and/or computational point of view).
-The goal in preference elicitation is that of gaining enough information about the user's preferences %(typically represented by an utility function $u$, unknown to the system) 
+Preferences \cite{Peintner2008} play an important role in artificial
+intelligence, including fields spanning from recommender systems to
+automatic planning, from non monotonic reasoning to computational
+social choice and algorithmic decision theory.  The task of eliciting
+or learning preferences is therefore a crucial one; typically only limited
+information about the user's preferences will be available and the
+cost of obtaining additional preference information will be high (from
+a cognitive and/or computational point of view).  The goal in
+preference elicitation is that of gaining enough information about the
+user's
+preferences %(typically represented by an utility function $u$, unknown to the system)
 in order to recommend a decision or a course of action.
 
 The assessment of preferences have received considerable attention in the literature, with early works confined to the operation research and management literature mostly \cite{White1984,JacquetLagreze95}.
 %In the past decade a number of researchers have considered elicitation of preferences from an artificial intelligence perspective%; within the machine learning field the term preference learning has been catching up.
 %While preferences are often assessed using some ad-hoc rules \cite{},
-Recently, in the last decade or so, a number of artificial intelligence researchers have proposed principled methods that elicit utility in an adaptive way \cite{chajewska2000,boutilier2002,Wang2003,boutilier2006,braziunas2007,guo2010real,viappiani2010optimal}; the aims is that of focusing on learning the ``important'' part of the utility, allowing to recommend good (or even optimal) decision with only a partial information about the utility function.
+Recently, in the last decade or so, a number of artificial
+intelligence researchers have proposed principled methods that elicit
+utility in an adaptive way
+\cite{chajewska2000,boutilier2002,Wang2003,boutilier2006,braziunas2007,guo2010real,viappiani2010optimal}. The
+aim is that of focusing on learning the ``important'' part of the
+utility, allowing to recommend good (or even optimal) decisions with
+only partial knowledge of the utility function.
 
 %braziunas-mmr:uai07,
 
@@ -181,22 +193,27 @@ The recommendation is then made by solving a constrained optimization
  problem in the space of feasible instances, guided by the learned
 utility. 
 
-Preference elicitation in configuration problems has been previously tackled with regret-based elicitation \cite{boutilier2006,braziunas2007}, where minimax regret is used both
-as a robust recommendation criterion and as a technique to drive elicitation in configuration problems.
-The main limitation of the minimax regret approach is the lack of tolerance with respect to user inconsistency (the user might state that an item is preferred to another one, even though the latter has higher utility).
-
+Preference elicitation in configuration problems has been previously
+tackled with regret-based elicitation
+\cite{boutilier2006,braziunas2007}, where minimax regret is used both
+as a robust recommendation criterion and as a technique to drive
+elicitation in configuration problems.  The main limitation of the
+minimax regret approach is the lack of tolerance with respect to user
+inconsistency (the user might state that an item is preferred to
+another one, even though the latter has higher utility).
 % setwise max-margin formulation to deal with uncertainty in user utility
+
 Indeed, learning a user utility function requires setting a preference
 elicitation strategy and dealing with uncertain and possibly
-inconsistent user feedback. 
-Bayesian preference elicitation approaches
-deal with both problems by building a probability distribution on
-candidate functions (endowed with a response or error model to be used for inference) and asking queries maximizing informativeness
-measures such as expected value of information (EVOI)~\cite{chajewska2000,guo2010real,viappiani2010optimal}. 
-
-These
+inconsistent user feedback.  Bayesian preference elicitation
+approaches deal with both problems by building a probability
+distribution on candidate functions (endowed with a response or error
+model to be used for inference) and asking queries maximizing
+informativeness measures such as expected value of information
+(EVOI)~\cite{chajewska2000,guo2010real,viappiani2010optimal}.  These
 approaches are however computationally expensive and can not scale to
 fully constructive scenarios, as shown in our experimental results.
+
 We take a space decomposition perspective and jointly learn a set of
 weight vectors, each representing a candidate utility function,
 maximizing diversity between the vectors and consistency with the
@@ -209,15 +226,15 @@ algorithm produces two outcomes: a set of weight vectors and a set of
 instances, each maximizing its score according to one of the weight
 vectors. 
 
-We evaluate the effectiveness of our approach by testing our elicitation method
-in both synthetic and configuration problems, and comparing it to state-of-the-art
-methods.
+We evaluate the effectiveness of our approach by testing our
+elicitation method in both synthetic and real-world problems, and
+comparing it to state-of-the-art methods.
 
-The paper is structured as follows: after discussing related works in next Section,
-we present some background material in Section \ref{sec:background} 
-and then proceed to our setwise maxmargin method in Section \ref{sec:formulation}; 
-we discuss experimental results in Section \ref{sec:experiments}
-and conclude with final remarks (Section \ref{sec:conclusions}).
+The paper is structured as follows: we present some background
+material in Section \ref{sec:background} and then proceed to our
+setwise max-margin method in Section \ref{sec:formulation}; we discuss
+experimental results in Section \ref{sec:experiments} and conclude
+with final remarks (Sec.~\ref{sec:conclusions}).
 
 %\section{Related Work}
 
@@ -265,25 +282,25 @@ weights $w_z$ must lie in a (constant but otherwise arbitrary) interval
 $[w^\bot_z, w^\top_z]$, with $w^\bot_z \ge 0$. 
 Both requirements are quite natural\footnote{Utility values are defined on an
 interval scale, therefore the assumption of non negativity is not restrictive as it is always possible to scale the values appropriately (see for instance \cite{Torra2007} and \cite{keeney1976}).}, and enable the translation of our core optimization problem into a
-mixed-integer linear problem (as done in Section~\ref{sec:formulation}).
+mixed-integer linear problem (as done in Section~\ref{sec:formulation}). 
+%\andrea{@paolo: sulla giustificazione delle utilita' additive, vogliamo metterla? c'e' anche molto lavoro che contesta il fatto che basti no?}
 
-During learning, the actual weight vector $\vw$ is {\em unknown} to the
-learning system, and must be estimated from pairwise choices elicited from the
-user.
-%\andrea{@PAOLO: qualche parola e reference per giustificare la scelta di pairwise queries?}  
-Comparison queries are especially natural, asking a user if she prefers one option x to another y;
-these comparisons can be extended to choice sets of more than two options \cite{viappiani2009,viappiani2010optimal}.
-Comparison and choice queries are common in conjoint analysis \cite{louviere2000,toubia2004}.
-
-
-We consider three possible outcomes for a pairwise comparison between
-two configurations $\vx$ and $\vx'$: either $\vx$ is preferred to $\vx'$ (written
-$\vx \succ \vx'$), $\vx'$ is preferred to $\vx$ ($\vx \prec \vx'$), or there is
-no clear preference between the two items ($\vx \approx \vx'$). We write
-$\calD$ to denote the set of preferences (answers to comparison queries) 
-elicited from the user. Queries are typically selected so as to maximize 
-some measure of informativeness of the
-resulting responses.  Details on our actual query selection strategy will be
+During learning, the actual weight vector $\vw$ is {\em unknown} to
+the learning system, and must be estimated by interacting with the
+user. We mostly focus on pairwise comparison queries, which are the
+simplest of the comparative queries. These can be extended to choice
+sets of more than two options
+\cite{viappiani2009,viappiani2010optimal}.  Comparison and choice
+queries are common in conjoint analysis
+\cite{louviere2000,toubia2004}. We consider three possible outcomes
+for a pairwise comparison between two configurations $\vx$ and $\vx'$:
+either $\vx$ is preferred to $\vx'$ (written $\vx \succ \vx'$), $\vx'$
+is preferred to $\vx$ ($\vx \prec \vx'$), or there is no clear
+preference between the two items ($\vx \approx \vx'$). We write
+$\calD$ to denote the set of preferences (answers to comparison
+queries) elicited from the user. Queries are typically selected so as
+to maximize some measure of informativeness of the resulting
+responses.  Details on our actual query selection strategy will be
 provided in Section~\ref{sec:formulation}.
 
 \section{Setwise Max-margin Learning}
@@ -296,9 +313,11 @@ then show how to reduce it to a mixed integer linear program.% optimization one.
 The goal of our setwise max-margin approach is twofold. First, for any
 given set size $k\geq 1$, we want to find a {\em set} of $k$ weight
 vectors $\vw^{1}, \ldots, \vw^{k}$, chosen so that all user-provided
-preferences are satisfied by the largest possible margin (i.e. all
-weight vectors are consistent with respect to the user responses
-$\calD$, modulo inconsistencies) and so that they are maximally
+preferences are satisfied by the largest possible margin (%
+%i.e. all
+%weight vectors are consistent with respect to the user responses
+%$\calD$, 
+modulo inconsistencies) and so that they are maximally
 diverse.  Second, we want to construct a {\em set} of $k$
 configurations $\vx^{1}, \ldots, \vx^{k}$, so that each configuration
 $\vx^{i}$ is the ``best'' possible option when evaluated according to
@@ -314,10 +333,8 @@ $\langle \vw^i, \vy^h_+ - \vy^h_- \rangle \geq \mu$, where $\mu$ is the
 the responses.  Non-separable datasets, which occur in practice due to
 occasional inconsistencies in user feedback, are handled by
 introducing slack variables (whose sum we aim at minimizing). When
-augmented with the slacks, the above inequalities take the form:
-\begin{align*}
-\langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h 
-\end{align*}
+augmented with the slacks, the above inequalities take the form
+$\langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h$
 where $\varepsilon^{i}_h$ is the penalty incurred by weight vector $\vw^{i}$
 for violating the margin separation of pair $h$. Indifference preferences, i.e.
 $\vy^h_1 \approx \vy^h_2$, are translated as $|\langle \vw^i, \vy^h_1 - \vy^h_2 \rangle| < \varepsilon^i_h$;
@@ -375,21 +392,21 @@ variables $\mu \in \bbR$, $\{ \vw^i \in \bbR^m \}$, $\{ \vx^i \in \{0,1\}^m \}$:
 \end{align}
 }
 %
-Let us illustrate the above piece by piece. The objective is composed of four
-parts: we maximize the shared margin $\mu$ (first part) and minimize the total
-sum of the ranking errors $\veps^i$ incurred by each weight vector $\vw^{i}$
-(second part), while at the same time regularizing the magnitude of the
-weights (third part) and the quality of the configurations $\{ \vx^{i} \}$ (last
-part). The non-negative hyperparameters $\alpha,\beta,\gamma$ control the
-influence of the various components.
-
-The third part of the objective does require a more in depth explanation. In
-many scenarios the user will have strong preferences about some attributes, but
-will be indifferent to most of them. %~\cite{} \stefano{@Paolo: add refs}. 
-The $\ell_1$ penalty is frequently
-used to improve the sparsity of learned models~\cite{lasso,zhang2008,Hensinger2010}, with consequent gains
-in generalization ability and efficiency, as confirmed by our empirical
-findings (see Section~\ref{sec:experiments}).
+Let us illustrate the above piece by piece. The objective is composed
+of four parts: we maximize the shared margin $\mu$ (first part) and
+minimize the total sum of the ranking errors $\veps^i$ incurred by
+each weight vector $\vw^{i}$ (second part), while at the same time
+regularizing the magnitude of the weights (third part) and the quality
+of the configurations $\{ \vx^{i} \}$ (last part). The non-negative
+hyperparameters $\alpha,\beta,\gamma$ control the influence of the
+various components. The weight regularization term copes with the
+common scenario in which the user has strong preferences about
+some attributes, but is indifferent to most of
+them. %~\cite{} \stefano{@Paolo: add refs}.
+The $\ell_1$ penalty is frequently used to improve the sparsity of
+learned models~\cite{lasso,zhang2008,Hensinger2010}, with consequent
+gains in generalization ability and efficiency, as confirmed by our
+empirical findings (see Section~\ref{sec:experiments}).
 
 The two core constraints are Equations~(\ref{eq:wyconstr}) and~(\ref{eq:wxconstr}),
 which are taken directly from the discussion above. The former enforces the
@@ -412,9 +429,10 @@ In each subregion, we have corresponding utility weight vector $\vw^{i}$
 lying ``close'' to the centre of each subregion. 
 Note that if we present $\vx^{1}$ and $\vx^{2}$ to the user, and the user states that he prefers
 the former to the latter, the feasible region for the weights will then become the part of the polytope to the left of the red line; moreover $\vw^{1}$ will be vector maximizing the margin in the classic sense.
-Therefore, setwise maxmargin can be thought as a ``look-ahead'' model with respect to a standard ($k=1$) max margin learner a posteriori.
+Therefore, setwise maxmargin can be thought as a ``look-ahead'' model with respect to a standard ($k=1$) max-margin learner a posteriori.
 %Therefore, setwise maxmargin can be thought as the set that, given any possible preference about the items, ensure that the reduction of utility uncertainty is the greatest
-\paolo{ho fatto un tentativo di migliorare l'intuizione, ma e' ancora possibile migliorare...}
+%\paolo{ho fatto un tentativo di migliorare l'intuizione, ma e' ancora possibile migliorare...}
+%\andrea{cosa intendi per a posteriori?}
 
 \begin{figure}[t]
     \begin{center}
@@ -590,18 +608,17 @@ and the full experimental setup are available at \url{https://db.tt/oqY62odW}.
 We compare {\sc SetMargin} against the following competitive Bayesian baselines:
 % and \cite{viappiani2010optimal}.
 
-
-\paolo{Se bisogno di spazio, posso accorciare la descrizione.}
 \begin{itemize}
 \item The best Bayesian approach from \cite{guo2010real}, selecting
   queries according to {\em restricted informed VOI} ({\sc riVOI}), a
-  heuristic approximation of value-of-information, and performing
-  inference using TrueSkill$^{TM}$ \cite{HerbrichMG06} (an inference
-  scheme based on expectation propagation \cite{Minka01}).
+  heuristic approximation (equally effective but more efficient) of
+  value-of-information, and inference using TrueSkill$^{TM}$
+  \cite{HerbrichMG06} (an inference scheme based on expectation
+  propagation \cite{Minka01}).
  
- \item The Bayesian framework of \cite{viappiani2010optimal} using Monte Carlo methods for Bayesian inference and asking choice queries (asking the user to select its preferred item among a set of diplayed ones); the next query is computed by performing a greedy optimization of {\em Expected Utility of a Selection} (hereafter just called {\sc EUS}), a submodular quantity that can be used as a proxy for value of information (giving strong approximate guarantees).
+ \item The Bayesian framework of \cite{viappiani2010optimal} using Monte Carlo methods for Bayesian inference and asking choice queries (asking the user to select its preferred item among a set of displayed ones); the next query is computed by performing a greedy optimization of {\em Expected Utility of a Selection} (hereafter just called {\sc EUS}), a submodular quantity that can be used as a proxy for value of information (giving strong approximate guarantees).
  
- \item {\em Query Iteration} (referred as {\sc QI} below), also from \cite{viappiani2010optimal}, an even faster query selection method based on sampling a set of utility vectors, selecting the items that maximize utility for each of the vector, forming a first proposal for a query set. Then, a new set is computed by considering the optimal items in the associated  beliefs, and the process is repeated until convergence.
+ \item {\em Query Iteration} (referred as {\sc QI} below), also from \cite{viappiani2010optimal}, an even faster query selection method based on sampling a set of utility vectors, selecting the items that maximize utility for each of the vector and forming a first proposal for a query set. Then, a new set is computed by considering the optimal items in the associated  beliefs, and the process is repeated until convergence.
 \end{itemize}
 
 
@@ -623,9 +640,12 @@ how close their utilities are, as in the exponential distribution:
 $$ \exp(-\lambda_2 |\langle\vw,\vx^i - \vx^j\rangle|). $$
 %
 The parameters $\lambda_1$ and $\lambda_2$ were set to one for all
-simulations\footnote{When experiment with EUS and QI, the user is forced to select
-its preffered item, so indifference is not possible. While support for indifference
-could be added, we chose to .}, as in~\cite{guo2010real}.
+simulations, as in~\cite{guo2010real}.
+
+% \footnote{When experiment with EUS and QI, the user is forced to select
+% its preffered item, so indifference is not possible. While support for indifference
+% could be added, we chose to .}
+%\andrea{@paolo: e' necessaria la footnote? dobbiamo tagliare..}
 
 In all experiments {\sc SetMargin} uses an internal 5-fold cross-validation procedure to
 update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
@@ -656,37 +676,38 @@ exponentially with $r$.
 % $\calX_\text{feasible} = [3] \times [3] \times [3]$, and so on. The
 % cardinality of $\calX_\text{feasible}$ is $m^m$, and grows (super)
 % exponentially with $m$. 
-For $r=3$, the dataset is comparable to the synthetic one used
-in~\cite{guo2010real} and~\cite{viappiani2010optimal}, which have
-three attributes with 2, 2 and 5 values respectively, for a total of
-20 feasible configurations.  For larger $r$ the size of the space
-grows much larger than the one typically used in the Bayesian
-preference elicitation literature, and as such represents a good testbed
-for comparing the scalability of the various methods. The feasible
-configuration space was encoded in {\sc SetMargin} through appropriate
-MILP constraints, while the other methods require all datasets to be
-explicitly grounded.
+For $r=3$, the dataset is comparable in size to the synthetic one used
+in~\cite{guo2010real} and~\cite{viappiani2010optimal}.
+%, which have
+%three attributes with 2, 2 and 5 values respectively, for a total of
+%20 feasible configurations.  
+For larger $r$ the size of the space grows much larger than the one
+typically used in the Bayesian preference elicitation literature, and
+as such represents a good testbed for comparing the scalability of the
+various methods. The feasible configuration space was encoded in {\sc
+  SetMargin} through appropriate MILP constraints, while the other
+methods require all datasets to be explicitly grounded.
 
-Users were simulated by drawing $20$ random utility vectors from each of four
-different distributions. The first two mimic those used
+Users were simulated by drawing $20$ random utility vectors from each
+of four different distributions. The first two mimic those used
 in~\cite{guo2010real}\footnote{The normal distribution reported
-in~\cite{guo2010real} differs slightly from the one implemented in the code of
-their experimental setting. 
-In our experiments we use the latter.}:
-(1) a uniform distribution over $[1, 100]$ for each individual weight, and (2)
-a normal distribution with mean $25$ and %covariance
-standard deviation $\frac{25}{3}$ (each attribute is sample i.i.d).  
-We further produced two novel
-{\em sparse} sets of weight vectors by setting to zero $80\%$ of the entries of the
-vectors sampled in the uniform and normal settings uniformly at random. 
-All methods were evaluated on the very same weight vectors. All users had
-a budget of 100 iterations; for {\sc SetMargin} we used a $0.01$
-threshold on the utility loss for early stopping (that does not affect the
-cross-validation procedure).
-The Bayesian methods can use the estimated loss to decide when to stop (the expectation
-of the utility loss with respect to the current probabilistic belief)
-\footnote{In our experiments, we left the Bayesian methods to run the full amount of iterations,
-even when the estimated loss was very low.}.
+  in~\cite{guo2010real} differs slightly from the one implemented in
+  the code of their experimental setting.  In our experiments we use
+  the latter.}: (1) a uniform distribution over $[1, 100]$ for each
+individual weight, and (2) a normal distribution with mean $25$
+and %covariance
+standard deviation $\frac{25}{3}$ (each attribute is sample i.i.d).
+We further produced two novel {\em sparse} versions of the uniform and
+normal distributions setting to zero $80\%$ of the entries (sampled
+uniformly at random). All methods were evaluated on the same weight
+vectors. All users had a budget of 100 iterations; for {\sc SetMargin}
+we used a $0.01$ threshold on the utility loss for early stopping
+(that does not affect the cross-validation procedure).  The Bayesian
+methods can use the estimated loss to decide when to stop (the
+expectation of the utility loss with respect to the current
+probabilistic belief) \footnote{In our experiments, we left the
+  Bayesian methods to run the full amount of iterations, even when the
+  estimated loss was very low.}. \andrea{@stefano: cosi' non va. O tutti early stopping o nessuno..}
 
 \begin{figure*}[h!]
     \centering
