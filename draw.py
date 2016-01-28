@@ -113,7 +113,7 @@ def set_offset(max_val):
     if offset < 1000:
         return int(round(offset,-2))
 
-def draw_groups(basename, groups, upper_max_x, per_query=False):
+def draw_groups(domsize, basename, groups, upper_max_x, per_query=False):
     loss_matrices, time_matrices = [], []
     for group in groups:
         paths = group.split()
@@ -147,6 +147,9 @@ def draw_groups(basename, groups, upper_max_x, per_query=False):
     ax.set_ylim([0.0, max_y + 0.1])
     ax.set_yticks(np.arange(0, max_y, set_offset(max_y)))
 
+    if domsize:
+        ax.set_title("Synthetic r=%d" %domsize, fontproperties=fonts)
+
     fig.savefig(basename + "_loss.png", bbox_inches="tight")
 
     # Time
@@ -161,10 +164,13 @@ def draw_groups(basename, groups, upper_max_x, per_query=False):
     ax.set_ylim([0.0, max_y + 0.1])
     ax.set_yticks(np.arange(0, max_y, set_offset(max_y)))
 
+    if domsize:
+        ax.set_title("Synthetic r=%d" %domsize, fontproperties=fonts)
+
     fig.savefig(basename + "_time.png", bbox_inches="tight")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 5:
-        print "Usage: {} <per query?> <max x> <output basename> (<group>)+".format(sys.argv[0])
+    if len(sys.argv) < 6:
+        print "Usage: {} <per query?> <domain size> <max x> <output basename> (<group>)+".format(sys.argv[0])
         quit()
-    draw_groups(sys.argv[2], sys.argv[4:], int(sys.argv[3]), per_query=bool(int(sys.argv[1])))
+    draw_groups(int(sys.argv[2]), sys.argv[3], sys.argv[5:], int(sys.argv[4]), per_query=bool(int(sys.argv[1])))

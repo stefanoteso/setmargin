@@ -15,7 +15,7 @@ for domain_size in `seq 3 4`; do
         viappiani_qi_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*QI*.txt`
         viappiani_eus_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*EUS*.txt`
         output="paper/figures/synthetic_vs_others_${domain_size}_${sampling_mode}_per_iter"
-        ./draw.py 0 $output $x_max "$setmargin_files" "$guo_files" "$viappiani_qi_files" "$viappiani_eus_files"
+        ./draw.py 0 ${domain_size} $output $x_max "$setmargin_files" "$guo_files" "$viappiani_qi_files" "$viappiani_eus_files"
     done
 done
 
@@ -32,7 +32,7 @@ for domain_size in `seq 3 4`; do
         viappiani_qi_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*QI*.txt`
         viappiani_eus_files=`ls results/ijcai16/viappiani/synthetic_${domain_size}/${sampling_mode}/*EUS*.txt`
         output="paper/figures/synthetic_vs_others_${domain_size}_${sampling_mode}_per_query"
-        ./draw.py 1 $output $x_max "$setmargin_files" "$guo_files" "$viappiani_qi_files" "$viappiani_eus_files"
+        ./draw.py 1 ${domain_size} $output $x_max "$setmargin_files" "$guo_files" "$viappiani_qi_files" "$viappiani_eus_files"
     done
 done
 
@@ -45,7 +45,7 @@ for domain_size in `seq 3 5`; do
         k3_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=3*50__300*.pickle`
         k4_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=4*50__300*.pickle`
         output="paper/figures/synthetic_vs_self_${domain_size}_${sampling_mode}_per_iter"
-        ./draw.py 0 $output 50 "$k2_files" "$k3_files" "$k4_files"
+        ./draw.py 0 ${domain_size} $output 50 "$k2_files" "$k3_files" "$k4_files"
     done
 done
 
@@ -56,7 +56,7 @@ for domain_size in `seq 3 5`; do
         k3_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=3*100__100*.pickle`
         k4_files=`ls results/ijcai16/synthetic_${domain_size}/${sampling_mode}/*k=4*100__100*.pickle`
         output="paper/figures/synthetic_vs_self_${domain_size}_${sampling_mode}_per_query"
-        ./draw.py 1 $output 100 "$k2_files" "$k3_files" "$k4_files"
+        ./draw.py 1 ${domain_size} $output 100 "$k2_files" "$k3_files" "$k4_files"
     done
 done
 
@@ -68,7 +68,7 @@ for sampling_mode in uniform_sparse normal_sparse; do
     k3_files=`ls results/ijcai16/pc_with_costs/${sampling_mode}/*k=3*50__300*.pickle`
     k4_files=`ls results/ijcai16/pc_with_costs/${sampling_mode}/*k=4*50__300*.pickle`
     output="paper/figures/pc_with_costs_${sampling_mode}_per_iter"
-    ./draw.py 0 $output 50 "$k2_files" "$k3_files" "$k4_files"
+    ./draw.py 0 0 $output 50 "$k2_files" "$k3_files" "$k4_files"
 done
 
 for sampling_mode in uniform_sparse normal_sparse; do
@@ -77,5 +77,5 @@ for sampling_mode in uniform_sparse normal_sparse; do
     k3_files=`ls results/ijcai16/pc_with_costs/${sampling_mode}/*k=3*100__100*.pickle`
     k4_files=`ls results/ijcai16/pc_with_costs/${sampling_mode}/*k=4*100__100*.pickle`
     output="paper/figures/pc_with_costs_${sampling_mode}_per_query"
-    ./draw.py 1 $output 100 "$k2_files" "$k3_files" "$k4_files"
+    ./draw.py 1 0 $output 100 "$k2_files" "$k3_files" "$k4_files"
 done
