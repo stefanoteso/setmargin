@@ -711,61 +711,7 @@ methods for simplicity.
 %   Bayesian methods to run the full amount of iterations, even when the
 %   estimated loss was very low.}. \andrea{@stefano: cosi' non va. O tutti early stopping o nessuno..}
 
- 
-
-% \begin{figure*}[h!]
-%     \centering
-%     {\footnotesize
-%     \begin{tabular}{cccc}
-%         % \hline
-%         % {\sc synthetic 3 loss} & {\sc synthetic 3 time} & {\sc synthetic 4 loss} & {\sc synthetic 4 time}
-%         % \\
-%         % \hline \hline
-%         \multicolumn{4}{c}{{\sc Uniform}}
-%         \\
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_loss} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_time} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_loss} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_time}
-%         \\
-%         \hline
-%         \multicolumn{4}{c}{{\sc Normal}}
-%         \\
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_per_iter_loss} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_per_iter_time} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_per_iter_loss} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_per_iter_time}
-%         \\
-%         \hline
-%         \multicolumn{4}{c}{{\sc Sparse Uniform}}
-%         \\
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_loss} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_time} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_loss} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_time}
-%         \\
-%         \hline
-%         \multicolumn{4}{c}{{\sc Sparse Normal}}
-%         \\
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_loss} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_time} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_loss} &
-%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_time}
-%         \\
-%         \hline
-%     \end{tabular}
-%     }
-%     \caption{\label{fig:comparison} Comparison between {\sc SetMargin}
-%       (orange), {\sc riVOI} (blue), {\sc QI} (green) and {\sc EUS}
-%       (gray) on the $r=3$ (left) and $r=4$ (right) datasets. Each row
-%       represents a different sampling distribution for user utility.
-%       The number of iterations is plotted against the utility loss
-%       (first and third columns) and the cumulative time (second and
-%       fourth columns). Thick lines indicate median values over users,
-%       while standard deviations are shown as shaded areas.}
-% \end{figure*}
-
-\begin{figure*}[h!]
+\begin{figure*}
     \centering
     {\footnotesize
     \begin{tabular}{ccccc}
@@ -872,7 +818,7 @@ designed to favour sparse functions.
 
 %\stefano{@Paolo: varianza tempi?}
 
-\begin{figure*}[h!]
+\begin{figure*}
     \centering
     {\footnotesize
     \begin{tabular}{ccccc}
@@ -948,6 +894,43 @@ could be beneficial with different noise levels).
 
 %\paolo{Maybe a plot of an experiment with increased noise in user response? (for example, $\beta=0.1$ instead of $1$.}
 
+\begin{figure*}
+    \centering
+    {\footnotesize
+    \begin{tabular}{lcccc}
+%        \hline
+%        \multicolumn{2}{c}{{\sc loss/time per iter.}} &
+%        \multicolumn{2}{c}{{\sc loss/time per query}}
+        \\
+%        \multicolumn{4}{c}{{\sc sparse uniform}}
+        {\sc uniform} &
+        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
+        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
+        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
+
+        % \includegraphics[width=..25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
+        % \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
+        % \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
+        % \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_query_time}
+        \\
+%        \hline
+        % \multicolumn{4}{c}{{\sc sparse normal}}
+        % \\
+        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_loss} &
+        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_time} &
+        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_loss} &
+        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_time}
+        % \\
+        % \hline
+    \end{tabular}
+    }
+    \caption{\label{fig:pc} Results for {\sc SetMargin} for $k=2$
+      (red), $k=3$ (blue) and $k=4$ (green) on the constructive PC
+      dataset for the sparse uniform distribution. Utility loss and
+      time are plotted against number of iterations (left)
+      and number of queries (right).}
+\end{figure*}
 
 \paragraph{Constructive dataset.} Next, we tested {\sc SetMargin} on a truly
 constructive setting. We developed a constructive version of the PC dataset
@@ -1059,44 +1042,6 @@ functions, the method compares favorably also in terms of utility loss.
 % synthetic_vs_self_5_normal_sparse_per_query_time
 % synthetic_vs_self_5_uniform_per_iter_time
 % synthetic_vs_self_5_uniform_per_query_time
-
-\begin{figure*}
-    \centering
-    {\footnotesize
-    \begin{tabular}{lcccc}
-%        \hline
-%        \multicolumn{2}{c}{{\sc loss/time per iter.}} &
-%        \multicolumn{2}{c}{{\sc loss/time per query}}
-        \\
-%        \multicolumn{4}{c}{{\sc sparse uniform}}
-        {\sc uniform} &
-        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
-        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
-        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
-        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
-
-        % \includegraphics[width=..25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
-        % \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
-        % \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
-        % \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_query_time}
-        \\
-%        \hline
-        % \multicolumn{4}{c}{{\sc sparse normal}}
-        % \\
-        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_loss} &
-        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_time} &
-        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_loss} &
-        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_time}
-        % \\
-        % \hline
-    \end{tabular}
-    }
-    \caption{\label{fig:pc} Results for {\sc SetMargin} for $k=2$
-      (red), $k=3$ (blue) and $k=4$ (green) on the constructive PC
-      dataset for the sparse uniform distribution. Utility loss and
-      time are plotted against number of iterations (left)
-      and number of queries (right).}
-\end{figure*}
 
 
 \end{document}
