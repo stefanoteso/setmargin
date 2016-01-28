@@ -593,11 +593,11 @@ We compare {\sc SetMargin} against the following competitive Bayesian baselines:
 
 \paolo{Se bisogno di spazio, posso accorciare la descrizione.}
 \begin{itemize}
- \item The Bayesian approach from \cite{guo2010real}, selecting queries according to {\em restricted uninformed VOI} (ruVOI), an heuristic approximation of value-of-information, and performing inference using  TrueSkill$^{TM}$ \cite{HerbrichMG06} (an inference scheme based on expectation propagation \cite{Minka01}).
+ \item The Bayesian approach from \cite{guo2010real}, selecting queries according to {\em restricted uninformed VOI} ({\sc ruVOI}), an heuristic approximation of value-of-information, and performing inference using  TrueSkill$^{TM}$ \cite{HerbrichMG06} (an inference scheme based on expectation propagation \cite{Minka01}).
  
- \item The Bayesian framework of \cite{viappiani2010optimal} using Monte Carlo methods for Bayesian inference and asking choice queries (asking the user to select its preferred item among a set of diplayed ones); the next query is computed by performing a greedy optimization of {\em Expected Utility of a Selection} (hereafter just called EUS), a submodular quantity that can be used as a proxy for value of information (giving strong approximate guarantees).
+ \item The Bayesian framework of \cite{viappiani2010optimal} using Monte Carlo methods for Bayesian inference and asking choice queries (asking the user to select its preferred item among a set of diplayed ones); the next query is computed by performing a greedy optimization of {\em Expected Utility of a Selection} (hereafter just called {\sc EUS}), a submodular quantity that can be used as a proxy for value of information (giving strong approximate guarantees).
  
- \item {\em Query Iteration} (referred as QI below), also from \cite{viappiani2010optimal}, an even faster query selection method based on sampling a set of utility vectors, selecting the items that maximize utility for each of the vector, forming a first proposal for a query set. Then, a new set is computed by considering the optimal items in the associated  beliefs, and the process is repeated until convergence.
+ \item {\em Query Iteration} (referred as {\sc QI} below), also from \cite{viappiani2010optimal}, an even faster query selection method based on sampling a set of utility vectors, selecting the items that maximize utility for each of the vector, forming a first proposal for a query set. Then, a new set is computed by considering the optimal items in the associated  beliefs, and the process is repeated until convergence.
 \end{itemize}
 
 
@@ -684,10 +684,6 @@ of the utility loss with respect to the current probabilistic belief)
 \footnote{In our experiments, we left the Bayesian methods to run the full amount of iterations,
 even when the estimated loss was very low.}.
 
-\andrea{give names to competitors}
-
-%\onecolumn
-
 \begin{figure*}[h!]
     \centering
     {\footnotesize
@@ -731,7 +727,7 @@ even when the estimated loss was very low.}.
     \end{tabular}
     }
     \caption{\label{fig:comparison} Comparison between {\sc SetMargin}
-      (orange), Guo (blue), Viappiani QI (green) and Viappiani EUS
+      (orange), {\sc ruVOI} (blue), {\sc QI} (green) and {\sc EUS}
       (gray) on the $r=3$ (left) and $r=4$ (right) datasets. Each row
       represents a different distribution for sampling the underlying
       user utility.  The number of iterations is plotted against the
@@ -754,20 +750,20 @@ $$ \max_{\vx\in\calX_\text{feasible}} \left( u(\vx) - u(\vx^*) \right) $$
 where $u(\cdot)$ is the true unknown user utility, and $\vx^*$ is the
 solution recommended to the user after the elicitation phase (see
 Algorithm~\ref{alg:setmargin}). Computational cost is measured in
-terms of cumulative time. Given that Guo and Viappiani (both QI and
-EUS) are single-threaded, we disabled multi-threading when running our
+terms of cumulative time. Given that {\sc ruVOI},  {\sc QI} and
+{\sc EUS} are single-threaded, we disabled multi-threading when running our
 algorithm in these comparisons. All experiments were run on a 2.8 GHz Intel
 Xeon CPU with 8 cores and 32 GiB of RAM.
 In all figures, thick lines indicate median values over the different
 users, shaded areas indicate standard deviations. Our {\sc SetMargin}
-algorithm for $k=2$ is reported in orange, Guo's ruVOI in blue, Viappiani's QI
-in green and EUS in gray. For all algorithms, one iteration
+algorithm for $k=2$ is reported in orange, {\sc ruVOI} in blue, {\sc QI}
+in green and {\sc EUS} in gray. For all algorithms, one iteration
 corresponds to a single pairwise query to the user.  Results for $r=3$
 and $r=4$ are reported.  For dense weight vector distributions (first
 two rows), our approach achieves results which are indistinguishable
 from the competitors in a fraction of their time.  Indeed, all
 Bayesian approaches become quickly intractable for growing values of $r$,
-%cannot scale over $r=4$ (for $r=5$, Guo did not
+%cannot scale over $r=4$ (for $r=5$, {\sc ruVOI} did not
 %finish a single user after 24 hours for, Viappiani QI takes 20 minutes
 %per user), \andrea{20 minuti mi paiono pochi, sei sicuro?}  
 while our algorithm can easily scale to much larger datasets, as will
@@ -780,7 +776,7 @@ while none of the other approaches is %explicitly
 designed to favour sparse functions.
 
 
-% Guo e' piantato al primo utente da tre giorni su synthetic 5.
+% {\sc ruVOI} e' piantato al primo utente da tre giorni su synthetic 5.
 % Paolo procede su S-5 da qualche ora (~8) (1290s su synthetic-5
 % uniforme per completamento di un utente).
 
