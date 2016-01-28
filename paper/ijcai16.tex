@@ -149,30 +149,29 @@
 
 \section{Introduction}
 
-Preferences \cite{Peintner2008} play an important role in artificial
-intelligence, including fields spanning from recommender systems to
-automatic planning, from non monotonic reasoning to computational
-social choice and algorithmic decision theory.  The task of eliciting
-or learning preferences is therefore a crucial one; typically only limited
+Preferences \cite{Peintner2008} play an important role in a variety of artificial
+intelligence applications and the task of eliciting or learning preferences is a crucial one; 
+typically only limited
 information about the user's preferences will be available and the
-cost of obtaining additional preference information will be high (from
-a cognitive and/or computational point of view).  The goal in
-preference elicitation is that of gaining enough information about the
-user's
-preferences %(typically represented by an utility function $u$, unknown to the system)
-in order to recommend a decision or a course of action.
+cost (cognitive or computational) obtaining additional preference information will be high.  
+%The goal in
+%preference elicitation is that of gaining enough information about the
+%user's
+%preferences %(typically represented by an utility function $u$, unknown to the system)
+%in order to recommend a decision or a course of action.
 
-The assessment of preferences have received considerable attention in the literature, with early works confined to the operation research and management literature mostly \cite{White1984,JacquetLagreze95}.
+The automated assessment of preferences has received considerable attention,
+starting with pioneering works \cite{White1984,JacquetLagreze95} in the OR community.
 %In the past decade a number of researchers have considered elicitation of preferences from an artificial intelligence perspective%; within the machine learning field the term preference learning has been catching up.
 %While preferences are often assessed using some ad-hoc rules \cite{},
-Recently, in the last decade or so, a number of artificial
-intelligence researchers have proposed principled methods that elicit
-utility in an adaptive way
-\cite{chajewska2000,boutilier2002,Wang2003,boutilier2006,braziunas2007,guo2010real,viappiani2010optimal}. The
-aim is that of focusing on learning the ``important'' part of the
-utility, allowing to recommend good (or even optimal) decisions with
-only partial knowledge of the utility function.
+More recently, a number of AI researchers have proposed interactive methods that elicit
+preferences in an adaptive way
+\cite{chajewska2000,boutilier2002,Wang2003,boutilier2006,guo2010real,viappiani2010optimal},
+observing that, by asking informative questions, it is often possible to make near-optimal decisions with only partial preference information.
 
+
+%focusing on learning the ``important'' part of the
+%preferences, 
 %braziunas-mmr:uai07,
 
 %One option is to be Bayesian and to maintain a probability distribution over the possible realizations of the utility's parameters \cite{chajewska2000,boutilier2002,guo2010real,viappiani2010optimal}.
@@ -197,20 +196,23 @@ Preference elicitation in configuration problems has been previously
 tackled with regret-based elicitation
 \cite{boutilier2006,braziunas2007}, where minimax regret is used both
 as a robust recommendation criterion and as a technique to drive
-elicitation in configuration problems.  The main limitation of the
-minimax regret approach is the lack of tolerance with respect to user
-inconsistency (the user might state that an item is preferred to
-another one, even though the latter has higher utility).
+elicitation.  The main limitation of their
+approach is the lack of tolerance with respect to user
+inconsistency. %(the user might state that an item is preferred to
+%another one, even though the latter has higher utility).
 % setwise max-margin formulation to deal with uncertainty in user utility
+Indeed, learning a user utility function requires 
+%elicitation strategy and 
+to deal with uncertain and possibly inconsistent user feedback.  
 
-Indeed, learning a user utility function requires setting a preference
-elicitation strategy and dealing with uncertain and possibly
-inconsistent user feedback.  Bayesian preference elicitation
-approaches deal with both problems by building a probability
+Bayesian preference elicitation
+approaches deal with this problem by 
+building a probability
 distribution on candidate functions (endowed with a response or error
 model to be used for inference) and asking queries maximizing
-informativeness measures such as expected value of information
-(EVOI)~\cite{chajewska2000,guo2010real,viappiani2010optimal}.  These
+informativeness measures such as {\em expected value of information
+(EVOI)}~\cite{chajewska2000,guo2010real,viappiani2010optimal}.  
+These
 approaches are however computationally expensive and can not scale to
 fully constructive scenarios, as shown in our experimental results.
 
@@ -220,23 +222,20 @@ maximizing diversity between the vectors and consistency with the
 available feedback. These two conflicting objectives tend to generate
 equally plausible alternative hypotheses for the unknown
 utility. 
-Our approach to preference elicitation works by combining weight vector
+Our approach to elicitation works by combining weight vector
 learning with instance generation, so that each iteration of the
 algorithm produces two outcomes: a set of weight vectors and a set of
 instances, each maximizing its score according to one of the weight
 vectors. 
-
 We evaluate the effectiveness of our approach by testing our
 elicitation method in both synthetic and real-world problems, and
 comparing it to state-of-the-art methods.
 
-The paper is structured as follows: we present some background
-material in Section \ref{sec:background} and then proceed to our
-setwise max-margin method in Section \ref{sec:formulation}; we discuss
-experimental results in Section \ref{sec:experiments} and conclude
-with final remarks (Sec.~\ref{sec:conclusions}).
-
-%\section{Related Work}
+% The paper is structured as follows: we present some background
+% material in Section \ref{sec:background} and then proceed to our
+% setwise max-margin method in Section \ref{sec:formulation}; we discuss
+% experimental results in Section \ref{sec:experiments} and conclude
+% with final remarks (Sec.~\ref{sec:conclusions}).
 
 %Preference elicitation for the customization of user interfaces \cite{gajos2005}.
 
@@ -246,15 +245,19 @@ with final remarks (Sec.~\ref{sec:conclusions}).
 \label{sec:background}
 %\section{Preference Elicitation}
 
-\paragraph{Notation.} We use boldface letters $\vx$ to indicate vectors,
+%\paragraph{Notation.}
+We first introduce some notation.
+We use boldface letters $\vx$ to indicate vectors,
 uppercase letters $X$ for matrices, and calligraphic capital letters $\calX$
-for sets. We frequently abbreviate the set $\{ x^i \}_{i=1}^n$ as $\{ x^i \}$
+for sets. We %frequently 
+abbreviate the set $\{ x^i \}_{i=1}^n$ as $\{ x^i \}$
 whenever the range of the index $i$ is clear from the context, and use $[n]$ as
-a shorthand for the set $\{1, \ldots, n\}$. We write $\|\vx\|_1 := \sum_z |x_z|$
-to indicate the $\ell_1$ vector norm, $\langle \cdot, \cdot \rangle$ to
-denote the usual dot product, and $X'$ for matrix transposition.
+a shorthand for %the set 
+$\{1, \ldots, n\}$. We write $\|\vx\|_1 := \sum_z |x_z|$
+to indicate the $\ell_1$ vector norm, $\langle \cdot, \cdot \rangle$ for the usual dot product,  $X'$ for matrix transposition.
 
-\paragraph{Setting.} We assume to have a multi-attribute feature space
+%\paragraph{Setting.} 
+We assume to have a multi-attribute feature space
 $\calX$ of configurations $\vx = (x_1, \ldots, x_m)$ over $m$
 features. For the sake of simplicity we focus on binary features only,
 i.e. $x_z\in\{0,1\}$ for all $z\in[m]$, assuming a one-hot encoding of
@@ -271,11 +274,12 @@ Boolean disjunction of two binary variables $x_1 \lor x_2$ can be rewritten as
 $x_1 + x_2 \ge 1$.
 
 Consistently with previous work~\cite{guo2010real,viappiani2010optimal}, 
-we model users by means of utility functions of a given structure; the user's preferences are represented by a latent weight
-vector $\vw\in\bbR^m$.
-We assume linear utility functions; the utility of a configuration $\vx$ is given by
-$\langle \vw, \vx \rangle = \sum_{z=1}^m w_z x_z$
-(see \cite{keeney1976} for theoretical conditions justifying additive utility functions). 
+we model users with additive utility functions \cite{keeney1976}; 
+the user's preferences are represented by a  weight
+vector $\vw\in\bbR^m$ and
+%We assume linear utility functions \cite{keeney1976}; 
+the utility of a configuration $\vx$ is given by
+$\langle \vw, \vx \rangle = \sum_{z=1}^m w_z x_z$. 
 In the remainder of the paper we
 require all weights to be {\em non-negative} and {\em bounded}: the per-attribute
 weights $w_z$ must lie in a (constant but otherwise arbitrary) interval
@@ -283,25 +287,27 @@ $[w^\bot_z, w^\top_z]$, with $w^\bot_z \ge 0$.
 Both requirements are quite natural\footnote{Utility values are defined on an
 interval scale, therefore the assumption of non negativity is not restrictive as it is always possible to scale the values appropriately (see for instance \cite{Torra2007} and \cite{keeney1976}).}, and enable the translation of our core optimization problem into a
 mixed-integer linear problem (as done in Section~\ref{sec:formulation}). 
-\andrea{@paolo: sulla giustificazione delle utilita' additive, vogliamo metterla? c'e' anche molto lavoro che contesta il fatto che basti no?}
 
 During learning, the actual weight vector $\vw$ is {\em unknown} to
 the learning system, and must be estimated by interacting with the
 user. We mostly focus on pairwise comparison queries, which are the
 simplest of the comparative queries. These can be extended to choice
 sets of more than two options
-\cite{viappiani2009,viappiani2010optimal}.  Comparison and choice
-queries are common in conjoint analysis
-\cite{louviere2000,toubia2004}. We consider three possible outcomes
-for a pairwise comparison between two configurations $\vx$ and $\vx'$:
+\cite{viappiani2009,viappiani2010optimal} and are common in conjoint analysis
+\cite{louviere2000,toubia2004}. %We consider three possible outcomes
+For a pairwise comparison between two configurations $\vx$ and $\vx'$:
 either $\vx$ is preferred to $\vx'$ (written $\vx \succ \vx'$), $\vx'$
 is preferred to $\vx$ ($\vx \prec \vx'$), or there is no clear
 preference between the two items ($\vx \approx \vx'$). We write
 $\calD$ to denote the set of preferences (answers to comparison
-queries) elicited from the user. Queries are typically selected so as
-to maximize some measure of informativeness of the resulting
-responses.  Details on our actual query selection strategy will be
-provided in Section~\ref{sec:formulation}.
+queries) elicited from the user. 
+
+In the next Section we describe how informative queries can be generated
+using our setwise maxmargin learning.
+% Queries are typically selected so as
+% to maximize some measure of informativeness of the resulting
+% responses.  In the next Section we describe how Details on our actual query selection strategy will be
+% provided in Section~\ref{sec:formulation}.
 
 \section{Setwise Max-margin Learning}
 \label{sec:formulation}
@@ -322,8 +328,8 @@ diverse.  Second, we want to construct a {\em set} of $k$
 configurations $\vx^{1}, \ldots, \vx^{k}$, so that each configuration
 $\vx^{i}$ is the ``best'' possible option when evaluated according to
 the corresponding $\vw^{i}$ and configurations are maximally diverse
-among each other. These options will be later employed to formulate
-the user queries.
+among each other. These options will be later used to formulate
+queries.
 
 The first goal is achieved by translating all pairwise preferences
 $\calD$ into ranking constraints: preferences of the form
@@ -408,13 +414,13 @@ learned models~\cite{lasso,zhang2008,Hensinger2010}, with consequent
 gains in generalization ability and efficiency, as confirmed by our
 empirical findings (see Section~\ref{sec:experiments}).
 
-The two core constraints are Equations~(\ref{eq:wyconstr}) and~(\ref{eq:wxconstr}),
+The two core constraints are~(\ref{eq:wyconstr}) and~(\ref{eq:wxconstr}),
 which are taken directly from the discussion above. The former enforces the
 correct ranking of the observed user preferences, while the latter ensures that
 the generated configurations are diverse in terms of the weight vectors they
-maximize. Equation~(\ref{eq:wbounds}), where the inequality is intended to be component-wise, and Eq.~(\ref{eq:xbounds})
-ensure that the weights and configurations are in fact feasible, while the
-remaining two guarantee the non-negativity of the slack and margin variables.
+maximize. Constraint~(\ref{eq:wbounds}), intended to be component-wise, and~(\ref{eq:xbounds})
+ensure that the weights and configurations are feasible, while the
+remaining two guarantee the non-negativity of the slack and of the margin.
 Since we require $\vw^\bot \ge (0,\ldots,0)$, Eq.~(\ref{eq:wbounds}) also enforces the weights to be non-negative.
 
 Note that we are choosing the configurations $\{ \vx^i \}$ and the weight vectors $\{
@@ -427,18 +433,17 @@ will prefer a set of configurations $\{ \vx^{1}, \vx^{2} \}$ that partitions the
 in an even way.
 In each subregion, we have corresponding utility weight vector $\vw^{i}$
 lying ``close'' to the centre of each subregion. 
-Note that if we present $\vx^{1}$ and $\vx^{2}$ to the user, and the user states that he prefers
-the former to the latter, the feasible region for the weights will then become the part of the polytope to the left of the red line; moreover $\vw^{1}$ will be vector maximizing the margin in the classic sense.
-Therefore, setwise maxmargin can be thought as a ``look-ahead'' model with respect to a standard ($k=1$) max-margin learner a posteriori.
+If we then present $\vx^{1}$ and $\vx^{2}$ to the user, and the user states that he prefers
+the former to the latter, the feasible region for the weights will then become the part of the polytope to the left of the red line; moreover $\vw^{1}$ will maximize the margin in the classic sense ($k=1$).
+%Therefore, setwise maxmargin can be thought as a ``look-ahead'' model with respect to a standard ($k=1$) max-margin learner.
 %Therefore, setwise maxmargin can be thought as the set that, given any possible preference about the items, ensure that the reduction of utility uncertainty is the greatest
 %\paolo{ho fatto un tentativo di migliorare l'intuizione, ma e' ancora possibile migliorare...}
-\andrea{cosa intendi per a posteriori?}
 
 \begin{figure}[t]
     \begin{center}
         \includegraphics[width=10em]{figures/setmargin}
     \end{center}
-    \caption{\label{fig:setmargin} The intuition behind setwise max-margin; the red points are utility vectors $\vw^{1}$ $\vw^{2}$, the red line corresponds to the constraint $\langle \vw, \vx^{1} - \vx^{2} \rangle \ge 0$.}
+    \caption{\label{fig:setmargin} Optimization of setwise max-margin; the black lines corresponds to preference constraints $\calD$, the red points are utility vectors $\vw^{1}$ $\vw^{2}$, the red line corresponds to the constraint $\langle \vw, \vx^{1} - \vx^{2} \rangle \ge 0$.}
 \end{figure}
 
 \paragraph{MILP Formulation.} This initial formulation is problematic to solve,
@@ -533,17 +538,15 @@ which can be solved by any suitable MILP solver.
 \paragraph{Set-wise max-margin.} The full {\sc SetMargin} algorithm
 follows the usual preference elicitation loop. Starting from an
 initially empty set of user responses $\calD$, it repeatedly solves
-the MILP problem above using the set $\calD$ to enforce ranking
+the MILP problem above using $\calD$ to enforce ranking
 constraints on the weight vectors $\{\vw^i\}$. The generated
 configurations $\{\vx^i\}$, which are chosen to be as good as possible
 with respect to the estimated user preferences, and as diverse as
 possible, are then employed to formulate a set of user queries. The
 new replies are added to $\calD$ and the whole procedure is
-repeated. The algorithm terminates after a fixed number of iterations,
-or once another suitable condition is met.  Termination might be left
-to the user to decide (see for example \cite{Reilly2007});
-alternatively we can terminate when the difference between the utility
-weights is small enough.
+repeated. Termination can be after a fixed number of iterations,
+when the difference between utility vectors is very small, or might be left
+to the user to decide (e.g. \cite{Reilly2007}).
 
 The procedure is sketched in
 Algorithm~\ref{alg:setmargin}. Note that at the end of the preference
@@ -970,17 +973,19 @@ discarded.
 
 We presented a max-margin approach for efficient preference
 elicitation in large configuration spaces. Our approach relies on an
-extension of max-margin learning to sets of hyperplanes, and is
-effective in the generation of a diverse set of items that can be used
-to ask informative queries to the user.  The main advantages of our
+extension of max-margin learning to sets, and is
+effective in the generation of a diverse set of configurations that can be used
+to ask informative preference queries.  The main advantages of this
 elicitation method are 1) its ability to elicit preferences and
-provide recommendations in large configuration problems 2) its
-robustness with respect to erroneous feedback and 3) its ability to
-encourage sparse utility functions. Experimental comparisons against
+provide recommendations in large configuration problems 2)
+robustness with respect to erroneous feedback and 3)  ability to
+encourage sparse utility functions. 
+Experimental comparisons against
 state-of-the-art Bayesian preference elicitation strategies confirm
 its substantial computational advantages. For sparse utility
-functions, the method compares favourably also in terms of the number
-of queries asked to the user.
+functions, the method compares favorably also in terms of utility loss.
+%the number
+%of queries asked to the user.
 
 \paolo{any idea about possible future works?}
 % FUTURE WORKS
