@@ -641,12 +641,11 @@ how close their utilities are, as in the exponential distribution:
 $$ \exp(-\lambda_2 |\langle\vw,\vx^i - \vx^j\rangle|). $$
 %
 The parameters $\lambda_1$ and $\lambda_2$ were set to one for all
-simulations\footnote{When experimenting with EUS and QI, the user is
-  forced to select its preffered item, so indifference is not
-  possible. While support for indifference could be added, we chose to
-  be consistent with the methods as originally published.}, as
-in~\cite{guo2010real}.
-\andrea{@paolo: e' necessaria la footnote? dobbiamo tagliare..}
+simulations, as in~\cite{guo2010real}.
+% \footnote{When experimenting with EUS and QI, the user is
+%   forced to select its preffered item, so indifference is not
+%   possible. While support for indifference could be added, we chose to
+%   be consistent with the methods as originally published.}, as
 
 In all experiments {\sc SetMargin} uses an internal 5-fold cross-validation procedure to
 update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
@@ -1006,30 +1005,35 @@ of queries asked to the user.
     \centering
     {\footnotesize
     \begin{tabular}{cccc}
-        \hline
-        \multicolumn{2}{c}{{\sc loss/time per iter.}} &
-        \multicolumn{2}{c}{{\sc loss/time per query}}
+%        \hline
+%        \multicolumn{2}{c}{{\sc loss/time per iter.}} &
+%        \multicolumn{2}{c}{{\sc loss/time per query}}
         \\
-        \multicolumn{4}{c}{{\sc sparse uniform}}
+%        \multicolumn{4}{c}{{\sc sparse uniform}}
         \\
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
+%        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
+%        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
+%        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
+%        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
+
+        \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
+        \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
+        \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
+        \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_query_time}
         \\
-        \hline
-        \multicolumn{4}{c}{{\sc sparse normal}}
-        \\
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_time}
-        \\
-        \hline
+%        \hline
+        % \multicolumn{4}{c}{{\sc sparse normal}}
+        % \\
+        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_loss} &
+        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_time} &
+        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_loss} &
+        % \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_time}
+        % \\
+        % \hline
     \end{tabular}
     }
     \caption{\label{fig:pc} Results for {\sc SetMargin} on the constructive PC
-    dataset.}
+    dataset for the sparse uniform distribution.}
 \end{figure*}
 
 

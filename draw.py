@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+import math
 import sys, os
 import cPickle as pickle
 import numpy as np
@@ -103,6 +104,15 @@ def draw_matrices(ax, matrices, cumulative):
 
     return max_x, max_y
 
+def set_offset(max_val):
+    offset = math.floor(max_val / 10)    
+    if offset < 10:
+        return offset
+    if offset < 100:
+        return int(round(offset,-1))
+    if offset < 1000:
+        return int(round(offset,-2))
+
 def draw_groups(basename, groups, upper_max_x, per_query=False):
     loss_matrices, time_matrices = [], []
     for group in groups:
@@ -119,19 +129,23 @@ def draw_groups(basename, groups, upper_max_x, per_query=False):
         loss_matrices.append(loss_matrix[:,:upper_max_x])
         time_matrices.append(time_matrix[:,:upper_max_x])
 
+    # set font size
+    fonts = FontProperties()
+    fonts.set_size('xx-large')
+
     xlabel = "Number of queries" if per_query else "Number of iterations"
 
     # Loss
     fig, ax = plt.subplots(1, 1)
     max_x, max_y = draw_matrices(ax, loss_matrices, False)
 
-    ax.set_xlabel(xlabel)
+    ax.set_xlabel(xlabel, fontproperties=fonts)
     ax.set_xlim([0.0, max_x])
-    ax.set_xticks(np.arange(0, max_x, 10))
+    ax.set_xticks(np.arange(0, max_x, set_offset(max_x)))
 
-    ax.set_ylabel("Utility loss")
+    ax.set_ylabel("Utility loss", fontproperties=fonts)
     ax.set_ylim([0.0, max_y + 0.1])
-    ax.set_yticks(np.arange(0, max_y, 10 if max_y < 130 else 20))
+    ax.set_yticks(np.arange(0, max_y, set_offset(max_y)))
 
     fig.savefig(basename + "_loss.png", bbox_inches="tight")
 
@@ -139,13 +153,13 @@ def draw_groups(basename, groups, upper_max_x, per_query=False):
     fig, ax = plt.subplots(1, 1)
     max_x, max_y = draw_matrices(ax, time_matrices, True)
 
-    ax.set_xlabel(xlabel)
+    ax.set_xlabel(xlabel, fontproperties=fonts)
     ax.set_xlim([0.0, max_x])
-    ax.set_xticks(np.arange(0, max_x, 10))
+    ax.set_xticks(np.arange(0, max_x, set_offset(max_x)))
 
-    ax.set_ylabel("Cumulative time (in seconds)")
+    ax.set_ylabel("Cumulative time (in seconds)", fontproperties=fonts)
     ax.set_ylim([0.0, max_y + 0.1])
-    ax.set_yticks(np.arange(0, max_y, 50 if max_y < 130 else 100))
+    ax.set_yticks(np.arange(0, max_y, set_offset(max_y)))
 
     fig.savefig(basename + "_time.png", bbox_inches="tight")
 
