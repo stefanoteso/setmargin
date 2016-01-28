@@ -722,40 +722,6 @@ distributions. Solution quality is measured in terms of utility loss:
 %
 $$ \max_{\vx\in\calX_\text{feasible}} \left( u(\vx) - u(\vx^*) \right) $$
 %
-%<<<<<<< HEAD
-%varying the number of collected user responses. Here $u(\cdot)$ is the
-%true unknown user utility, and $\vx^*$ is the solution recommended to
-%the user after the elicitation phase (see Algorithm~\ref{alg:setmargin}).
-%
-%The thick line is the median
-%utility loss taken over all 20 users, while the shaded area represents the
-%standard deviation.
-%
-%\stefano{plot average utility loss at the increase of dataset size}
-%
-%\stefano{plot average runtime at the increase of dataset size}
-%
-%\stefano{comment on usefulness of sparse weights}
-%
-%\paolo{Maybe a plot of an experiment with increased noise in user reponse? (for example, $\beta=0.1$ instead of $1$.}
-%
-%\paragraph{Cognitive effort.} Contrarily to most other preference elicitation
-%methods, which generate a single candidate option per iteration, {\sc
-%SetMargin} constructs a whole {\em set} of options. We thus can not leverage
-%standard query selection strategies \stefano{which ones?}. 
-%
-%The simplest solution is to query the user about all $k \choose 2$ pairs of
-%configurations in $\{\vx^i\}$. Since $k$ is a small constant, the resulting
-%number of queries does not grow large in practice.  An appealing alternative
-%involves using a modified sorting algorithm, such as merge-sort, to order the
-%set $\{\vx^i\}$ by asking only $O(n\log n)$ queries to the user. However, this
-%approach is very susceptible to noise: a single inconsistent user response may
-%affect all successive comparisons, leading to a cascading effect. While more
-%robust strategies may be conceived, empirically we found that the simpler
-%quadratic scheme tends to work reasonably well.
-%
-%\andrea{rewrite as footnote}
-%=======
 where $u(\cdot)$ is the true unknown user utility, and $\vx^*$ is the
 solution recommended to the user after the elicitation phase (see
 Algorithm~\ref{alg:setmargin}). Computational cost is measured in
