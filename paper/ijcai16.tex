@@ -6,8 +6,10 @@
 \usepackage{ijcai16}
 \usepackage{times}
 %\usepackage{latexsym}
-\usepackage{graphicx}
+%\usepackage{graphicx}
+\usepackage{graphbox}
 \usepackage{hyperref}
+\usepackage{multirow}
 
 \RequirePackage{amsmath,amssymb,amsfonts,amsthm}
 \usepackage{algorithm}
@@ -711,44 +713,100 @@ methods for simplicity.
 
  
 
+% \begin{figure*}[h!]
+%     \centering
+%     {\footnotesize
+%     \begin{tabular}{cccc}
+%         % \hline
+%         % {\sc synthetic 3 loss} & {\sc synthetic 3 time} & {\sc synthetic 4 loss} & {\sc synthetic 4 time}
+%         % \\
+%         % \hline \hline
+%         \multicolumn{4}{c}{{\sc Uniform}}
+%         \\
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_loss} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_time} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_loss} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_time}
+%         \\
+%         \hline
+%         \multicolumn{4}{c}{{\sc Normal}}
+%         \\
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_per_iter_loss} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_per_iter_time} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_per_iter_loss} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_per_iter_time}
+%         \\
+%         \hline
+%         \multicolumn{4}{c}{{\sc Sparse Uniform}}
+%         \\
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_loss} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_time} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_loss} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_time}
+%         \\
+%         \hline
+%         \multicolumn{4}{c}{{\sc Sparse Normal}}
+%         \\
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_loss} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_time} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_loss} &
+%         \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_time}
+%         \\
+%         \hline
+%     \end{tabular}
+%     }
+%     \caption{\label{fig:comparison} Comparison between {\sc SetMargin}
+%       (orange), {\sc riVOI} (blue), {\sc QI} (green) and {\sc EUS}
+%       (gray) on the $r=3$ (left) and $r=4$ (right) datasets. Each row
+%       represents a different sampling distribution for user utility.
+%       The number of iterations is plotted against the utility loss
+%       (first and third columns) and the cumulative time (second and
+%       fourth columns). Thick lines indicate median values over users,
+%       while standard deviations are shown as shaded areas.}
+% \end{figure*}
+
 \begin{figure*}[h!]
     \centering
     {\footnotesize
-    \begin{tabular}{cccc}
+    \begin{tabular}{ccccc}
         % \hline
         % {\sc synthetic 3 loss} & {\sc synthetic 3 time} & {\sc synthetic 4 loss} & {\sc synthetic 4 time}
         % \\
         % \hline \hline
-        \multicolumn{4}{c}{{\sc Uniform}}
+        % \multicolumn{4}{c}{{\sc Uniform}}
         \\
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_time}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc Normal}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_per_iter_time}
+        {\sc Uniform}  &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_3_uniform_per_iter_time} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_4_uniform_per_iter_time}
         \\
         \hline
-        \multicolumn{4}{c}{{\sc Sparse Uniform}}
+         % \multicolumn{4}{c}{{\sc Normal}}
         \\
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_time}
+         {\sc Normal} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_3_normal_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_3_normal_per_iter_time} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_4_normal_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_4_normal_per_iter_time}
         \\
         \hline
-        \multicolumn{4}{c}{{\sc Sparse Normal}}
+        % \multicolumn{4}{c}{{\sc Sparse Uniform}}
         \\
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_time}
+        {\sc Sparse Uniform} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_3_uniform_sparse_per_iter_time} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_4_uniform_sparse_per_iter_time}
+        \\
+        \hline
+        % \multicolumn{4}{c}{{\sc Sparse Normal}}
+        \\
+        {\sc Sparse Normal} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_3_normal_sparse_per_iter_time} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_time}
         \\
         \hline
     \end{tabular}
@@ -817,7 +875,7 @@ designed to favour sparse functions.
 \begin{figure*}[h!]
     \centering
     {\footnotesize
-    \begin{tabular}{cccc}
+    \begin{tabular}{ccccc}
         % \hline
         % \multicolumn{2}{c}{{\sc synthetic 4}} &
         % \multicolumn{2}{c}{{\sc synthetic 5}}
@@ -825,20 +883,18 @@ designed to favour sparse functions.
         % {\sc loss per iter.} & {\sc loss per query} & {\sc loss per iter.} & {\sc loss per query}
         % \\
         % \hline \hline
-        \multicolumn{4}{c}{{\sc uniform}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_uniform_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_uniform_per_query_loss}
+        {\sc uniform} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_self_4_uniform_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_self_4_uniform_per_query_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_self_5_uniform_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_self_5_uniform_per_query_loss}
         \\
         \hline
-        \multicolumn{4}{c}{{\sc sparse normal}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_query_loss}
+        {\sc sparse normal} &        
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_query_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_query_loss}
         \\
         \hline
      \end{tabular}
@@ -1007,17 +1063,17 @@ functions, the method compares favorably also in terms of utility loss.
 \begin{figure*}
     \centering
     {\footnotesize
-    \begin{tabular}{cccc}
+    \begin{tabular}{lcccc}
 %        \hline
 %        \multicolumn{2}{c}{{\sc loss/time per iter.}} &
 %        \multicolumn{2}{c}{{\sc loss/time per query}}
         \\
 %        \multicolumn{4}{c}{{\sc sparse uniform}}
-        \\
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
+        {\sc uniform} &
+        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
+        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
+        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
+        \includegraphics[align=c,width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
 
         % \includegraphics[width=..25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
         % \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
