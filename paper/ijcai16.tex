@@ -756,12 +756,11 @@ methods for simplicity.
     \caption{\label{fig:comparison} Comparison between {\sc SetMargin}
       (orange), {\sc riVOI} (blue), {\sc QI} (green) and {\sc EUS}
       (gray) on the $r=3$ (left) and $r=4$ (right) datasets. Each row
-      represents a different distribution for sampling the underlying
-      user utility.  The number of iterations is plotted against the
-      utility loss (first and third columns) and the cumulative time
-      (second and fourth columns). Thick lines indicate median values
-      over users, while standard deviations are shown as shaded
-      areas.}
+      represents a different sampling distribution for user utility.
+      The number of iterations is plotted against the utility loss
+      (first and third columns) and the cumulative time (second and
+      fourth columns). Thick lines indicate median values over users,
+      while standard deviations are shown as shaded areas.}
 \end{figure*}
 
 
@@ -1015,15 +1014,15 @@ functions, the method compares favorably also in terms of utility loss.
         \\
 %        \multicolumn{4}{c}{{\sc sparse uniform}}
         \\
-%        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
-%        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
-%        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
-%        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
+        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
+        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
+        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
+        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
 
-        \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
-        \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
-        \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
-        \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_query_time}
+        % \includegraphics[width=..25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
+        % \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
+        % \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
+        % \includegraphics[width=.25\textwidth]{figures/pc_with_costs_uniform_sparse_per_query_time}
         \\
 %        \hline
         % \multicolumn{4}{c}{{\sc sparse normal}}
@@ -1038,7 +1037,9 @@ functions, the method compares favorably also in terms of utility loss.
     }
     \caption{\label{fig:pc} Results for {\sc SetMargin} for $k=2$
       (red), $k=3$ (blue) and $k=4$ (green) on the constructive PC
-      dataset for the sparse uniform distribution.}
+      dataset for the sparse uniform distribution. Utility loss and
+      time are plotted against number of iterations (left)
+      and number of queries (right).}
 \end{figure*}
 
 
