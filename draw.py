@@ -129,9 +129,9 @@ def draw_groups(basename, groups, upper_max_x, per_query=False):
     ax.set_xlim([0.0, max_x])
     ax.set_xticks(np.arange(0, max_x, 10))
 
-    ax.set_ylabel("Median utility loss")
+    ax.set_ylabel("Utility loss")
     ax.set_ylim([0.0, max_y + 0.1])
-    ax.set_yticks(np.arange(0, max_y, 10))
+    ax.set_yticks(np.arange(0, max_y, 10 if max_y < 130 else 20))
 
     fig.savefig(basename + "_loss.png", bbox_inches="tight")
 
@@ -143,9 +143,9 @@ def draw_groups(basename, groups, upper_max_x, per_query=False):
     ax.set_xlim([0.0, max_x])
     ax.set_xticks(np.arange(0, max_x, 10))
 
-    ax.set_ylabel("Cumulative average time (in seconds)")
+    ax.set_ylabel("Cumulative time (in seconds)")
     ax.set_ylim([0.0, max_y + 0.1])
-    ax.set_yticks(np.arange(0, max_y, 50))
+    ax.set_yticks(np.arange(0, max_y, 50 if max_y < 130 else 100))
 
     fig.savefig(basename + "_time.png", bbox_inches="tight")
 
