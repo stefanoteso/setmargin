@@ -10,6 +10,7 @@
 \usepackage{graphbox}
 \usepackage{hyperref}
 \usepackage{multirow}
+\usepackage{placeins}
 
 \RequirePackage{amsmath,amssymb,amsfonts,amsthm}
 \usepackage{algorithm}
@@ -610,23 +611,28 @@ We implemented the {\sc SetMargin} algorithm using Python, leveraging Gurobi
 6.5.0 for solving the core MILP problem. Both the {\sc SetMargin} source code
 and the full experimental setup are available at \url{https://db.tt/oqY62odW}.
 
-We compare {\sc SetMargin} against the following competitive Bayesian baselines:
-% and \cite{viappiani2010optimal}.
-
-\begin{itemize}
-\item The Bayesian approach from \cite{guo2010real}, selecting queries
-  according to {\em restricted informed VOI} ({\sc riVOI}), a
-  computationally efficient heuristic approximation of
-  value-of-information, and inference using TrueSkill$^{TM}$
-  \cite{HerbrichMG06} (an inference scheme based on expectation
-  propagation \cite{Minka01}).
- 
- \item The Bayesian framework of \cite{viappiani2010optimal} using Monte Carlo methods
- \footnote{We use 50000 particles to represent the probability distribution.}for Bayesian inference and asking choice queries (asking the user to select its preferred item among a set of diplayed ones); the next query is computed by performing a greedy optimization of {\em Expected Utility of a Selection} (hereafter just called {\sc EUS}), a submodular quantity that can be used as a proxy for value of information (giving strong approximate guarantees).
-
- \item {\em Query Iteration} (referred as {\sc QI} below), also from \cite{viappiani2010optimal}, an even faster query selection method based on sampling a set of utility vectors, selecting the items that maximize utility for each of the vector and forming a first proposal for a query set. Then, a new set is computed by considering the optimal items in the associated  beliefs, and the process is repeated until convergence.
-\end{itemize}
-
+We compare {\sc SetMargin} against three state-of-the-art Bayesian
+approaches: i) the Bayesian approach from \cite{guo2010real},
+selecting queries according to {\em restricted informed VOI} ({\sc
+  riVOI}), a computationally efficient heuristic approximation of
+value-of-information, and inference using TrueSkill$^{TM}$
+\cite{HerbrichMG06} (an inference scheme based on expectation
+propagation \cite{Minka01}); ii) the Bayesian framework of
+\cite{viappiani2010optimal} using Monte Carlo methods \footnote{We use
+  50000 particles to represent the probability distribution.}for
+Bayesian inference and asking choice queries (asking the user to
+select its preferred item among a set of diplayed ones); the next
+query is computed by performing a greedy optimization of {\em Expected
+  Utility of a Selection} (hereafter just called {\sc EUS}), a
+submodular quantity that can be used as a proxy for value of
+information (giving strong approximate guarantees); iii) {\em Query
+  Iteration} (referred as {\sc QI} below), also from
+\cite{viappiani2010optimal}, an even faster query selection method
+based on sampling a set of utility vectors, selecting the items that
+maximize utility for each of the vector and forming a first proposal
+for a query set. Then, a new set is computed by considering the
+optimal items in the associated beliefs, and the process is repeated
+until convergence.
 
 We adopt the {\em indifference-augmented} Bradley-Terry user response
 model introduced in~\cite{guo2010real}. The probability that a user
@@ -657,61 +663,9 @@ that $\alpha$ can not be taken to be less than $1$, as in this case, the
 objective can be increased arbitrarily while keeping the right-hand side of
 Eq.~(\ref{eq:wyconstr}) constant, rendering the problem unbounded.}
 
-\paragraph{Synthetic Dataset.} Following the experimental protocol
-in~\cite{guo2010real} and \cite{viappiani2010optimal}, in the first
-experiment we evaluate the behavior of the proposed method in an
-artificial setting with increasingly complex problems. We developed
-synthetic datasets with $r$ attributes, for increasing values of $r$.
-Each attribute takes one of $r$ possible values, so that the one-hot
-encoding of attributes results in $m=r^2$ features. In terms of space
-of configurations, for $r=3$ the synthetic dataset corresponds to 
-$\calX_\text{feasible} = [3] \times [3] \times [3]$, for $r=4$ to
-$\calX_\text{feasible} = [4] \times [4] \times [4] \times [4]$, and so on. The
-cardinality of $\calX_\text{feasible}$ is $r^r$, and grows (super)
-exponentially with $r$.
-% We developed
-% seven synthetic datasets: each dataset involves $m=2,\ldots,7$
-% attributes, where each attribute takes one of $m$ possible
-% values. More explicitly, for $m=2$ the synthetic dataset is
-% $\calX_\text{feasible} = [2] \times [2]$, for $m=3$ to
-% $\calX_\text{feasible} = [3] \times [3] \times [3]$, and so on. The
-% cardinality of $\calX_\text{feasible}$ is $m^m$, and grows (super)
-% exponentially with $m$. 
-For $r=3$, the dataset is comparable in size to the synthetic one used
-in~\cite{guo2010real} and~\cite{viappiani2010optimal}.
-%, which have
-%three attributes with 2, 2 and 5 values respectively, for a total of
-%20 feasible configurations.  
-For larger $r$ the size of the space grows much larger than the one
-typically used in the Bayesian preference elicitation literature, and
-as such represents a good testbed for comparing the scalability of the
-various methods. The feasible configuration space was encoded in {\sc
-  SetMargin} through appropriate MILP constraints, while the other
-methods require all datasets to be explicitly grounded.  Users were
-simulated by drawing $20$ random utility vectors from each of four
-different distributions. The first two mimic those used
-in~\cite{guo2010real}\footnote{The normal distribution reported
-  in~\cite{guo2010real} differs slightly from the one implemented in
-  the code of their experimental setting.  In our experiments we use
-  the latter.}: (1) a uniform distribution over $[1, 100]$ for each
-individual weight, and (2) a normal distribution with mean $25$
-and %covariance
-standard deviation $\frac{25}{3}$ (each attribute is sample i.i.d).
-We further produced two novel {\em sparse} versions of the uniform and
-normal distributions setting to zero $80\%$ of the entries (sampled
-uniformly at random). We set a maximum budget of 100 iterations for all
-methods for simplicity.
 
-% ; for {\sc SetMargin}a
-% we used a $0.01$ threshold on the utility loss for early stopping
-% (that does not affect the cross-validation procedure).  The Bayesian
-% methods can use the estimated loss to decide when to stop (the
-% expectation of the utility loss with respect to the current
-% probabilistic belief) \footnote{In our experiments, we left the
-%   Bayesian methods to run the full amount of iterations, even when the
-%   estimated loss was very low.}. \andrea{@stefano: cosi' non va. O tutti early stopping o nessuno..}
 
-\begin{figure*}
+\begin{figure*}[t]
     \centering
     {\footnotesize
     \begin{tabular}{ccccc}
@@ -767,17 +721,65 @@ methods for simplicity.
       while standard deviations are shown as shaded areas.}
 \end{figure*}
 
+\paragraph{Synthetic Dataset.} Following the experimental protocol
+in~\cite{guo2010real} and \cite{viappiani2010optimal}, in the first
+experiment we evaluate the behavior of the proposed method in an
+artificial setting with increasingly complex problems. We developed
+synthetic datasets with $r$ attributes, for increasing values of $r$.
+Each attribute takes one of $r$ possible values, so that the one-hot
+encoding of attributes results in $m=r^2$ features. In terms of space
+of configurations, for $r=3$ the synthetic dataset corresponds to 
+$\calX_\text{feasible} = [3] \times [3] \times [3]$, for $r=4$ to
+$\calX_\text{feasible} = [4] \times [4] \times [4] \times [4]$, and so on. The
+cardinality of $\calX_\text{feasible}$ is $r^r$, and grows (super)
+exponentially with $r$.
+% We developed
+% seven synthetic datasets: each dataset involves $m=2,\ldots,7$
+% attributes, where each attribute takes one of $m$ possible
+% values. More explicitly, for $m=2$ the synthetic dataset is
+% $\calX_\text{feasible} = [2] \times [2]$, for $m=3$ to
+% $\calX_\text{feasible} = [3] \times [3] \times [3]$, and so on. The
+% cardinality of $\calX_\text{feasible}$ is $m^m$, and grows (super)
+% exponentially with $m$. 
+For $r=3$, the dataset is comparable in size to the synthetic one used
+in~\cite{guo2010real} and~\cite{viappiani2010optimal}.
+%, which have
+%three attributes with 2, 2 and 5 values respectively, for a total of
+%20 feasible configurations.  
+For larger $r$ the size of the space grows much larger than the one
+typically used in the Bayesian preference elicitation literature, and
+as such represents a good testbed for comparing the scalability of the
+various methods. The feasible configuration space was encoded in {\sc
+  SetMargin} through appropriate MILP constraints, while the other
+methods require all datasets to be explicitly grounded.  Users were
+simulated by drawing $20$ random utility vectors from each of four
+different distributions. The first two mimic those used
+in~\cite{guo2010real}\footnote{The normal distribution reported
+  in~\cite{guo2010real} differs slightly from the one implemented in
+  the code of their experimental setting.  In our experiments we use
+  the latter.}: (1) a uniform distribution over $[1, 100]$ for each
+individual weight, and (2) a normal distribution with mean $25$
+and %covariance
+standard deviation $\frac{25}{3}$ (each attribute is sample i.i.d).
+We further produced two novel {\em sparse} versions of the uniform and
+normal distributions setting to zero $80\%$ of the entries (sampled
+uniformly at random). We set a maximum budget of 100 iterations for all
+methods for simplicity.
 
-%\twocolumn
+% ; for {\sc SetMargin}a
+% we used a $0.01$ threshold on the utility loss for early stopping
+% (that does not affect the cross-validation procedure).  The Bayesian
+% methods can use the estimated loss to decide when to stop (the
+% expectation of the utility loss with respect to the current
+% probabilistic belief) \footnote{In our experiments, we left the
+%   Bayesian methods to run the full amount of iterations, even when the
+%   estimated loss was very low.}. \andrea{@stefano: cosi' non va. O tutti early stopping o nessuno..}
 
 In Figure~\ref{fig:comparison} we report solution quality and timing
 values for increasing number of collected user responses, for the
 different competitors on each of the four different utility vector
 distributions and datasets $r=3$ and $r=4$. Solution quality is
-measured in terms of utility loss:
-%
-$$ \max_{\vx\in\calX_\text{feasible}} \left( u(\vx) - u(\vx^*) \right) $$
-%
+measured in terms of utility loss $ \max_{\vx\in\calX_\text{feasible}} \left( u(\vx) - u(\vx^*) \right)$,
 where $u(\cdot)$ is the true unknown user utility, and $\vx^*$ is the
 solution recommended to the user after the elicitation phase (see
 Algorithm~\ref{alg:setmargin}). Computational cost is measured in
@@ -795,10 +797,12 @@ used {\sc SetMargin} with $k=2$).
 %Results for $r=3$ and $r=4$ are reported.  
 For dense weight vector distributions (first two rows), our approach
 achieves results which are indistinguishable from the competitors in a
-fraction of their time.  Indeed, all Bayesian approaches\footnote{Note
-  that for {\sc QI} and {\sc EUS}, the time spent for Bayesian
-  inference greatly dominates the time spent for choosing the next
-  query to ask.\andrea{@paolo: necessario?}} become quickly intractable for growing values of $r$,
+fraction of their time.  Indeed, all Bayesian approaches%
+%\footnote{Note
+%  that for {\sc QI} and {\sc EUS}, the time spent for Bayesian
+%  inference greatly dominates the time spent for choosing the next
+%  query to ask.\andrea{@paolo: necessario?}} 
+ become quickly intractable for growing values of $r$,
 %cannot scale over $r=4$ (for $r=5$, {\sc riVOI} did not
 %finish a single user after 24 hours for, Viappiani QI takes 20 minutes
 %per user), \andrea{20 minuti mi paiono pochi, sei sicuro?}  
@@ -818,7 +822,7 @@ designed to favour sparse functions.
 
 %\stefano{@Paolo: varianza tempi?}
 
-\begin{figure*}
+\begin{figure*}[t]
     \centering
     {\footnotesize
     \begin{tabular}{ccccc}
@@ -849,7 +853,6 @@ designed to favour sparse functions.
       with $k=2,3,4$, in orange, blue and green respectively for the
       $r=4$ (left) and $r=5$ (right) datasets using uniform (top row) and sparse normal (bottom row) distributions. Median and standard deviation utility loss values are reported for increasing number of iterations ($1^{st}$ and $3^{rd}$ columns) and pairwise queries ($2^{nd}$ and $4^{th}$ columns).}
 \end{figure*}
-
 
 In order to study the effect of increasing the number of weight
 vectors in our formulation, we also ran {\sc SetMargin} varying the
@@ -948,10 +951,11 @@ branding.
 %
 Interactions between attributes are expressed as Horn clauses. An example
 constraint might look like this: ``if the manufacturer is Apple, then the
-CPU must be either a PowerPC G3 or a PowerPC G4''\footnote{Despite the components
-included in the dataset, which are a bit outdated, the dataset itself is pretty
-realistic.}, which can be encoded
-into MILP form as
+CPU must be either a PowerPC G3 or a PowerPC G4''%
+%\footnote{Despite the components
+%included in the dataset, which are a bit outdated, the dataset itself is pretty
+%realistic.} \andrea{necessario?}
+, which can be encoded into MILP form as
 %
 $ (1 - x_\text{Apple}) + x_\text{G3} + x_\text{G4} \ge 1 $.
 %
