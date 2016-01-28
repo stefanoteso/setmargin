@@ -714,39 +714,6 @@ All methods were evaluated on the very same weight vectors.
       areas.}
 \end{figure*}
 
-\begin{figure*}[h!]
-    \centering
-    {\footnotesize
-    \begin{tabular}{cccc}
-        \hline
-        \multicolumn{2}{c}{{\sc synthetic 4}} &
-        \multicolumn{2}{c}{{\sc synthetic 5}}
-        \\
-        {\sc loss per iter.} & {\sc loss per query} & {\sc loss per iter.} & {\sc loss per query}
-        \\
-        \hline \hline
-        \multicolumn{4}{c}{{\sc uniform}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_uniform_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_uniform_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_uniform_per_query_loss}
-        \\
-        \hline
-        \multicolumn{4}{c}{{\sc sparse normal}}
-        \\
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_query_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_iter_loss} &
-        \includegraphics[width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_query_loss}
-        \\
-        \hline
-     \end{tabular}
-    }
-    \caption{\label{fig:selfcomparison} Comparison for {\sc SetMargin}
-      with $k=2,3,4$, in orange, blue and green respectively for the
-      $r=4$ (left) and $r=5$ (right) datasets using uniform (top row) and sparse normal (bottom row) distributions. Median and standard deviation utility loss values are reported for increasing number of iterations ($1^{st}$ and $3^{rd}$ columns) and pairwise queries ($2^{nd}$ and $4^{th}$ columns).}
-\end{figure*}
 
 %\twocolumn
 
@@ -825,6 +792,41 @@ favour sparse functions.
 
 %\stefano{@Paolo: varianza tempi?}
 
+\begin{figure*}[h!]
+    \centering
+    {\footnotesize
+    \begin{tabular}{cccc}
+        \hline
+        \multicolumn{2}{c}{{\sc synthetic 4}} &
+        \multicolumn{2}{c}{{\sc synthetic 5}}
+        \\
+        {\sc loss per iter.} & {\sc loss per query} & {\sc loss per iter.} & {\sc loss per query}
+        \\
+        \hline \hline
+        \multicolumn{4}{c}{{\sc uniform}}
+        \\
+        \includegraphics[width=10em]{figures/synthetic_vs_self_4_uniform_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_4_uniform_per_query_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_5_uniform_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_5_uniform_per_query_loss}
+        \\
+        \hline
+        \multicolumn{4}{c}{{\sc sparse normal}}
+        \\
+        \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_4_normal_sparse_per_query_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_iter_loss} &
+        \includegraphics[width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_query_loss}
+        \\
+        \hline
+     \end{tabular}
+    }
+    \caption{\label{fig:selfcomparison} Comparison for {\sc SetMargin}
+      with $k=2,3,4$, in orange, blue and green respectively for the
+      $r=4$ (left) and $r=5$ (right) datasets using uniform (top row) and sparse normal (bottom row) distributions. Median and standard deviation utility loss values are reported for increasing number of iterations ($1^{st}$ and $3^{rd}$ columns) and pairwise queries ($2^{nd}$ and $4^{th}$ columns).}
+\end{figure*}
+
+
 In order to study the effect of increasing the number of weight
 vectors in our formulation, we also ran {\sc SetMargin} varying the
 parameter $k$. Figure~\ref{fig:selfcomparison} reports utility loss
@@ -901,9 +903,7 @@ size, type $\to$ monitor size, for 16 Horn constraints total. We do
 not report the full list due to space limitations. Note that the
 search space is of the order of hundreds of thousands of candidate
 configurations, and is far beyond reach of existing Bayesian
-approaches. Furthermore, existing Bayesian preference elicitation
-approaches are designed for categorical attributes and cannot deal
-with (even dependent) continuous features like the price. \andrea{@andrea: mention Bonilla}
+approaches. 
 
 Figure~\ref{fig:pc} reports results of {\sc SetMargin} for $k=2$
 (red), $k=3$ (blue) and $k=4$ (green) using the sparse uniform (top
@@ -944,16 +944,19 @@ discarded.
 \section{Conclusion}
 \label{sec:conclusions}
 
-We presented a max-margin approach for generating a set of diverse
-examples.  Our approach, that can be seen as an extension of maxmargin
-learning to sets, is effective in the generation of a diverse set of
-items that can be used to ask informative queries to the user.  The
-main advantages of our elicitation method are 1) its aptitude for
-eliciting preferences and providing recommendations in large
-configuration problems 2) robustness with respect to erroneous
-preference input, and 3) its ability to encourage sparse utility
-functions.  In a number of experiments we showed how our method
-compare with state-of-the-art approaches.
+We presented a max-margin approach for efficient preference
+elicitation in large configuration spaces. Our approach relies on an
+extension of max-margin learning to sets of hyperplanes, and is
+effective in the generation of a diverse set of items that can be used
+to ask informative queries to the user.  The main advantages of our
+elicitation method are 1) its ability to elicit preferences and
+provide recommendations in large configuration problems 2) its
+robustness with respect to erroneous feedback and 3) its ability to
+encourage sparse utility functions. Experimental comparisons against
+state-of-the-art Bayesian preference elicitation strategies confirm
+its substantial computational advantages. For sparse utility
+functions, the method compares favourably also in terms of the number
+of queries asked to the user.
 
 \paolo{any idea about possible future works?}
 % FUTURE WORKS
@@ -975,36 +978,35 @@ compare with state-of-the-art approaches.
 % synthetic_vs_self_5_uniform_per_iter_time
 % synthetic_vs_self_5_uniform_per_query_time
 
-% \begin{figure}[b]
-%     \centering
-%     {\footnotesize
-%     \begin{tabular}{cccc}
-%         \hline
-%         \multicolumn{2}{c}{{\sc loss/time per iter.}} &
-%         \multicolumn{2}{c}{{\sc loss/time per query}}
-%         \\
-%         \multicolumn{4}{c}{{\sc sparse uniform}}
-%         \\
-%         \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
-%         \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
-%         \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
-%         \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
-%         \\
-%         \hline
-%         \multicolumn{4}{c}{{\sc sparse normal}}
-%         \\
-%         \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_loss} &
-%         \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_time} &
-%         \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_loss} &
-%         \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_time}
-%         \\
-%         \hline
-%     \end{tabular}
-%     }
-%     \caption{\label{fig:pc} Results for {\sc SetMargin} on the constructive PC
-%     dataset.}
-% \end{figure}
+\begin{figure*}
+    \centering
+    {\footnotesize
+    \begin{tabular}{cccc}
+        \hline
+        \multicolumn{2}{c}{{\sc loss/time per iter.}} &
+        \multicolumn{2}{c}{{\sc loss/time per query}}
+        \\
+        \multicolumn{4}{c}{{\sc sparse uniform}}
+        \\
+        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_loss} &
+        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_iter_time} &
+        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_loss} &
+        \includegraphics[width=10em]{figures/pc_with_costs_uniform_sparse_per_query_time}
+        \\
+        \hline
+        \multicolumn{4}{c}{{\sc sparse normal}}
+        \\
+        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_loss} &
+        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_iter_time} &
+        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_loss} &
+        \includegraphics[width=10em]{figures/pc_with_costs_normal_sparse_per_query_time}
+        \\
+        \hline
+    \end{tabular}
+    }
+    \caption{\label{fig:pc} Results for {\sc SetMargin} on the constructive PC
+    dataset.}
+\end{figure*}
 
-\twocolumn
 
 \end{document}
