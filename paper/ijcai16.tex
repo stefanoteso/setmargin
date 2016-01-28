@@ -152,13 +152,14 @@
 Preferences \cite{Peintner2008} play an important role in artificial intelligence,
 including fields spanning from recommender systems to automatic planning, 
 from non monotonic reasoning to computational social choice and algorithmic decision theory.
-The task of eliciting or learning preferences is therefore a crucial; typically only limited information about the user's preferences will be available and the cost of obtaining additional preference information will be usually high (from a cognitive and/or computational point of view).
-The goal in preference elicitation is that of gaining enough information about the user's preferences (typically represented by an utility function $u$, unknown to the system) in order to recommend a decision or a course of action.
+The task of eliciting or learning preferences is therefore a crucial; typically only limited information about the user's preferences will be available and the cost of obtaining additional preference information will be high (from a cognitive and/or computational point of view).
+The goal in preference elicitation is that of gaining enough information about the user's preferences %(typically represented by an utility function $u$, unknown to the system) 
+in order to recommend a decision or a course of action.
 
-The assessment of preferences have received considerable attention in the literature, with early works confined to the operation research and management literature mostly \cite{}.
-In the past decade a number of researchers have considered elicitation of preferences from an artificial intelligence perspective; within the machine learning field the term preference learning has been catching up.
+The assessment of preferences have received considerable attention in the literature, with early works confined to the operation research and management literature mostly \cite{White1984,JacquetLagreze95}.
+%In the past decade a number of researchers have considered elicitation of preferences from an artificial intelligence perspective%; within the machine learning field the term preference learning has been catching up.
 %While preferences are often assessed using some ad-hoc rules \cite{},
-Recently, in the last decade or so, a number of researchers have proposed principled methods that elicit utility in an adaptive way \cite{chajewska2000,boutilier2002,Wang2003,boutilier2006,braziunas2007,guo2010real,viappiani2010optimal}; the aims is that of focusing on learning the ``important'' part of the utility, allowing to recommend good (or even optimal) decision with only a partial information about the utility function.
+Recently, in the last decade or so, a number of artificial intelligence researchers have proposed principled methods that elicit utility in an adaptive way \cite{chajewska2000,boutilier2002,Wang2003,boutilier2006,braziunas2007,guo2010real,viappiani2010optimal}; the aims is that of focusing on learning the ``important'' part of the utility, allowing to recommend good (or even optimal) decision with only a partial information about the utility function.
 
 %braziunas-mmr:uai07,
 
@@ -182,7 +183,7 @@ utility.
 
 Preference elicitation in configuration problems has been previously tackled with regret-based elicitation \cite{boutilier2006,braziunas2007}, where minimax regret is used both
 as a robust recommendation criterion and as a technique to drive elicitation in configuration problems.
-The main limitation of the minimax regret approach is the lack of tolerance with respect to user inconsistency (the user might state that item x is preferred to y, even though the latter has higher utility).
+The main limitation of the minimax regret approach is the lack of tolerance with respect to user inconsistency (the user might state that an item is preferred to another one, even though the latter has higher utility).
 
 % setwise max-margin formulation to deal with uncertainty in user utility
 Indeed, learning a user utility function requires setting a preference
@@ -513,8 +514,8 @@ new replies are added to $\calD$ and the whole procedure is
 repeated. The algorithm terminates after a fixed number of iterations,
 or once another suitable condition is met. 
 %\andrea{@Paolo: what termination condition for pref elicitation?}  
-Termination might be left to the user to decide (see for example \ref{} for discussion on user-involved recommender systems); the system can however propose
-to terminate when the difference between the utility weights is small enough.
+Termination might be left to the user to decide (see for example \cite{Reilly2007}); 
+alternatively we can terminate when the difference between the utility weights is small enough.
 
 The procedure is sketched in
 Algorithm~\ref{alg:setmargin}. Note that at the end of the preference
@@ -576,9 +577,18 @@ We implemented the {\sc SetMargin} algorithm using Python, leveraging Gurobi
 6.5.0 for solving the core MILP problem. Both the {\sc SetMargin} source code
 and the full experimental setup are available at \url{https://db.tt/oqY62odW}.
 
-We compare {\sc SetMargin} against two strong Bayesian baselines:
-\cite{guo2010real} and \cite{viappiani2010optimal}.
-\stefano{Paolo, could you describe the baselines?}
+We compare {\sc SetMargin} against the following competitive Bayesian baselines:
+% and \cite{viappiani2010optimal}.
+
+
+\paolo{Se bisogno di spazio, posso accorciare la descrizione.}
+\begin{itemize}
+ \item The Bayesian approach from \cite{guo2010real}, selecting queries according to 
+ {\em restricted uninformed VOI}, an heuristic approximation of value-of-information a query, and performing inference using  TrueSkill$^{TM}$ \cite{HerbrichMG06} (an inference scheme based on expectation propagation \cite{Minka01}).
+ \item The Bayesian framework of \cite{viappiani2010optimal}, using Monte Carlo methods for Bayesian inference and asking choice queries (asking the user to select its preferred item among a set of diplayed ones); the next query is computed by performing a greedy optimization of {\em Expected Utility of a Selection} (hereafter just called EUS), a submodular quantity that can be used as a proxy for value of information (giving strong approximate guarantees).
+ \item {\em Query Iteration} (referred as QI below), also from \cite{viappiani2010optimal}, an even faster query selection method based on sampling a set of utility vectors, selecting the items that maximize utility for each of the vector, forming a first proposal for a query set. Then, a new set is computed by considering the optimal items in the associated  beliefs, and the process is repeated until convergence.
+\end{itemize}
+
 
 We adopt the {\em indifference-augmented} Bradley-Terry user response
 model introduced in~\cite{guo2010real}. According to the classical
@@ -655,8 +665,11 @@ vectors sampled in the uniform and normal settings uniformly at random.
 All methods were evaluated on the very same weight vectors. All users had
 a budget of 100 iterations; for {\sc SetMargin} we used a $0.01$
 threshold on the utility loss for early stopping (that does not affect the
-cross-validation procedure). \stefano{I have no idea if the other methods
-have any kind of early stopping logic.}
+cross-validation procedure).
+The Bayesian methods can use the estimated loss to decide when to stop (the expectation
+of the utility loss with respect to the current probabilistic belief)
+\footnote{In our experiments, we left the Bayesian methods to run the full amount of iterations,
+even when the estimated loss was very low.}.
 
 \andrea{give names to competitors}
 
@@ -749,9 +762,9 @@ be shown later on. For sparse weight vector distributions (last two
 rows) our approach, in addition to being substantially faster on each
 iteration, requires less queries in order to reach optimal
 solutions. This is an expected result as the sparsification norm in
-our formulation ($\| \vw \|_1$) is enforcing sparsity in the weight
-vectors, while none of the other approaches are explicitly designed to
-favour sparse functions.
+our formulation ($\| \vw \|_1$) is enforcing sparsity in the weights, 
+while none of the other approaches is %explicitly 
+designed to favour sparse functions.
 
 
 % Guo e' piantato al primo utente da tre giorni su synthetic 5.
@@ -835,7 +848,7 @@ effect of inconsistence feedback.
 % robust strategies may be conceived, empirically we found that the simpler
 % quadratic scheme tends to work reasonably well.
 
-\paolo{Maybe a plot of an experiment with increased noise in user response? (for example, $\beta=0.1$ instead of $1$.}
+%\paolo{Maybe a plot of an experiment with increased noise in user response? (for example, $\beta=0.1$ instead of $1$.}
 
 
 \paragraph{Constructive dataset.} Next, we tested {\sc SetMargin} on a truly
