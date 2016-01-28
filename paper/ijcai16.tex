@@ -283,7 +283,7 @@ $[w^\bot_z, w^\top_z]$, with $w^\bot_z \ge 0$.
 Both requirements are quite natural\footnote{Utility values are defined on an
 interval scale, therefore the assumption of non negativity is not restrictive as it is always possible to scale the values appropriately (see for instance \cite{Torra2007} and \cite{keeney1976}).}, and enable the translation of our core optimization problem into a
 mixed-integer linear problem (as done in Section~\ref{sec:formulation}). 
-%\andrea{@paolo: sulla giustificazione delle utilita' additive, vogliamo metterla? c'e' anche molto lavoro che contesta il fatto che basti no?}
+\andrea{@paolo: sulla giustificazione delle utilita' additive, vogliamo metterla? c'e' anche molto lavoro che contesta il fatto che basti no?}
 
 During learning, the actual weight vector $\vw$ is {\em unknown} to
 the learning system, and must be estimated by interacting with the
@@ -432,7 +432,7 @@ the former to the latter, the feasible region for the weights will then become t
 Therefore, setwise maxmargin can be thought as a ``look-ahead'' model with respect to a standard ($k=1$) max-margin learner a posteriori.
 %Therefore, setwise maxmargin can be thought as the set that, given any possible preference about the items, ensure that the reduction of utility uncertainty is the greatest
 %\paolo{ho fatto un tentativo di migliorare l'intuizione, ma e' ancora possibile migliorare...}
-%\andrea{cosa intendi per a posteriori?}
+\andrea{cosa intendi per a posteriori?}
 
 \begin{figure}[t]
     \begin{center}
@@ -540,10 +540,10 @@ with respect to the estimated user preferences, and as diverse as
 possible, are then employed to formulate a set of user queries. The
 new replies are added to $\calD$ and the whole procedure is
 repeated. The algorithm terminates after a fixed number of iterations,
-or once another suitable condition is met. 
-%\andrea{@Paolo: what termination condition for pref elicitation?}  
-Termination might be left to the user to decide (see for example \cite{Reilly2007}); 
-alternatively we can terminate when the difference between the utility weights is small enough.
+or once another suitable condition is met.  Termination might be left
+to the user to decide (see for example \cite{Reilly2007});
+alternatively we can terminate when the difference between the utility
+weights is small enough.
 
 The procedure is sketched in
 Algorithm~\ref{alg:setmargin}. Note that at the end of the preference
@@ -609,9 +609,9 @@ We compare {\sc SetMargin} against the following competitive Bayesian baselines:
 % and \cite{viappiani2010optimal}.
 
 \begin{itemize}
-\item The best Bayesian approach from \cite{guo2010real}, selecting
-  queries according to {\em restricted informed VOI} ({\sc riVOI}), a
-  heuristic approximation (equally effective but more efficient) of
+\item The Bayesian approach from \cite{guo2010real}, selecting queries
+  according to {\em restricted informed VOI} ({\sc riVOI}), a
+  computationally efficient heuristic approximation of
   value-of-information, and inference using TrueSkill$^{TM}$
   \cite{HerbrichMG06} (an inference scheme based on expectation
   propagation \cite{Minka01}).
@@ -646,7 +646,7 @@ simulations\footnote{When experimenting with EUS and QI, the user is
   possible. While support for indifference could be added, we chose to
   be consistent with the methods as originally published.}, as
 in~\cite{guo2010real}.
-%\andrea{@paolo: e' necessaria la footnote? dobbiamo tagliare..}
+\andrea{@paolo: e' necessaria la footnote? dobbiamo tagliare..}
 
 In all experiments {\sc SetMargin} uses an internal 5-fold cross-validation procedure to
 update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
@@ -700,15 +700,19 @@ and %covariance
 standard deviation $\frac{25}{3}$ (each attribute is sample i.i.d).
 We further produced two novel {\em sparse} versions of the uniform and
 normal distributions setting to zero $80\%$ of the entries (sampled
-uniformly at random). All methods were evaluated on the same weight
-vectors. All users had a budget of 100 iterations; for {\sc SetMargin}
-we used a $0.01$ threshold on the utility loss for early stopping
-(that does not affect the cross-validation procedure).  The Bayesian
-methods can use the estimated loss to decide when to stop (the
-expectation of the utility loss with respect to the current
-probabilistic belief) \footnote{In our experiments, we left the
-  Bayesian methods to run the full amount of iterations, even when the
-  estimated loss was very low.}. \andrea{@stefano: cosi' non va. O tutti early stopping o nessuno..}
+uniformly at random). We set a budget of 100 iterations for all
+methods for simplicity.\andrea{@stefano: vediamo se rimane a hundred}
+
+% ; for {\sc SetMargin}a
+% we used a $0.01$ threshold on the utility loss for early stopping
+% (that does not affect the cross-validation procedure).  The Bayesian
+% methods can use the estimated loss to decide when to stop (the
+% expectation of the utility loss with respect to the current
+% probabilistic belief) \footnote{In our experiments, we left the
+%   Bayesian methods to run the full amount of iterations, even when the
+%   estimated loss was very low.}. \andrea{@stefano: cosi' non va. O tutti early stopping o nessuno..}
+
+ 
 
 \begin{figure*}[h!]
     \centering
