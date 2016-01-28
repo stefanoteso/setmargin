@@ -401,17 +401,26 @@ remaining two guarantee the non-negativity of the slack and margin variables.
 Since we require $\vw^\bot \ge (0,\ldots,0)$, Eq.~(\ref{eq:wbounds}) also enforces the weights to be non-negative.
 
 Note that we are choosing the configurations $\{ \vx^i \}$ and the weight vectors $\{
-\vw^i \}$ {\em simultaneously}. Since we maximize the margin $\mu$, the optimizer
-will prefer a set of configurations $\{ \vx^{i} \}$ that partitions the weight space
-roughly equally, and corresponding utility functions such that each $\vw^{i}$
-lies (intuitively) close to the centre of each subregion. See
-Figure~\ref{fig:setmargin} for a depiction of this intuition.\andrea{@Paolo: mmh non chiarissimo, da rivedere insieme, legenda inclusa}
+\vw^i \}$ {\em simultaneously}.
+Look at Figure~\ref{fig:setmargin}, where, for simplicity, we need to choose a pair ($k=2$). 
+The constraint \ref{eq:wxconstr} is represented by a red line, that partitions the space of
+feasible utility weights in two parts (in general, there will be $k$ subregions).
+Since we maximize the margin $\mu$, the optimizer
+will prefer a set of configurations $\{ \vx^{1}, \vx^{2} \}$ that partitions the weight space
+in an even way.
+In each subregion, we have corresponding utility weight vector $\vw^{i}$
+lying ``close'' to the centre of each subregion. 
+Note that if we present $\vx^{1}$ and $\vx^{2}$ to the user, and the user states that he prefers
+the former to the latter, the feasible region for the weights will then become the part of the polytope to the left of the red line; moreover $\vw^{1}$ will be vector maximizing the margin in the classic sense.
+Therefore, setwise maxmargin can be thought as a ``look-ahead'' model with respect to a standard ($k=1$) max margin learner a posteriori.
+%Therefore, setwise maxmargin can be thought as the set that, given any possible preference about the items, ensure that the reduction of utility uncertainty is the greatest
+\paolo{ho fatto un tentativo di migliorare l'intuizione, ma e' ancora possibile migliorare...}
 
 \begin{figure}[t]
     \begin{center}
         \includegraphics[width=10em]{figures/setmargin}
     \end{center}
-    \caption{\label{fig:setmargin} The intuition behind setwise max-margin; the red points are utility vectors $\vw^{i}$ $\vw^{j}$, the red line corresponds to the constraint $\langle \vw, \vx^{1} - \vx^{2} \rangle \ge 0$.}
+    \caption{\label{fig:setmargin} The intuition behind setwise max-margin; the red points are utility vectors $\vw^{1}$ $\vw^{2}$, the red line corresponds to the constraint $\langle \vw, \vx^{1} - \vx^{2} \rangle \ge 0$.}
 \end{figure}
 
 \paragraph{MILP Formulation.} This initial formulation is problematic to solve,
