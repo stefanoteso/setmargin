@@ -432,7 +432,7 @@ pair ($k=2$).  The constraint \ref{eq:wxconstr} is represented by a
 red line, that partitions the space of feasible utility weights in two
 parts (in general, there will be $k$ subregions).  Since we maximize
 the margin $\mu$, the optimizer will prefer a set of configurations
-$\{ \vx^{1}, \vx^{2} \}$ that partitions the weight space in an even
+$\{ \vx^{1}, \vx^{2} \}$ that partitions the weight space in an ``even''
 way.  In each subregion, we have corresponding utility weight vector
 $\vw^{i}$ lying ``close'' to its centre. If the user indicates a
 preference for $\vx^{1}$ over $\vx^{2}$, the feasible region for the
@@ -447,7 +447,7 @@ sense ($k=1$).
     \begin{center}
         \includegraphics[width=10em]{figures/setmargin}
     \end{center}
-    \caption{\label{fig:setmargin} Optimization of setwise max-margin; the black lines corresponds to preference constraints $\calD$, the red points are utility vectors $\vw^{1}$ $\vw^{2}$, the red line corresponds to the constraint $\langle \vw, \vx^{1} - \vx^{2} \rangle \ge 0$.}
+    \caption{\label{fig:setmargin} Optimization of setwise max-margin; the black lines corresponds to preference constraints $\calD$, the red points are utility vectors $\vw^{1}$ and $\vw^{2}$, the red line corresponds to the hyperplane $\langle \vw, \vx^{1} - \vx^{2} \rangle = 0$.}
 \end{figure}
 
 \paragraph{MILP Formulation.} This initial formulation is problematic to solve,
@@ -1018,8 +1018,9 @@ feedback and 3) ability to encourage sparse utility functions.
 Experimental comparisons against state-of-the-art Bayesian preference
 elicitation strategies confirm these advantages. Future work includes
 extending the approach to truly hybrid scenarios (where real valued
-attributes do not depend on categorical ones) and studying the
-applicability of the setwise max-margin idea to other problems.
+attributes do not depend on categorical ones) and studying its
+applicability %of the setwise max-margin idea 
+to other problems.
 
 %\paolo{any idea about possible future works?}
 % FUTURE WORKS
