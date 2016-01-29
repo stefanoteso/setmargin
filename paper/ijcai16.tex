@@ -535,7 +535,7 @@ formulation, we obtain the following mixed-integer linear problem:
 \end{align}
 }
 %
-%which can be solved by any suitable MILP solver.
+which can be solved by any suitable MILP solver.
 
 \paragraph{Set-wise max-margin.} The full {\sc SetMargin} algorithm
 follows the usual preference elicitation loop. Starting from an
@@ -615,20 +615,16 @@ selecting queries according to {\em restricted informed VOI} ({\sc
 value-of-information, and inference using TrueSkill$^{TM}$
 \cite{HerbrichMG06} (an inference scheme based on expectation
 propagation \cite{Minka01}); ii) the Bayesian framework of
-\cite{viappiani2010optimal} using Monte Carlo methods (with 50,000 particles) for
-Bayesian inference and asking choice queries (asking the user to
-select its preferred item among a set of diplayed ones); the next
-query is computed by performing a greedy optimization of {\em Expected
-  Utility of a Selection} (hereafter just called {\sc EUS}), a
-submodular quantity that can be used as a proxy for value of
-information (giving strong approximate guarantees); iii) {\em Query
-  Iteration} (referred as {\sc QI} below), also from
-\cite{viappiani2010optimal}, an even faster query selection method
-based on sampling a set of utility vectors, selecting the items that
-maximize utility for each of the vector and forming a first proposal
-for a query set. Then, a new set is computed by considering the
-optimal items in the associated beliefs, and the process is repeated
-until convergence.
+\cite{viappiani2010optimal} using Monte Carlo methods (with 50,000
+particles) for Bayesian inference and asking choice queries
+(i.e. selection of the most preferred item in a set) selected
+optimizing {\em Expected Utility of a Selection} (a tight
+approximation for the value of information, hereafter just called {\sc
+  EUS}); iii) {\em Query Iteration} (referred as {\sc QI} below), also
+from \cite{viappiani2010optimal}, an even faster query selection
+method which repeateadly samples a set of utility vectors according to
+their beliefs and forms a query set selecting the items that maximize
+utility for each of the vectors.
 
 We adopt the {\em indifference-augmented} Bradley-Terry user response
 model introduced in~\cite{guo2010real}. The probability that a user
@@ -1024,8 +1020,6 @@ Experimental comparisons against
 state-of-the-art Bayesian preference elicitation strategies confirm
 its substantial computational advantages. For sparse utility
 functions, the method compares favorably also in terms of utility loss.
-
-\FloatBarrier
 
 %\paolo{any idea about possible future works?}
 % FUTURE WORKS
