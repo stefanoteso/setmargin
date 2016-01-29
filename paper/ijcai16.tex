@@ -386,9 +386,7 @@ variables $\mu \in \bbR$, $\{ \vw^i \in \bbR^m \}$, $\{ \vx^i \in \{0,1\}^m \}$:
         \nonumber
     \\
     \text{s.t.}
-        & \;\; \forall \; i \in [k], \forall \; h \in [n] \nonumber
-    \\
-        & \;\; \qquad \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h \label{eq:wyconstr}
+        & \;\; \forall \; i \in [k], \forall \; h \in [n] \quad \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h \label{eq:wyconstr}
     \\
         & \;\; \forall \; i, j \in [k], i \neq j \quad \langle \vw^{i}, \vx^{i} - \vx^{j} \rangle \ge \mu \label{eq:wxconstr}
     \\
@@ -397,8 +395,8 @@ variables $\mu \in \bbR$, $\{ \vw^i \in \bbR^m \}$, $\{ \vx^i \in \{0,1\}^m \}$:
         & \;\; \forall \; i \in [k] \quad \vx^{i} \in \calX_{\text{feasible}} \label{eq:xbounds}
     \\
         & \;\; \forall \; i \in [k] \quad \veps^{i} \ge 0 \nonumber
-    \\
-        & \;\; \mu \ge 0 \nonumber
+%    \\
+%        & \;\; \mu \ge 0 \nonumber
 \end{align}
 }
 %
@@ -410,35 +408,37 @@ regularizing the magnitude of the weights (third part) and the quality
 of the configurations $\{ \vx^{i} \}$ (last part). The non-negative
 hyperparameters $\alpha,\beta,\gamma$ control the influence of the
 various components. The weight regularization term copes with the
-common scenario in which the user has strong preferences about
-some attributes, but is indifferent to most of
+common scenario in which the user has strong preferences about some
+attributes, but is indifferent to most of
 them. %~\cite{} \stefano{@Paolo: add refs}.
 The $\ell_1$ penalty is frequently used to improve the sparsity of
 learned models~\cite{lasso,zhang2008,Hensinger2010}, with consequent
 gains in generalization ability and efficiency, as confirmed by our
-empirical findings (see Section~\ref{sec:experiments}).
+empirical findings (see
+Section~\ref{sec:experiments}). Constraint~(\ref{eq:wyconstr})
+enforces the correct ranking of the observed user preferences, while
+constraint~(\ref{eq:wxconstr}) ensures that the generated
+configurations are diverse in terms of the weight vectors they
+maximize. Constraints~(\ref{eq:wbounds}) and~(\ref{eq:xbounds}) ensure
+that the weights and configurations are feasible, while the last one
+guarantees the non-negativity of the slacks.  Since we require
+$\vw^\bot \ge (0,\ldots,0)$, Eq.~(\ref{eq:wbounds}) also enforces the
+weights to be non-negative.
 
-The two core constraints are~(\ref{eq:wyconstr}) and~(\ref{eq:wxconstr}),
-which are taken directly from the discussion above. The former enforces the
-correct ranking of the observed user preferences, while the latter ensures that
-the generated configurations are diverse in terms of the weight vectors they
-maximize. Constraint~(\ref{eq:wbounds}), intended to be component-wise, and~(\ref{eq:xbounds})
-ensure that the weights and configurations are feasible, while the
-remaining two guarantee the non-negativity of the slack and of the margin.
-Since we require $\vw^\bot \ge (0,\ldots,0)$, Eq.~(\ref{eq:wbounds}) also enforces the weights to be non-negative.
-
-Note that we are choosing the configurations $\{ \vx^i \}$ and the weight vectors $\{
-\vw^i \}$ {\em simultaneously}.
-Look at Figure~\ref{fig:setmargin}, where, for simplicity, we need to choose a pair ($k=2$). 
-The constraint \ref{eq:wxconstr} is represented by a red line, that partitions the space of
-feasible utility weights in two parts (in general, there will be $k$ subregions).
-Since we maximize the margin $\mu$, the optimizer
-will prefer a set of configurations $\{ \vx^{1}, \vx^{2} \}$ that partitions the weight space
-in an even way.
-In each subregion, we have corresponding utility weight vector $\vw^{i}$
-lying ``close'' to the centre of each subregion. 
-If we then present $\vx^{1}$ and $\vx^{2}$ to the user, and the user states that he prefers
-the former to the latter, the feasible region for the weights will then become the part of the polytope to the left of the red line; moreover $\vw^{1}$ will maximize the margin in the classic sense ($k=1$).
+Note that we are choosing the configurations $\{ \vx^i \}$ and the
+weight vectors $\{ \vw^i \}$ {\em simultaneously}.  Look at
+Figure~\ref{fig:setmargin}, where, for simplicity, we need to choose a
+pair ($k=2$).  The constraint \ref{eq:wxconstr} is represented by a
+red line, that partitions the space of feasible utility weights in two
+parts (in general, there will be $k$ subregions).  Since we maximize
+the margin $\mu$, the optimizer will prefer a set of configurations
+$\{ \vx^{1}, \vx^{2} \}$ that partitions the weight space in an even
+way.  In each subregion, we have corresponding utility weight vector
+$\vw^{i}$ lying ``close'' to its centre. If the user indicates a
+preference for $\vx^{1}$ over $\vx^{2}$, the feasible region for the
+weights will then become the part of the polytope to the left of the
+red line; moreover $\vw^{1}$ will maximize the margin in the classic
+sense ($k=1$).
 %Therefore, setwise maxmargin can be thought as a ``look-ahead'' model with respect to a standard ($k=1$) max-margin learner.
 %Therefore, setwise maxmargin can be thought as the set that, given any possible preference about the items, ensure that the reduction of utility uncertainty is the greatest
 %\paolo{ho fatto un tentativo di migliorare l'intuizione, ma e' ancora possibile migliorare...}
@@ -513,9 +513,7 @@ formulation, we obtain the following mixed-integer linear problem:
         \nonumber
     \\
     \text{s.t.}
-        & \;\; \forall \; i \in [k], \forall \; h \in [n] \nonumber
-    \\
-        & \;\; \qquad \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h \nonumber
+        & \;\; \forall \; i \in [k], \forall \; h \in [n] \quad \langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h \nonumber
     \\
         & \;\; \forall \; i, j \in [k], i \neq j \quad \sum_{z=1}^m p^{i,i}_z - p^{i,j}_z \ge \mu
     \\
@@ -532,12 +530,12 @@ formulation, we obtain the following mixed-integer linear problem:
         & \;\; \forall \; i \in [k] \quad \vx^{i} \in \calX_{\text{feasible}} \nonumber
     \\
         & \;\; \forall \; i \in [k] \quad \veps^{i}_h \ge 0 \nonumber
-    \\
-        & \;\; \mu \ge 0 \nonumber
+%    \\
+%        & \;\; \mu \ge 0 \nonumber
 \end{align}
 }
 %
-which can be solved by any suitable MILP solver.
+%which can be solved by any suitable MILP solver.
 
 \paragraph{Set-wise max-margin.} The full {\sc SetMargin} algorithm
 follows the usual preference elicitation loop. Starting from an
@@ -557,7 +555,7 @@ Algorithm~\ref{alg:setmargin}. Note that at the end of the preference
 elicitation procedure, a final recommendation is made by solving the
 MILP problem for $k=1$.
 
-\begin{algorithm}
+\begin{algorithm}[t]
 {\footnotesize
 \begin{algorithmic}[1]
     \Procedure{SetMargin}{$k, \alpha, \beta, \gamma, T$}
@@ -579,19 +577,17 @@ number of iterations. The values of $\calX_\text{feasible}$, $\vw^\top$ and
 $\vw^\bot$ are left implicit.}
 \end{algorithm}
 
-\paragraph{Linearly dependent real attributes.} In many domains of interest,
-items are composed of both Boolean and real-valued attributes, where the latter
-depend linearly  on the former. This is for instance the case for the price,
-weight and power consumption of a laptop model, which depend linearly on the
-choice of components.
-%
-In this setting, item configurations are composed of two parts: $\vx =
-(\vx_B;\vx_R)$, where $\vx_B$ is Boolean and $\vx_R$ is real-valued, and the
-relation between the two is entirely described by an appropriately sized
-non-negative cost matrix $C$, such that $\vx_R = C \vx_B$. It is
-straightforward to extend the MILP formulation to this setting, as follows.
-
-First, we rewrite the weight vector as $\vw = (\vw_B;\vw_R)$. The utility
+\paragraph{Linearly dependent real attributes.} In many domains of
+interest, items are composed of both Boolean and real-valued
+attributes, where the latter depend linearly on the former. This is
+for instance the case for the price, weight and power consumption of a
+laptop model, which depend linearly on the choice of components.  In
+this setting, item configurations are composed of two parts:
+$\vx = (\vx_B;\vx_R)$, where $\vx_B$ is Boolean and $\vx_R$ is
+real-valued and can be written as $\vx_R = C \vx_B$ for an
+appropriately sized non-negative cost matrix $C$.  It is
+straightforward to extend the MILP formulation to this setting. First,
+we rewrite the weight vector as $\vw = (\vw_B;\vw_R)$. The utility
 becomes:
 %
 $$ \langle \vw, \vx \rangle = \langle \vw_B, \vx_B \rangle + \langle \vw_R, C \vx_B \rangle = \langle \vw_B + C' \vw_R, \vx_B \rangle $$
@@ -602,8 +598,8 @@ change occurs in Eq.~(\ref{eq:wbounds2}), which becomes:
 %
 $$ \forall \; i \in [k] \;.\; (\vw_B^\bot + C' \vw_R^\bot) \le \vv^i \le (\vw_B^\top + C' \vw_R^\top)$$
 %
-As can be seen, non-negativity of $C$ is required for the weights $\{\vv^i\}$
-to be non-negative.
+%As can be seen, non-negativity of $C$ is required for the weights $\{\vv^i\}$
+%to be non-negative.
 
 \section{Experiments}
 \label{sec:experiments}
@@ -704,7 +700,7 @@ Eq.~(\ref{eq:wyconstr}) constant, rendering the problem unbounded.}
         \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_loss} &
         \includegraphics[align=c,width=10em]{figures/synthetic_vs_others_4_normal_sparse_per_iter_time}
         \\
-        \hline
+        %\hline
     \end{tabular}
     }
     \caption{\label{fig:comparison} Comparison between {\sc SetMargin}
@@ -789,13 +785,13 @@ Xeon CPU with 8 cores and 32 GiB of RAM.
 %users, shaded areas indicate standard deviations. Our {\sc SetMargin}
 %algorithm for $k=2$ is reported in orange, {\sc riVOI} in blue, {\sc QI}
 %in green and {\sc EUS} in gray. 
-For all algorithms, one iteration corresponds to a single pairwise (we
+For all algorithms, one iteration corresponds to a single pairwise query (we
 used {\sc SetMargin} with $k=2$).
 %query to the user 
 %Results for $r=3$ and $r=4$ are reported.  
 For dense weight vector distributions (first two rows), our approach
 achieves results which are indistinguishable from the competitors in a
-fraction of their time.  Indeed, all Bayesian approaches%
+fraction of their time.  Indeed, all Bayesian approaches
 %\footnote{Note
 %  that for {\sc QI} and {\sc EUS}, the time spent for Bayesian
 %  inference greatly dominates the time spent for choosing the next
@@ -844,7 +840,7 @@ designed to favour sparse functions.
         \includegraphics[align=c,width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_iter_loss} &
         \includegraphics[align=c,width=10em]{figures/synthetic_vs_self_5_normal_sparse_per_query_loss}
         \\
-        \hline
+        %\hline
      \end{tabular}
     }
     \caption{\label{fig:selfcomparison} Comparison for {\sc SetMargin}
@@ -949,25 +945,30 @@ attributes: this is a fair modeling choice, as often the price of a PC is
 well approximated by the sum of the price of its components plus a bias due to
 branding.
 %
-Interactions between attributes are expressed as Horn clauses. An example
-constraint might look like this: ``if the manufacturer is Apple, then the
-CPU must be either a PowerPC G3 or a PowerPC G4''%
-%\footnote{Despite the components
-%included in the dataset, which are a bit outdated, the dataset itself is pretty
-%realistic.} \andrea{necessario?}
-, which can be encoded into MILP form as
-%
-$ (1 - x_\text{Apple}) + x_\text{G3} + x_\text{G4} \ge 1 $.
-%
-Note that only one of $x_\text{G3}$ and $x_\text{G4}$ can be 1 because
-of the mutual exclusivity constraints of the one-hot encoding.  The
-dataset includes constraints between the following attributes:
-manufacturer $\to$ type, manufacturer $\to$ CPU, type $\to$ RAM
-amount, type $\to$ storage size, type $\to$ monitor size, for 16 Horn
-constraints total. We do not report the full list due to space
-limitations. Note that the search space is of the order of hundreds of
-thousands of candidate configurations, and is far beyond reach of
-existing Bayesian approaches.
+Interactions between attributes are expressed as Horn clauses (e.g. a certain manufacturer implies a set of possible CPUs).
+% . An example
+% constraint might look like this: ``if the manufacturer is Apple, then the
+% CPU must be either a PowerPC G3 or a PowerPC G4''%
+% %\footnote{Despite the components
+% %included in the dataset, which are a bit outdated, the dataset itself is pretty
+% %realistic.} \andrea{necessario?}
+% , which can be encoded into MILP form as
+% %
+% $ (1 - x_\text{Apple}) + x_\text{G3} + x_\text{G4} \ge 1 $.
+% %
+% Note that only one of $x_\text{G3}$ and $x_\text{G4}$ can be 1 because
+% of the mutual exclusivity constraints of the one-hot encoding.  
+The
+dataset includes 16 Horn constraints (the full list is omitted for
+space limitations).
+% constraints between the following attributes:
+% manufacturer $\to$ type, manufacturer $\to$ CPU, type $\to$ RAM
+% amount, type $\to$ storage size, type $\to$ monitor size, for 16 Horn
+% constraints total. We do not report the full list due to space
+% limitations. 
+Note that the search space is of the order of hundreds of thousands of
+candidate configurations, and is far beyond reach of existing Bayesian
+approaches.
 
 Figure~\ref{fig:pc} reports results of {\sc SetMargin} varying $k$
 using the sparse uniform distribution (the more complex of the sparse
