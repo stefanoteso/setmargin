@@ -306,13 +306,7 @@ preference between the two items ($\vx \approx \vx'$). We write
 $\calD$ to denote the set of preferences (answers to comparison
 queries) elicited from the user. 
 
-Max-margin learning has been proposed before \cite{gajos2005} for preference elicitation, but with  rudimental methods for query selection.
-%We adopt the idea of max-margin learning (while it has been proposed before \cite{gajos2005}, their methods query generation were rather rudimental) for preference elicitation.
 In the next Section we describe how informative queries can be generated using our setwise maxmargin learning.
-% Queries are typically selected so as
-% to maximize some measure of informativeness of the resulting
-% responses.  In the next Section we describe how Details on our actual query selection strategy will be
-% provided in Section~\ref{sec:formulation}.
 
 \section{Setwise Max-margin Learning}
 \label{sec:formulation}
@@ -430,21 +424,21 @@ weights to be non-negative.
 Note that we are choosing the configurations $\{ \vx^i \}$ and the
 weight vectors $\{ \vw^i \}$ {\em simultaneously}.  
 %Note that the methods bears some similarity with volumetric approaches, but  with important differences. 
-We look for $\vw^i$ so that the utility loss (see constraint \ref{eq:wxconstr}) of choosing $\vx^{j}$ instead of $\vx^{i}$, $j \neq i$, is large (at least the shared margin $\mu$).
+We look for $\vw^i$ so that the utility loss (see constraint \ref{eq:wxconstr}) of choosing $\vx^{j}$ instead of $\vx^{i}$, $j \neq i$, is large (at least $\mu$).
 Look at
 Figure~\ref{fig:setmargin}, where, for simplicity, we need to choose a
-pair ($k=2$).  The constraint \ref{eq:wxconstr} is represented by a
+pair ($k=2$).  Eq. \ref{eq:wxconstr} is represented by a
 red line, that partitions the space of feasible utility weights in two
 parts (in general, there will be $k$ subregions).  Since we maximize
 the margin $\mu$, the optimizer will prefer a set of configurations
 $\{ \vx^{1}, \vx^{2} \}$ that partitions the weight space in an ``even''
 way\footnote{This bears similarity with volumetric approaches \cite{iyengar:acm-ec01}, but there are important differences: first here
 we consider real items to find the best separator, second the margin is also expressed in utility terms, third the query is found via an optimization process.}. 
-In each subregion, we have corresponding utility weight vector
+In each subregion, we have corresponding %utility weight vector
 $\vw^{i}$ lying ``close'' to its centre. 
 If, for example, the user indicates a
-preference for $\vx^{1}$ over $\vx^{2}$, the feasible region for the
-weights will then become the part of the polytope to the left of the
+preference for $\vx^{1}$ over $\vx^{2}$, the feasible region %for the weights 
+will then become the part of the polytope to the left of the
 red line; moreover the vector $\vw^{1}$ will maximize the margin in the classic ($k=1$) sense in new feasible region.
 %Therefore, setwise maxmargin can be thought as a ``look-ahead'' model with respect to a standard ($k=1$) max-margin learner.
 %Therefore, setwise maxmargin can be thought as the set that, given any possible preference about the items, ensure that the reduction of utility uncertainty is the greatest
@@ -621,7 +615,7 @@ approaches: i) the Bayesian approach from \cite{guo2010real},
 selecting queries according to {\em restricted informed VOI} ({\sc
   riVOI}), a computationally efficient heuristic approximation of
 value-of-information, and inference using TrueSkill$^{TM}$
-\cite{HerbrichMG06} (an inference scheme based on expectation
+\cite{HerbrichMG06} (based on expectation
 propagation \cite{Minka01}); ii) the Bayesian framework of
 \cite{viappiani2010optimal} using Monte Carlo methods (with 50,000
 particles) for Bayesian inference and asking choice queries
@@ -756,7 +750,7 @@ in~\cite{guo2010real}\footnote{We used the parameters implemented in their code,
 : (1) a uniform distribution over $[1, 100]$ for each
 individual weight, and (2) a normal distribution with mean $25$
 and %covariance
-standard deviation $\frac{25}{3}$ (each attribute is sample i.i.d).
+standard deviation $\frac{25}{3}$ (each attribute is sampled i.i.d).
 We further produced two novel {\em sparse} versions of the uniform and
 normal distributions setting to zero $80\%$ of the entries (sampled
 uniformly at random). We set a maximum budget of 100 iterations for all
@@ -774,7 +768,7 @@ methods for simplicity.
 In Figure~\ref{fig:comparison} we report solution quality and timing
 values for increasing number of collected user responses, for the
 different competitors on each of the four different utility vector
-distributions and datasets $r=3$ and $r=4$. Solution quality is
+distributions and datasets $r\!=\!3$ and $r\!=\!4$. Solution quality is
 measured in terms of utility loss $ \max_{\vx\in\calX_\text{feasible}} \left( u(\vx) - u(\vx^*) \right)$,
 where $u(\cdot)$ is the true unknown user utility, and $\vx^*$ is the
 solution recommended to the user after the elicitation phase (see
@@ -893,7 +887,7 @@ designed to do this. %favour sparse functions.
 In order to study the effect of increasing the number of weight
 vectors in our formulation, we also ran {\sc SetMargin} varying the
 parameter $k$. Figure~\ref{fig:selfcomparison} reports utility loss
-results on $r=4$ and $r=5$ datasets for the uniform and sparse normal
+results on $r\!=\!4$ and $r\!=\!5$ datasets for the uniform and sparse normal
 distributions (the toughest and the simplest, for space limitations).
 % \footnote{We picked the most difficult dense distribution
 %   (uniform) and the simplest sparse distribution (normal) to provide
@@ -1014,7 +1008,9 @@ discarded.
 \label{sec:conclusions}
 
 We presented a max-margin approach for efficient preference
-elicitation in large configuration spaces. Our approach relies on an
+elicitation in large configuration spaces.\footnote{Note that max-margin learning has been proposed before \cite{gajos2005} for preference elicitation, 
+but with  rudimental methods for query selection.}
+Our approach relies on an
 extension of max-margin learning to sets, and is effective in the
 generation of a diverse set of configurations that can be used to ask
 informative preference queries.  The main advantages of this
