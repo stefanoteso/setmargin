@@ -432,14 +432,14 @@ red line, that partitions the space of feasible utility weights in two
 parts (in general, there will be $k$ subregions).  Since we maximize
 the margin $\mu$, the optimizer will prefer a set of configurations
 $\{ \vx^{1}, \vx^{2} \}$ that partitions the weight space in an ``even''
-way\footnote{This bears similarity with volumetric approaches \cite{iyengar:acm-ec01}, but there are important differences: first here
-we consider real items to find the best separator, second the margin is also expressed in utility terms, third the query is found via an optimization process.}. 
+way.\footnote{This bears similarity with volumetric approaches \cite{iyengar:acm-ec01}, but there are important differences: first here
+we consider real items to find the best separator, second the margin is also expressed in utility terms, third the query is found via an optimization process.}
 In each subregion, we have corresponding %utility weight vector
 $\vw^{i}$ lying ``close'' to its centre. 
 If, for example, the user indicates a
 preference for $\vx^{1}$ over $\vx^{2}$, the feasible region %for the weights 
 will then become the part of the polytope to the left of the
-red line; moreover the vector $\vw^{1}$ will maximize the margin in the classic ($k=1$) sense in new feasible region.
+red line; moreover the vector $\vw^{1}$ will maximize the margin in the classic ($k=1$) sense in the new feasible region.
 %Therefore, setwise maxmargin can be thought as a ``look-ahead'' model with respect to a standard ($k=1$) max-margin learner.
 %Therefore, setwise maxmargin can be thought as the set that, given any possible preference about the items, ensure that the reduction of utility uncertainty is the greatest
 %\paolo{ho fatto un tentativo di migliorare l'intuizione, ma e' ancora possibile migliorare...}
