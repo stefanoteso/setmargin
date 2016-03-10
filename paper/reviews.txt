@@ -1,0 +1,314 @@
+----------------------- REVIEW 1 ---------------------
+PAPER: 2243
+TITLE: Constructive Preference Elicitation by Setwise Max-margin Learning
+AUTHORS: Stefano Teso, Andrea Passerini and Paolo Viappiani
+
+Significance: 2 (medium (modest contribution or average impact))
+Soundness: 3 (correct)
+Scholarship: 2 (relevant literature cited but could expand)
+Clarity: 3 (well written)
+Breadth of Interest: 2 (limited to specialty area)
+SUMMARY RATING: -1 (- (weak reject))
+
+----------- SUMMARIZE THE MAIN CONTRIBUTION OF THE PAPER -----------
+This paper addresses the problem of preference elicitation. The authors propose
+an extension of the max-margin learning approach to sets. Thus, instead of
+maintaining a single best solution, they maintain a diverse set of candidate
+solutions, which is used to ask informative preference queries.
+
+----------- COMMENTS FOR THE AUTHORS -----------
+The paper is well-written and easy to follow. Overall, it appears to be a solid
+piece of work. That being said, I'm not convinced that it meets the high
+quality standards of the conference. The main reasons are as follows:
+
+The novelty of the paper is in my opinion quite limited. What the authors
+propose is the standard preference elicitation scheme used by other authors in
+the past, except for working with sets of solutions instead of a single one.
+However, the idea of working with sets of candidate solutions to achieve
+diversity (or balance between preference and diversity) is certainly not new
+and has been used in many other approaches as well (not only in preference
+elicitation but also other tasks such as information retrieval). In this
+regard, it is also worth mentioning that the authors are very much focusing on
+a few other works (by Guo, Sanner, Boutilier) while related work in general is
+less well covered. For example, it's noticeable that even the most recent among
+the citations is 6 years old. 
+
+As for the main contribution, that is, the extension of max-margin learning to
+sets, the effect of using a larger number of candidate solutions is neither
+analyzed in a thorough way, nor does it seem to yield clear improvements in
+terms of effectiveness. The authors conduct some experiments with k=2,3,4, but
+the message is not very clear. Thus, the overall benefit of the proposal
+remains somewhat unclear. 
+
+The observation that the proposed method is computationally more efficient than
+Bayesian approaches is certainly not surprising (given the knowingly high
+complexity of the latter). From a practical point of view, the results can
+nevertheless be judged critically. For example, for the PC data, the authors
+find that around 50-70 queries are needed on average in order to find a
+solution that is only 10 percent worse than the best one. It's not easy to
+evaluate these results in detail (for example, I don't know the noise level of
+the user). However, I cannot imagine a real user who is willing to answer 50
+queries just in order to select an alternative with 8 attributes (7 of which
+are binary).
+
+
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 2243
+TITLE: Constructive Preference Elicitation by Setwise Max-margin Learning
+AUTHORS: Stefano Teso, Andrea Passerini and Paolo Viappiani
+
+Significance: 3 (high (substantial contribution or strong impact))
+Soundness: 3 (correct)
+Scholarship: 3 (excellent coverage of related work)
+Clarity: 2 (mostly readable with some scope of improvement)
+Breadth of Interest: 3 (some interest beyond specialty area)
+SUMMARY RATING: 2 (++)
+
+----------- SUMMARIZE THE MAIN CONTRIBUTION OF THE PAPER -----------
+The paper deals with constructive preference elicitation where an algorithm
+generates queries (active learning) and at the same time tries to find the
+optimal decision among a combinatorial set of solution in a configuration
+problem.
+There are two leading approaches to solve this problem: min-max regret and
+Bayesian learning techniques. As said by the authors, the first one assumes
+that the preference inputs are consistent.
+The authors are interested by setwise queries, where at each iteration the user
+is presented not only two alternatives to compare but a number k of solutions.
+The minmax regret approach has already been extended to setwise generation.
+The preference model is simply a weight vector multiplied by the features.
+
+The authors wish to identify simultaneously a set of weight vectors, and the
+associated best candidate, in order to maximize two objectives: (i) minimize
+the number of learning examples that are not represented, (ii) maximize
+diversity between the different weight vectors.
+This is translated into an optimization problem. This latter is transformed
+into MILP.
+
+Many experiments have been done by the authors.
+The answer of the user to a query it probabilistic and based on a sigmoid
+function. Users preferences are simulated by taking four possible profiles.
+The comparison with Bayesian approaches is limited to 3 or 4 attributes due to
+restrictions of Bayesian approaches. The approach of the authors tend to
+converge faster than Bayesian ones.
+
+----------- COMMENTS FOR THE AUTHORS -----------
+For goal (i) (minimize the number of learning examples that are not
+represented), each learning instance y^h_+>y^h_- is transformed into a
+constraint where the right hand side is composed of the difference between the
+margin mu (to be maximized) and a slack variable epsilon^i_h (to be minimized)
+which allows to violate the preference input whenever necessary. This gives
+constraint (1). This is a classical formulation in OR. This is for instance
+what one can find in the UTA (additive utility) method.
+
+Page 2 col 2, the authors say that "The second goal requires to jointly
+maximize the utility of each xi according to its corresponding weight vector wi
+and its scoring difference with respect to the other configurations". It is not
+completely apparent that this contributes to diversity (goal (ii): maximize
+diversity between the different weight vectors).
+It seems that term "\sum_i <w^i,x^i>" in the functional favors that x_i is the
+option that is optimal for weight vector w^i, and that constraint
+"<w^i,x^i-x^j> \geq mu" enforces diversity.
+Lastly there is a L1 penalty term that is supposed to favor sparsity. This
+factor is not completely clear to me. It is often assumed that the weights w in
+the linear model <w,x> are normalized so as its L1 norm is equal to one. There
+is no restriction by enforcing this assumption. So I do not see why minimizing
+the sum of the terms in w should enforce sparsity. I would rather expect the
+use of a non- linear function to perform this task.
+
+The optimization problem that is derived in non-linear as there are products of
+variables.
+The authors use a trick to linearize the product of a 0-1 variable by a real
+variable. This trick is pretty well-known and used for instance in reference
+[Boutilier et al., 2006]. This is not new and the authors should say that.
+
+Although the variables are considered as Boolean, the authors explain how to
+extend to real variables. However in order to keep a good accuracy, a lot of
+Boolean variables must be introduced to replace real variables. Isn't there the
+risk of getting intractable problems?
+
+
+The objective function in the optimization problem contains hyperparameters
+alpha, beta, gamma. They are fixed thanks to cross-validation techniques, as in
+machine learning. The hyperparameters are determined by maximizing the
+fulfillment of preference inputs. This is reflected by alpha. As this objective
+function is tested on the generalization step, regularization term beta is also
+of main importance.
+On the other hand, I don't see what is the influence of the last term gamma
+when "minimizing the ranking loss over the user responses collected so far". In
+other word, I do not have the intuition why gamma should be properly fitted by
+the process proposed by the authors. I have the impression that gamma does not
+help in minimizing the ranking loss. This should be clarified.
+Note that in the experiment, the authors say at the end of the paper that some
+optimization problem to identify the hyperparameters are hard to solve. Isn't
+it related to this point?
+
+I don't understand footnote 4. It suggests that if alpha is lower than 1, then
+we change mu by mu+M and epsilon by epsilon+M. This leaves the rhs of (1) and
+increases arbitrarily the objective function. Is it the argument of the
+authors? But in this case, increasing mu will violate eq (2). So one cannot
+increase arbitrarily mu. So the authors should better explain their point.
+
+Four profiles of utility weights are simulated. Two of them correspond to
+sparse utilities where 80% of the individual weights are set to 0. I miss the
+intuition why such profile would mimic a real user. On only 3 or 4 features, a
+real user can express a pretty complex preference function in which most of the
+weights will probably non-zero. The authors shall explain more deeply the
+choice of such profiles.
+
+Related to previous point, the authors say page 5:
+"For sparse weight vector distributions (last two rows) our approach, in
+addition to being substantially faster on each iteration, requires less queries
+in order to reach optimal solutions. This is an expected result as the
+sparsification norm in our formulation (kwk1) is enforcing sparsity in the
+weights, while none of the other approaches is designed to do this."
+I wonder whether this is not only a side effect of term gamma in the objective
+function. If one introduces a regularization term in the cost function that
+favors to have sparse weight vectors, and if there is a preference profile that
+is sparse, it is not a surprise that their method works better. One could argue
+that the authors have introduced random sparse utility models to favor their
+solution. Isn't it the case?
+
+
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 2243
+TITLE: Constructive Preference Elicitation by Setwise Max-margin Learning
+AUTHORS: Stefano Teso, Andrea Passerini and Paolo Viappiani
+
+Significance: 3 (high (substantial contribution or strong impact))
+Soundness: 3 (correct)
+Scholarship: 2 (relevant literature cited but could expand)
+Clarity: 3 (well written)
+Breadth of Interest: 4 (broad interest across AI audience)
+SUMMARY RATING: 3 (+++)
+
+----------- SUMMARIZE THE MAIN CONTRIBUTION OF THE PAPER -----------
+The paper presents an approach for eliciting preference relations for
+combinatorial problems with multiple attributes. The paper requires that those
+problems are formulated in terms of linear constraints over 0/1-variables. The
+preference relations are limited to those that can be represented by additive
+utility functions. The preference elicitation procedures works with pairwise
+comparisons and thus avoids more complex gambling queries used by other
+approaches. As other approaches, the preference elicitation method proceeds in
+several iterations and computes a new query in each iteration until the
+acquired preference relation is good enough. 
+
+In each iteration, the method computes k utility functions that satisfy the
+already acquired preferences as well as an optimal configuration for each of
+the utility functions. The k configurations will be used to pose new queries to
+the user. The weight vectors are chosen in such a way that they maximise the
+minimal margin for each of the acquired preferences, i.e. the distance between
+the utility values of two compared configurations. Moreover the minimal
+distance is also imposed between the k computed configurations. This approach
+ensures a good diversity of the k configurations. As a consequence, the answers
+to the pairwise queries among those k configurations will be very informative
+for the preference elicitation procedure and thus reduce the overall number of
+queries. The paper conducts experimental comparisons with Bayesian preference
+elicitation methods, which are confirming this hypothesis.
+
+----------- COMMENTS FOR THE AUTHORS -----------
+The paper is well-written and well-elaborated. The overall approach appears to
+be sound and the principles and results are interesting and of general nature.
+
+The UTA-GMS method [Greco et al. 2008] is somewhat related to this approach.
+
+Greco, S., Mousseau, V., & Slowinski, R. (2008). Ordinal regression revisited:
+Multiple criteria ranking using a set of additive value functions. European
+Journal of Operational Research, 191(2), 416–436.
+
+Minor comments:
+
+p.2, right column: Can the margin variable have a negative value?
+
+
+
+
+----------------------- REVIEW 4 ---------------------
+PAPER: 2243
+TITLE: Constructive Preference Elicitation by Setwise Max-margin Learning
+AUTHORS: Stefano Teso, Andrea Passerini and Paolo Viappiani
+
+Significance: 2 (medium (modest contribution or average impact))
+Soundness: 3 (correct)
+Scholarship: 2 (relevant literature cited but could expand)
+Clarity: 3 (well written)
+Breadth of Interest: 3 (some interest beyond specialty area)
+SUMMARY RATING: 3 (+++)
+
+----------- SUMMARIZE THE MAIN CONTRIBUTION OF THE PAPER -----------
+This paper describes a method for actively learning preferences based on an
+additive utility (weighted sum) model. The originality of this contribution is
+to work with a set of weight vectors, which are as diverse as possible (while
+they are  as much as possible in accordance with the known DM's preferences),
+and a set of alternatives that maximize the utility w.r.t. each of these weight
+vectors, while being definitely not the best w.r.t. the other weight vectors.
+These alternatives provide contrasted queries to the DM and the next iteration
+uses the query answers to constrain further the search.  
+This method leads to a mixed integer linear programming formulation and uses
+MILP solvers. It is compared to three recent Bayesian approaches under
+different distributional hypotheses and also on a reasonably constructed
+artificial decision case (already used in Guo and Sanner, 2010). According to
+the simulation results it seems that the proposed approach is performing well
+and scales better than its Bayesian competitors
+
+----------- COMMENTS FOR THE AUTHORS -----------
+The proposed method seems to be promising. 
+
+In contrast with the Bayesian approach it is compared with, there are no
+explicit hypotheses or model underlying the new proposal. Consequently it is
+not easy to validate it. Here the validation is purely empirical.  I wonder if
+using the Bradley-Terry probabilistic response model does not bias the
+experiments in favor of the new method. (Since the latter constructs x^{i} and
+x^{j} so as to maximize the difference of their values computed with the
+different weight vectors approximating the true one. This tends to make a wrong
+answer to the query unlikely). 
+
+One of the principles for designing good learning method is the low cognitive
+load on the user (see Guo and Sanner 2010). Nothing is said about the cognitive
+load incurred in comparig the constructed alternatives x^{i} and x^{j}. They
+might be difficult to compare due to their construction. Some comment on this
+point would be welcome. 
+
+Regarding scalability, one should expect that the MILP problems will become
+intractable at some point, when the number of binary variables becomes large.
+There is no indication about the size of the problems that one can hope to
+solve in reasonable time using MILP solvers.
+
+The hypothesis about continuous variables depending linearly on the categorical
+ones is rather restrictive. This hypothesis could probably be relaxed using
+ideas contained in "pioneering works" done in the OR community. However, in
+these papers it is assumed that preference increases (or decreases) with the
+attribute value (on which an order is assumed to exist). So, for each
+attribute, the preference is either "the larger the better" or "the smaller the
+better", which is not assumed here. By the way, the reference Jacquet-Lagreze
+1995 is not the original one. The original paper by this author, and a
+co-author, is much more general than the one cited and was published in 1982:
+
+@article{jaquetlsiskos1982,
+    author = {{Jacquet-Lagr{\`e}ze}, E. and Siskos, Y.},
+    title = {Assessing a set of additive utility functions for
+         multicriteria decision making: the {UTA} method},
+    journal = {European Journal of Operational Research},
+    volume = {10},
+    year = {1982},
+    pages = {151-164}
+}
+
+It gave rise to a fruiful posterity that is partly reviewed in  
+@article{jaquetlsiskos2001,
+    title = {Preference disaggregation: 20 years of {MCDA} experience},
+    author = {Jacquet-Lagr\`eze, E. and Siskos, Y.},
+    journal = {European Journal of Operational Research},
+    volume = {130},
+    number = {2},
+    pages = {233 - 245},
+    year = {2001},
+    issn = {0377-2217},
+    doi = {http://dx.doi.org/10.1016/S0377-2217(00)00035-7},
+    url = {http://www.sciencedirect.com/science/article/pii/S0377221700000357},
+}
+
+------------------------------------------------------
