@@ -30,27 +30,35 @@ REVIEW 1
 %     - gli attributi booleani c'e' un misunderstanding: il problema e' ben
 %       piu' complesso. spiegare attributi in dettaglio e quanti bits.
 
-- True, usage of sets of candidates to encourage diversity is not new; the
-  novelty is that we exploit the candidates to rationally split the search space.
+- We agree that using sets of candidates to encourage diversity is not new. Indeed one of the 
+  competitors we have is a Bayesian approach for optimal recommendation sets. The
+  novelty is in the set-margin formulation adapting the large margin paradigm to this setting.
+
 - Diversity in information retrieval has a different goal, unrelated to
   optimization and learning. We will provide details and further references
-  in the additional page.
-- Recently the focus in preference elicitation shifted a bit. Our searches in
-  the literature found nothing more appropriate than the work of Guo & Sanner,
-  and Boutilier. We'd be grateful for any other relevant references.
-- The analysis of the setmargin procedure could certainly be more theoretical. XXX
-  As proven empirically, the message is that our method can provide close
-  better performance than state-of-the-art methods at a fraction of the
-  computational cost. This is certainly true for pairwise queries (k=2), while
-  for set-based queries, where the cognitive load is less well defined, we
-  report both per-iteration and per-query results to cover the full spectrum of
-  possibilities.
-- Bayesian methods are the state-of-the-art. True, they trade off runtime for
-  modelling expressivity. But we do provide comparable performance while
-  scaling much more.
-- There is a misunderstanding. The task is more complex than perceived by
-  the reviewer: the number of Boolean attributes in the PC dataset is 73, not
-  8.
+  in the additional page. QUESTO LO LEVEREI
+
+- Recently the focus in preference elicitation shifted a bit. Our
+  searches in the literature found nothing more appropriate than the
+  works we compare to. We'd be grateful for any other relevant
+  references.
+
+- The main contribution of the work is that splitting the search space
+  in the fashion proposed achieves state-of-the-art performance at a
+  fraction of the computational cost. This is certainly true for
+  pairwise queries (k=2), where all methods can be compared on a fair
+  basis. For k>2, it is difficult to precisely define the cognitive
+  load.  That's why we report both per-query and per-iteration 
+  results, where the latter show faster convergence for k>2.
+
+- The fact that Bayesian methods are computationally expensive is not
+  sufficient to rule them out, as they tend to be more accurate on
+  small scale problems. What we show is that we are able to get
+  comparable performance on these problems, while scaling much more.
+
+- There is a misunderstanding regarding the complexity of the PC dataset. The
+  task is more complex than perceived by the reviewer: a binary encoding of the 
+  features would produce 73 boolean attributes, not 7. [RIVEDERE]
 
 REVIEW 2
 
@@ -125,11 +133,15 @@ REVIEW 4
 %   sarebbero non-lineari per via di <w,x>, citare ultimo paper sanner. in
 %   realta' ongoing su hybrid (alternated o nonlinear).
 
-- We do not think the BT response model favors our method. First, it was
-  previously used to evaluate the competitors, we merely took it from there.
-  Second, given that Bayesian models are tied to the response model, they are
-  more likely to benefit from the additional constraints that the modelling
-  provides.
+%- We do not think the BT response model favors our method. First, it was
+%  previously used to evaluate the competitors, we merely took it from there.
+%  Second, given that Bayesian models are tied to the response model, they are
+%  more likely to benefit from the additional constraints that the modelling
+%  provides.
+
+- We adopt Bradley Terry (BT) as a response model as it is a common assumption in preference elicitation papers. It is true that constraint 2 induce items that are "different" and will often be associated with a low prob of error according to the BT reponse model.
+But we do not think this as giving an unfair advantage to our method; actually it is the Bayesian competitors that exploit BT better, as it is used as an observation model when performing Bayesian updates.
+
 - True, modelling the cognitive load is not easy. We have ongoing work to
   explore this issue further, in collaboration with psychologists. In the
   paper we just followed the common practice of pairwise queries, for
