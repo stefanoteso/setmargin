@@ -4,28 +4,27 @@ REVIEW_1
 
 First of all, there is a misunderstanding regarding the experiment
 with the PC dataset.  The choice space is much larger than perceived
-by the reviewer: the binary encoding of the 8 features (7 discrete + 1
+by the reviewer: the binary encoding of the 8 features (7 discrete, 1
 real) uses 73 boolean attributes. This corresponds to more than 700K
 feasible configurations.
 
 While the idea of using sets of candidates to encourage diversity is
 not new, the novelty is in extending the large margin paradigm to
 sets. We view this as a significant step forward over previous
-approaches using max-margin maximization and heuristic methods for
+approaches using maxmargin maximization and heuristic methods for
 uncertainty reduction.
 
 Recently the focus in preference elicitation shifted a bit towards
-sequential decision making and preference-based reinforcement
-learning. Our literature search found nothing more appropriate than
-the works we compare to. We'd be grateful for pointers to other
-relevant references.
+sequential decision making and reinforcement learning. Our literature
+search found nothing more appropriate than the works we compare
+to. We'd be grateful for pointers to other relevant references.
 
 The main contribution of the work is that our method for splitting the
 search space achieves state-of-the-art performance at a fraction of
 the computational cost. This is certainly true for pairwise queries
 (k=2), where all methods can be compared.  For k>2, it is difficult to
 precisely define the cognitive load.  That's why we report both
-per-query and per-iteration results; the latter show faster
+perQuery and perIiteration results; the latter show faster
 convergence for k>2.
 
 The fact that Bayesian methods are computationally expensive is not
@@ -42,7 +41,7 @@ Thanks for the reference, it will be integrated.
 Correct, <wi,xi> encourages the quality of the xi's; diversity is
 given by constraint 2. We will rephrase.
 
-Fixing the 1-norm is not the only option. In our case, the norm is
+Fixing the 1_norm is not the only option. In our case, the norm is
 varying and sparsity is encouraged through LASSO. This is a standard
 approach.
 
@@ -53,7 +52,7 @@ them, but rather use appropriate solvers like MIQP.
 
 Gamma controls the importance given to the quality of the candidate
 (we want to suggest 'good' items). This needs to be traded with respect
-to diversity, that's why we include gamma in the cross-validation.
+to diversity, that's why we include gamma in the crossvalidation.
 
 Footnote 4 is only relevant to the case k=1 (as constraint 2 vanishes). Will
 fix.
@@ -71,14 +70,14 @@ REVIEW_3
 
 Thanks for the references, we'll include them.
 
-The margin must be non-negative, as specified in the text above Eq.1;
+The margin must be nonnegative, as specified in the text above Eq.1;
 we will point it out more clearly.
 
 REVIEW_4
 
 Bradley Terry (BT) is a common assumption in preference
 elicitation. It is true that constraint 2 tends to induce items with a
-low prob-of-error according to BT. However we do not see this as
+low error probability according to BT. However we do not see this as
 giving us an unfair advantage; actually it is the Bayesian competitors
 that exploit BT better when using it for performing Bayesian updates.
 
@@ -87,8 +86,8 @@ common practice of pairwise queries. We have ongoing work in
 collaboration with psychologists to explore this issue further.
 
 User cognitive resources (rather than computational ones) limit the
-size of problems; MILP solvers are well-equipped to solve
-optimizations of this magnitude.
+size of problems; MILP solvers can easily address optimizations of this
+magnitude.
 
 Indeed linearly dependent variables are not very expressive. We are
 interested in extending to hybrid Boolean/continuous domains.  
