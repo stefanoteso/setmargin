@@ -92,8 +92,5 @@ optimizations of this magnitude.
 
 Indeed linearly dependent variables are not very expressive. We are
 interested in extending to hybrid Boolean/continuous domains.  
-%We are currently investigating two directions: alternating between
-%optimization of Boolean and continuous variables, and leveraging
-%non-linear solvers.
 
 We'll include the suggested reference.
