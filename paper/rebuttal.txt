@@ -1,5 +1,5 @@
 We would like to thank all reviewers for their feedback. We will buy an
-additional page in the camera ready to enrich the related works section and
+additional page for the camera ready to enrich the related works section and
 improve the text where it was previously cut due to space limitations.
 Additional replies:
 
@@ -31,14 +31,14 @@ REVIEW 1
 %       piu' complesso. spiegare attributi in dettaglio e quanti bits.
 
 - True, usage of sets of candidates to encourage diversity is not new; the
-  novelty is that we exploit the candidates to evenly split the search space.
+  novelty is that we exploit the candidates to rationally split the search space.
 - Diversity in information retrieval has a different goal, unrelated to
   optimization and learning. We will provide details and further references
   in the additional page.
 - Recently the focus in preference elicitation shifted a bit. Our searches in
   the literature found nothing more appropriate than the work of Guo & Sanner,
   and Boutilier. We'd be grateful for any other relevant references.
-- The analysis of the setmargin procedure could certaily be more theoretical. XXX
+- The analysis of the setmargin procedure could certainly be more theoretical. XXX
   As proven empirically, the message is that our method can provide close
   better performance than state-of-the-art methods at a fraction of the
   computational cost. This is certainly true for pairwise queries (k=2), while
@@ -46,11 +46,11 @@ REVIEW 1
   report both per-iteration and per-query results to cover the full spectrum of
   possibilities.
 - Bayesian methods are the state-of-the-art. True, they trade off runtime for
-  modelling accuracy. But we do provide comparable performance while scaling
-  much more.
-- There is a misunderstanding: the number of Boolean attributes in the PC
-  dataset is 73, not 8, plus a continuous cost. The problem is much more
-  complex than that.
+  modelling expressivity. But we do provide comparable performance while
+  scaling much more.
+- There is a misunderstanding. The task is more complex than perceived by
+  the reviewer: the number of Boolean attributes in the PC dataset is 73, not
+  8.
 
 REVIEW 2
 
@@ -85,22 +85,17 @@ REVIEW 2
 - Correct, <wi,xi> encourages the quality of the xi's, diversity is given
   by constraint 2. We will rephrase the sentence.
 - Fixing the 1-norm is not the only option. In our case, the norm is variable
-  and sparsity is encouraged via LASSO. This is a rather standard approach.
+  and sparsity is encouraged through LASSO. This is a standard approach.
 - We will clarify that the linearization trick is taken from elsewhere, and
-  refer to the paper by Boutilier et al.
+  refer to the paper by Boutilier.
 - We plan to extend the work to real variables, as per the Conclusion;
   but this is beyond the scope of this paper.
 - User resources strongly limit the overall complexity of the MILP problem.
   Current MILP solvers can easily deal with problems of this magnitude.
-- Indeed linearly dependent variables are not very expressive. We are
-  interested in extensions to hybrid Boolean/continuous domains, as per the
-  Conclusion, and currently investigating two directions: alternating between
-  optimization of Boolean and continuous variables, and leveraging non-linear
-  solvers.
-- Gamma controls the importance of candidate item quality for diversity;
-  gamma=0 could be used. Since the correlation is not known beforehand, we
-  include gamma in the cross-validation.
-- Footnote 4 only applies to k=1 (as constraint 2 vanishes). Will fix.
+- Gamma controls the importance of candidate item quality for ensuring
+  diversity; gamma=0 could be used. Since the correlation is not known
+  beforehand, we include gamma in the cross-validation.
+- Footnote 4 should only apply to k=1 (as constraint 2 vanishes. Will fix.
 - NOT SURE HOW TO WRITE IT DOWN
 
 REVIEW 3
