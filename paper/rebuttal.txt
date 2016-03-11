@@ -178,15 +178,12 @@ to explore this issue further, in collaboration with psychologists. In
 the paper we just followed the common practice of pairwise queries,
 for comparability.
 
-User resources strongly limit the overall complexity of the MILP
-problem; MILP solvers are well-equipped to solve problems of this
-magnitude.
+User cognitive resources (rather than computational ones) limit the size (in terms of attributes) of the decision problems; MILP solvers are well-equipped to solve problems of this magnitude.
 
-Indeed linearly dependent variables are not very expressive. We are
-very much interested in extending the method to hybrid
-Boolean/continuous domains, as hinted to in the Conclusion. We are
-currently investigating two directions: alternating between
-optimization of Boolean and continuous variables, and leveraging
-non-linear solvers.  
+Indeed linearly dependent variables are not very expressive. We are interested in extending to hybrid Boolean/continuous domains. 
+%We are currently investigating two directions: alternating between
+%optimization of Boolean and continuous variables, and leveraging
+%non-linear solvers.  
 
-Thanks for the reference, we'll make sure to include it.
+Thanks for the reference. 
+%, we'll make sure to include it.
