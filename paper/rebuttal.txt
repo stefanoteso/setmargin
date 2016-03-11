@@ -30,18 +30,18 @@ REVIEW 1
 %     - gli attributi booleani c'e' un misunderstanding: il problema e' ben
 %       piu' complesso. spiegare attributi in dettaglio e quanti bits.
 
-- We agree that using sets of candidates to encourage diversity is not new. Indeed one of the 
-  competitors we have is a Bayesian approach for optimal recommendation sets. The
-  novelty is in the set-margin formulation adapting the large margin paradigm to this setting.
+- First of all, there is a misunderstanding regarding the experiment with the PC dataset. 
+The choice space is much larger than perceived by the reviewer: the binary encoding of the 8
+features (7 discrete + 1 real) uses 73 boolean attributes. This corresponds to more than 700K feasible configurations. 
+
+- While the idea of using sets of candidates to encourage diversity is not new, the
+  novelty is in extending the large margin paradigm to sets. We view this as a significant step forward over previous approaches using max-margin maximization and heuristic methods for uncertainty reduction [for example: Gajos 2005].
 
 - Diversity in information retrieval has a different goal, unrelated to
   optimization and learning. We will provide details and further references
   in the additional page. QUESTO LO LEVEREI
 
-- Recently the focus in preference elicitation shifted a bit. Our
-  searches in the literature found nothing more appropriate than the
-  works we compare to. We'd be grateful for any other relevant
-  references.
+- Recently the focus in preference elicitation shifted a bit towards sequential decision making and preference-based reinforcement learning. Our literature search found nothing more appropriate than the works we compare to. We'd be grateful for pointers to other relevant references.
 
 - The main contribution of the work is that splitting the search space
   in the fashion proposed achieves state-of-the-art performance at a
@@ -54,11 +54,9 @@ REVIEW 1
 - The fact that Bayesian methods are computationally expensive is not
   sufficient to rule them out, as they tend to be more accurate on
   small scale problems. What we show is that we are able to get
-  comparable performance on these problems, while scaling much more.
+  comparable performance on these problems, while being able to scale much more.
 
-- There is a misunderstanding regarding the complexity of the PC dataset. The
-  task is more complex than perceived by the reviewer: a binary encoding of the 
-  features would produce 73 boolean attributes, not 7. [RIVEDERE]
+
 
 REVIEW 2
 
