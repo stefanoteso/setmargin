@@ -133,11 +133,15 @@ REVIEW 4
 %   sarebbero non-lineari per via di <w,x>, citare ultimo paper sanner. in
 %   realta' ongoing su hybrid (alternated o nonlinear).
 
-- We do not think the BT response model favors our method. First, it was
-  previously used to evaluate the competitors, we merely took it from there.
-  Second, given that Bayesian models are tied to the response model, they are
-  more likely to benefit from the additional constraints that the modelling
-  provides.
+%- We do not think the BT response model favors our method. First, it was
+%  previously used to evaluate the competitors, we merely took it from there.
+%  Second, given that Bayesian models are tied to the response model, they are
+%  more likely to benefit from the additional constraints that the modelling
+%  provides.
+
+- We adopt Bradley Terry (BT) as a response model as it is a common assumption in preference elicitation papers. It is true that constraint 2 induce items that are "different" and will often be associated with a low prob of error according to the BT reponse model.
+But we do not think this as giving an unfair advantage to our method; actually it is the Bayesian competitors that exploit BT better, as it is used as an observation model when performing Bayesian updates.
+
 - True, modelling the cognitive load is not easy. We have ongoing work to
   explore this issue further, in collaboration with psychologists. In the
   paper we just followed the common practice of pairwise queries, for
