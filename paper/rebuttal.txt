@@ -2,31 +2,6 @@ We would like to thank all reviewers for their feedback. Detailed replies follow
 
 REVIEW_1
 
-% - novelty
-%     - certamente le alternative/sets non sono nuovi; la novita' e' la
-%       suddivisione dello spazio di ricerca
-%     - cercare roba recente che cita Guo/Bonilla/Viappiani e dimostrare che
-%       non esiste nulla di piu' sul punto
-%     - diversity in IR esiste [ma non ha lo stesso scopo (non dipende da w)] ma
-%       per spazio ci siamo concentrati su related work piu' vicini; si potrebbe
-%       comprare una pagina ulteriore nel camera ready per spiegare.
-% 
-% - set search not analyzed thoroughly
-%     - il metodo e' giustificato anche con k=2, che funziona pure bene
-%     - k>2 e' utile in base al costo cognitivo; per questo abbiamo messo 2
-%       grafici (per query e per iteration); qui si vede il vantaggio di k>2
-%     - no messaggio definitivo per via del costo cognitivo e del modello utente;
-%       si possono esplorare alternative ma non e' il nostro fuoco; o vederlo
-%       come recommendation set (di 5 prendi 1), pero' avvantaggerebbe il nostro
-%       metodo
-% 
-% - *
-%     - il fatto che i Bayes siano piu' lenti sono comunque lo stato dell'arte:
-%       c'e' un tradeoff tra numero di domande e scalare nel bayesiano; noi
-%       invece otteniamo le stesse perf ma scaliamo molto oltre.
-%     - gli attributi booleani c'e' un misunderstanding: il problema e' ben
-%       piu' complesso. spiegare attributi in dettaglio e quanti bits.
-
 First of all, there is a misunderstanding regarding the experiment
 with the PC dataset.  The choice space is much larger than perceived
 by the reviewer: the binary encoding of the 8 features (7 discrete + 1
@@ -62,55 +37,26 @@ problems, while capable of scaling much more.
 
 REVIEW_2
 
-% R2
-% 
-% - citare UTA in OR -> citare UTA quando introduciamo le slacks
-% - ha ragione, rephrase (primo qualita', secondo diversita', tutti e due diversita' dei buoni)
-% - non normalizzando i pesi (che e' solo una possibilita'), la L1 e' lo standard
-%   per sparsificare
-% - explain that the linearization trick is used in Boutilier et al. 2006
-% - chiarire che il num bool e sum domini; ma i problemi sono tranquilli perche'
-%   i w utenti sono semplici e gli XOR restringono il problema
-% - why should gamma be crossvalidated? intuition:
-%     - il vincolo 2 diversifica
-%     - il gamma vuole che gli oggetti siano di buona qualita' che in PE servono
-%       perche' l'utente non si incazzi; non e' ovvio quale deve essere il suo
-%       contributo percio' crossvalidiamo
-%     - chiarire i bump a cosa sono dovuti (non a gamma); tagliato per spazio
-% - fix footnote 4 only applies to k=1 (chiarisco che chiariro')
-% - explain why 80% sparsity mimics a user (typically cares about 3 or 4 features)
-%     - siamo d'accordo che con 3-4 features non serve la sparsita'; peccato
-%       che dobbiamo simularlo su poche features (synth) for sake of comparisons
-%       perche su PC gli altri metodi non funzionano
-%     - la sparsita' non l'abbiamo introdotta per far vedere che il nostro sys
-%       va meglio -- l'idea e' che scaliamo meglio sia in sparso che in denso.
-%       ma usarla e' ragionevole per modellare l'utente. non ci costa nulla
-%       toglierla, e non cambia la sua utilita'. il confronto non e' sulla
-%       sparsita' ma sul fatto che gli altri non scalano)
-%       (infatti la scalabilita' e' il nostro cavallo di battaglia)
-
-
-
 Thanks for the reference, it will be integrated.
 
 Correct, <wi,xi> encourages the quality of the xi's; diversity is
 given by constraint 2. We will rephrase.
- 
+
 Fixing the 1-norm is not the only option. In our case, the norm is
 varying and sparsity is encouraged through LASSO. This is a standard
 approach.
 
 We will clarify that the linearization trick is a classic method in OR.
-%and refer to the paper by Boutilier.
 
-Our plan for extending the approach real variables is not to binarize
-them, but rather use appropriate solvers like MIQP
+Our plan for extending the approach to real variables is not to binarize
+them, but rather use appropriate solvers like MIQP.
 
 Gamma controls the importance given to the quality of the candidate
 (we want to suggest 'good' items). This needs to be traded with respect
 to diversity, that's why we include gamma in the cross-validation.
 
-Footnote 4 is only relevant to the case k=1 (as constraint 2 vanishes). Will fix.
+Footnote 4 is only relevant to the case k=1 (as constraint 2 vanishes). Will
+fix.
 
 The intuition for the sparse utility is based on human's bounded
 rationality in large decision spaces. We agree 3 or 4
@@ -123,10 +69,6 @@ assumption.
 
 REVIEW_3
 
-% - citeremo e commenteremo, grazie
-% - margin must be non-negative, make clearer
-
-
 Thanks for the references, we'll include them.
 
 The margin must be non-negative, as specified in the text above Eq.1;
@@ -134,35 +76,13 @@ we will point it out more clearly.
 
 REVIEW_4
 
-% - BT: forse ci favorisce, ci stiamo solo confrontando con quello che fanno gli
-%   altri, preso dai competitors; al contrario, sono i modelli bayesiani che
-%   lo sfruttano meglio (o almeno che potrebbero)
-% - cognitive load: ha ragione, ma tutti fanno domande a coppie es Guo & Sanner,
-%   ci accodiamo. non e' chiaro come formalizzare (chiedere agli psicologi)? e'
-%   da investigare. in effetti e' quello che vogliamo fare (trovare query che
-%   sono piu' facili per l'utente). ma va oltre lo scopo.
-% - scalability: stiamo sempre parlando di interazione con l'utente, quindi siamo
-%   lontani dal raggiugnere la complex gestibile da un MILP solver. il PC ad es
-%   e' gestibile mentre per l'utente e' complesso (non si va sulle migliaia di
-%   var booleane). capire quanti Bools un MILP gestisce (chiedere a Roberto?).
-%   la sat del solver sta molto sopra la sat dell'utente.
-% - reals: future work di sicuro, infatti l'abbiamo messo li' -- le estensioni
-%   sarebbero non-lineari per via di <w,x>, citare ultimo paper sanner. in
-%   realta' ongoing su hybrid (alternated o nonlinear).
-
-%- We do not think the BT response model favors our method. First, it was
-%  previously used to evaluate the competitors, we merely took it from there.
-%  Second, given that Bayesian models are tied to the response model, they are
-%  more likely to benefit from the additional constraints that the modelling
-%  provides.
-
 Bradley Terry (BT) is a common assumption in preference
 elicitation. It is true that constraint 2 tends to induce items with a
 low prob-of-error according to BT. However we do not see this as
 giving us an unfair advantage; actually it is the Bayesian competitors
 that exploit BT better when using it for performing Bayesian updates.
 
-Mdelling the cognitive load is indeed not easy, we just followed the
+Modelling the cognitive load is indeed not easy, we just followed the
 common practice of pairwise queries. We have ongoing work in
 collaboration with psychologists to explore this issue further.
 
