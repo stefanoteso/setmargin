@@ -1,7 +1,4 @@
-We would like to thank all reviewers for their feedback. We will buy an
-additional page for the camera ready to enrich the related works section and
-improve the text where it was previously cut due to space limitations.
-Additional replies:
+We would like to thank all reviewers for their feedback. Detailed replies follow:
 
 REVIEW_1
 
@@ -48,18 +45,18 @@ learning. Our literature search found nothing more appropriate than
 the works we compare to. We'd be grateful for pointers to other
 relevant references.
 
-The main contribution of the work is that splitting the search space
-in the fashion proposed achieves state-of-the-art performance at a
-fraction of the computational cost. This is certainly true for
-pairwise queries (k=2), where all methods can be compared on a fair
-basis. For k>2, it is difficult to precisely define the cognitive
-load.  That's why we report both per-query and per-iteration results,
-where the latter show faster convergence for k>2.
+The main contribution of the work is that our method for splitting the
+search space achieves state-of-the-art performance at a fraction of
+the computational cost. This is certainly true for pairwise queries
+(k=2), where all methods can be compared.  For k>2, it is difficult to
+precisely define the cognitive load.  That's why we report both
+per-query and per-iteration results; the latter show faster
+convergence for k>2.
 
 The fact that Bayesian methods are computationally expensive is not
 sufficient to rule them out, as they tend to be more accurate on small
-scale problems. What we show is that we are able to get comparable
-performance on these problems, while being able to scale much more.
+problems. Our method achieves comparable performance on these
+problems, while capable of scaling much more.
 
 
 
@@ -96,15 +93,15 @@ REVIEW_2
 
 Thanks for the reference, it will be integrated.
 
-Correct, <wi,xi> encourages the quality of the xi's, diversity is
+Correct, <wi,xi> encourages the quality of the xi's; diversity is
 given by constraint 2. We will rephrase.
  
 Fixing the 1-norm is not the only option. In our case, the norm is
-variable and sparsity is encouraged through LASSO. This is a standard
+varying and sparsity is encouraged through LASSO. This is a standard
 approach.
 
-We will clarify that the linearization trick is a classic method in OR, and
-refer to the paper by Boutilier.
+We will clarify that the linearization trick is a classic method in OR.
+%and refer to the paper by Boutilier.
 
 Our plan for extending the approach real variables is not to binarize
 them, but rather use appropriate solvers like MIQP
@@ -115,8 +112,8 @@ to diversity, that's why we include gamma in the cross-validation.
 
 Footnote 4 is only relevant to the case k=1 (as constraint 2 vanishes). Will fix.
 
-The intuition for the sparse utility is based on the bounded
-rationality of humans in large decision spaces. We agree 3 or 4
+The intuition for the sparse utility is based on human's bounded
+rationality in large decision spaces. We agree 3 or 4
 features do not require sparsity, but these were the domain sizes
 suitable for the comparison with Bayesian methods. Please note that
 the scalability of our method does not depend on the sparsity
@@ -130,9 +127,9 @@ REVIEW_3
 % - margin must be non-negative, make clearer
 
 
-Thanks for the references, we will make sure to include them.
+Thanks for the references, we'll include them.
 
-The margin must be non-negative, as specified in the text above Eq 1;
+The margin must be non-negative, as specified in the text above Eq.1;
 we will point it out more clearly.
 
 REVIEW_4
@@ -159,25 +156,24 @@ REVIEW_4
 %  more likely to benefit from the additional constraints that the modelling
 %  provides.
 
-We adopt Bradley Terry (BT) as a response model as it is a common
-assumption in preference elicitation papers. It is true that
-constraint 2 induce items that are "different" and will often be
-associated with a low prob-of-error according to the BT reponse model.
-But we do not think this as giving an unfair advantage to our method;
-actually it is the Bayesian competitors that exploit BT better, as it
-is used as an observation model when performing Bayesian updates.
+Bradley Terry (BT) is a common assumption in preference
+elicitation. It is true that constraint 2 tends to induce items with a
+low prob-of-error according to BT. However we do not see this as
+giving us an unfair advantage; actually it is the Bayesian competitors
+that exploit BT better when using it for performing Bayesian updates.
 
-Mdelling the cognitive load is indeed not easy. We have ongoing work
-to explore this issue further, in collaboration with psychologists. In
-the paper we just followed the common practice of pairwise queries,
-for comparability.
+Mdelling the cognitive load is indeed not easy, we just followed the
+common practice of pairwise queries. We have ongoing work in
+collaboration with psychologists to explore this issue further.
 
-User cognitive resources (rather than computational ones) limit the size (in terms of attributes) of the decision problems; MILP solvers are well-equipped to solve problems of this magnitude.
+User cognitive resources (rather than computational ones) limit the
+size of problems; MILP solvers are well-equipped to solve
+optimizations of this magnitude.
 
-Indeed linearly dependent variables are not very expressive. We are interested in extending to hybrid Boolean/continuous domains. 
+Indeed linearly dependent variables are not very expressive. We are
+interested in extending to hybrid Boolean/continuous domains.  
 %We are currently investigating two directions: alternating between
 %optimization of Boolean and continuous variables, and leveraging
-%non-linear solvers.  
+%non-linear solvers.
 
-Thanks for the reference. 
-%, we'll make sure to include it.
+We'll include the suggested reference.
