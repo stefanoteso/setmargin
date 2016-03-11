@@ -168,7 +168,7 @@ REVIEW_4
 We adopt Bradley Terry (BT) as a response model as it is a common
 assumption in preference elicitation papers. It is true that
 constraint 2 induce items that are "different" and will often be
-associated with a low prob of error according to the BT reponse model.
+associated with a low prob-of-error according to the BT reponse model.
 But we do not think this as giving an unfair advantage to our method;
 actually it is the Bayesian competitors that exploit BT better, as it
 is used as an observation model when performing Bayesian updates.
