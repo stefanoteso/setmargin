@@ -1,0 +1,149 @@
+We would like to thank all reviewers for their feedback. We will buy an
+additional page in the camera ready to enrich the related works section and
+improve the text where it was previously cut due to space limitations.
+Additional replies:
+
+REVIEW 1
+
+% - novelty
+%     - certamente le alternative/sets non sono nuovi; la novita' e' la
+%       suddivisione dello spazio di ricerca
+%     - cercare roba recente che cita Guo/Bonilla/Viappiani e dimostrare che
+%       non esiste nulla di piu' sul punto
+%     - diversity in IR esiste [ma non ha lo stesso scopo (non dipende da w)] ma
+%       per spazio ci siamo concentrati su related work piu' vicini; si potrebbe
+%       comprare una pagina ulteriore nel camera ready per spiegare.
+% 
+% - set search not analyzed thoroughly
+%     - il metodo e' giustificato anche con k=2, che funziona pure bene
+%     - k>2 e' utile in base al costo cognitivo; per questo abbiamo messo 2
+%       grafici (per query e per iteration); qui si vede il vantaggio di k>2
+%     - no messaggio definitivo per via del costo cognitivo e del modello utente;
+%       si possono esplorare alternative ma non e' il nostro fuoco; o vederlo
+%       come recommendation set (di 5 prendi 1), pero' avvantaggerebbe il nostro
+%       metodo
+% 
+% - *
+%     - il fatto che i Bayes siano piu' lenti sono comunque lo stato dell'arte:
+%       c'e' un tradeoff tra numero di domande e scalare nel bayesiano; noi
+%       invece otteniamo le stesse perf ma scaliamo molto oltre.
+%     - gli attributi booleani c'e' un misunderstanding: il problema e' ben
+%       piu' complesso. spiegare attributi in dettaglio e quanti bits.
+
+- True, usage of sets of candidates to encourage diversity is not new; the
+  novelty is that we exploit the candidates to evenly split the search space.
+- Diversity in information retrieval has a different goal, unrelated to
+  optimization and learning. We will provide details and further references
+  in the additional page.
+- Recently the focus in preference elicitation shifted a bit. Our searches in
+  the literature found nothing more appropriate than the work of Guo & Sanner,
+  and Boutilier. We'd be grateful for any other relevant references.
+- The analysis of the setmargin procedure could certaily be more theoretical. XXX
+  As proven empirically, the message is that our method can provide close
+  better performance than state-of-the-art methods at a fraction of the
+  computational cost. This is certainly true for pairwise queries (k=2), while
+  for set-based queries, where the cognitive load is less well defined, we
+  report both per-iteration and per-query results to cover the full spectrum of
+  possibilities.
+- Bayesian methods are the state-of-the-art. True, they trade off runtime for
+  modelling accuracy. But we do provide comparable performance while scaling
+  much more.
+- There is a misunderstanding: the number of Boolean attributes in the PC
+  dataset is 73, not 8, plus a continuous cost. The problem is much more
+  complex than that.
+
+REVIEW 2
+
+% R2
+% 
+% - citare UTA in OR -> citare UTA quando introduciamo le slacks
+% - ha ragione, rephrase (primo qualita', secondo diversita', tutti e due diversita' dei buoni)
+% - non normalizzando i pesi (che e' solo una possibilita'), la L1 e' lo standard
+%   per sparsificare
+% - explain that the linearization trick is used in Boutilier et al. 2006
+% - chiarire che il num bool e sum domini; ma i problemi sono tranquilli perche'
+%   i w utenti sono semplici e gli XOR restringono il problema
+% - why should gamma be crossvalidated? intuition:
+%     - il vincolo 2 diversifica
+%     - il gamma vuole che gli oggetti siano di buona qualita' che in PE servono
+%       perche' l'utente non si incazzi; non e' ovvio quale deve essere il suo
+%       contributo percio' crossvalidiamo
+%     - chiarire i bump a cosa sono dovuti (non a gamma); tagliato per spazio
+% - fix footnote 4 only applies to k=1 (chiarisco che chiariro')
+% - explain why 80% sparsity mimics a user (typically cares about 3 or 4 features)
+%     - siamo d'accordo che con 3-4 features non serve la sparsita'; peccato
+%       che dobbiamo simularlo su poche features (synth) for sake of comparisons
+%       perche su PC gli altri metodi non funzionano
+%     - la sparsita' non l'abbiamo introdotta per far vedere che il nostro sys
+%       va meglio -- l'idea e' che scaliamo meglio sia in sparso che in denso.
+%       ma usarla e' ragionevole per modellare l'utente. non ci costa nulla
+%       toglierla, e non cambia la sua utilita'. il confronto non e' sulla
+%       sparsita' ma sul fatto che gli altri non scalano)
+%       (infatti la scalabilita' e' il nostro cavallo di battaglia)
+
+- Thanks for the reference, it will be integrated.
+- Correct, <wi,xi> encourages the quality of the xi's, diversity is given
+  by constraint 2. We will rephrase the sentence.
+- Fixing the 1-norm is not the only option. In our case, the norm is variable
+  and sparsity is encouraged via LASSO. This is a rather standard approach.
+- We will clarify that the linearization trick is taken from elsewhere, and
+  refer to the paper by Boutilier et al.
+- We plan to extend the work to real variables, as per the Conclusion;
+  but this is beyond the scope of this paper.
+- User resources strongly limit the overall complexity of the MILP problem.
+  Current MILP solvers can easily deal with problems of this magnitude.
+- Indeed linearly dependent variables are not very expressive. We are
+  interested in extensions to hybrid Boolean/continuous domains, as per the
+  Conclusion, and currently investigating two directions: alternating between
+  optimization of Boolean and continuous variables, and leveraging non-linear
+  solvers.
+- Gamma controls the importance of candidate item quality for diversity;
+  gamma=0 could be used. Since the correlation is not known beforehand, we
+  include gamma in the cross-validation.
+- Footnote 4 only applies to k=1 (as constraint 2 vanishes). Will fix.
+- NOT SURE HOW TO WRITE IT DOWN
+
+REVIEW 3
+
+% - citeremo e commenteremo, grazie
+% - margin must be non-negative, make clearer
+
+- Thanks for the references, we will make sure to include them.
+- The margin must be non-negative, as specified in the text above Eq 1; we will
+  point it out more clearly.
+
+REVIEW 4
+
+% - BT: forse ci favorisce, ci stiamo solo confrontando con quello che fanno gli
+%   altri, preso dai competitors; al contrario, sono i modelli bayesiani che
+%   lo sfruttano meglio (o almeno che potrebbero)
+% - cognitive load: ha ragione, ma tutti fanno domande a coppie es Guo & Sanner,
+%   ci accodiamo. non e' chiaro come formalizzare (chiedere agli psicologi)? e'
+%   da investigare. in effetti e' quello che vogliamo fare (trovare query che
+%   sono piu' facili per l'utente). ma va oltre lo scopo.
+% - scalability: stiamo sempre parlando di interazione con l'utente, quindi siamo
+%   lontani dal raggiugnere la complex gestibile da un MILP solver. il PC ad es
+%   e' gestibile mentre per l'utente e' complesso (non si va sulle migliaia di
+%   var booleane). capire quanti Bools un MILP gestisce (chiedere a Roberto?).
+%   la sat del solver sta molto sopra la sat dell'utente.
+% - reals: future work di sicuro, infatti l'abbiamo messo li' -- le estensioni
+%   sarebbero non-lineari per via di <w,x>, citare ultimo paper sanner. in
+%   realta' ongoing su hybrid (alternated o nonlinear).
+
+- We do not think the BT response model favors our method. First, it was
+  previously used to evaluate the competitors, we merely took it from there.
+  Second, given that Bayesian models are tied to the response model, they are
+  more likely to benefit from the additional constraints that the modelling
+  provides.
+- True, modelling the cognitive load is not easy. We have ongoing work to
+  explore this issue further, in collaboration with psychologists. In the
+  paper we just followed the common practice of pairwise queries, for
+  comparability.
+- User resources strongly limit the overall complexity of the MILP problem;
+  MILP solvers are well-equipped to solve problems of this magnitude.
+- Indeed linearly dependent variables are not very expressive. We are very much
+  interested in extending the method to hybrid Boolean/continuous domains, as
+  hinted to in the Conclusion. We are currently investigating two directions:
+  alternating between optimization of Boolean and continuous variables, and
+  leveraging non-linear solvers.
+- Thanks for the reference, we'll make sure to include it.
