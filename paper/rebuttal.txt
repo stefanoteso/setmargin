@@ -40,7 +40,7 @@ While the idea of using sets of candidates to encourage diversity is
 not new, the novelty is in extending the large margin paradigm to
 sets. We view this as a significant step forward over previous
 approaches using max-margin maximization and heuristic methods for
-uncertainty reduction [for example: Gajos 2005].
+uncertainty reduction.
 
 Recently the focus in preference elicitation shifted a bit towards
 sequential decision making and preference-based reinforcement
@@ -97,7 +97,7 @@ REVIEW_2
 Thanks for the reference, it will be integrated.
 
 Correct, <wi,xi> encourages the quality of the xi's, diversity is
-given by constraint 2. We will rephrase the sentence.
+given by constraint 2. We will rephrase.
  
 Fixing the 1-norm is not the only option. In our case, the norm is
 variable and sparsity is encouraged through LASSO. This is a standard
@@ -109,24 +109,18 @@ refer to the paper by Boutilier.
 Our plan for extending the approach real variables is not to binarize
 them, but rather use appropriate solvers like MIQP
 
-Gamma controls the importance given to the quality of the candidate,
-since we do want to favour queries with 'good' items in term of
-utility; in principle gamma=0 could be used.  Since the relation
-between utility of items in a set and the information value of the
-query is not known beforehand (contrary to the settings investigated
-by Viappiani&Boutilier), we include gamma in the cross-validation.
+Gamma controls the importance given to the quality of the candidate
+(we want to suggest 'good' items). This needs to be traded with respect
+to diversity, that's why we include gamma in the cross-validation.
 
 Footnote 4 is only relevant to the case k=1 (as constraint 2 vanishes). Will fix.
 
-
-The intuition for the sparse utility is that when a large number of
-features are available, a real user will likely use only few of
-them. We agree with the reviewer that with 3 or 4 features sparsity is
-not needed, but these were the domain sizes suitable for the
-comparison with Bayesian methods. Please note that the scalability of
-our method does not depend on the sparsity assumption, which is rather
-introduced to account for the bounded rationality of users in large
-decision spaces.
+The intuition for the sparse utility is based on the bounded
+rationality of humans in large decision spaces. We agree 3 or 4
+features do not require sparsity, but these were the domain sizes
+suitable for the comparison with Bayesian methods. Please note that
+the scalability of our method does not depend on the sparsity
+assumption.
 
 
 
