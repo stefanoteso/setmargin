@@ -3,7 +3,7 @@ additional page for the camera ready to enrich the related works section and
 improve the text where it was previously cut due to space limitations.
 Additional replies:
 
-REVIEW 1
+REVIEW_1
 
 % - novelty
 %     - certamente le alternative/sets non sono nuovi; la novita' e' la
@@ -30,35 +30,40 @@ REVIEW 1
 %     - gli attributi booleani c'e' un misunderstanding: il problema e' ben
 %       piu' complesso. spiegare attributi in dettaglio e quanti bits.
 
-- First of all, there is a misunderstanding regarding the experiment with the PC dataset. 
-The choice space is much larger than perceived by the reviewer: the binary encoding of the 8
-features (7 discrete + 1 real) uses 73 boolean attributes. This corresponds to more than 700K feasible configurations. 
+First of all, there is a misunderstanding regarding the experiment
+with the PC dataset.  The choice space is much larger than perceived
+by the reviewer: the binary encoding of the 8 features (7 discrete + 1
+real) uses 73 boolean attributes. This corresponds to more than 700K
+feasible configurations.
 
-- While the idea of using sets of candidates to encourage diversity is not new, the
-  novelty is in extending the large margin paradigm to sets. We view this as a significant step forward over previous approaches using max-margin maximization and heuristic methods for uncertainty reduction [for example: Gajos 2005].
+While the idea of using sets of candidates to encourage diversity is
+not new, the novelty is in extending the large margin paradigm to
+sets. We view this as a significant step forward over previous
+approaches using max-margin maximization and heuristic methods for
+uncertainty reduction [for example: Gajos 2005].
 
-% - Diversity in information retrieval has a different goal, unrelated to
-%  optimization and learning. We will provide details and further references
-%  in the additional page. QUESTO LO LEVEREI
+Recently the focus in preference elicitation shifted a bit towards
+sequential decision making and preference-based reinforcement
+learning. Our literature search found nothing more appropriate than
+the works we compare to. We'd be grateful for pointers to other
+relevant references.
 
-- Recently the focus in preference elicitation shifted a bit towards sequential decision making and preference-based reinforcement learning. Our literature search found nothing more appropriate than the works we compare to. We'd be grateful for pointers to other relevant references.
+The main contribution of the work is that splitting the search space
+in the fashion proposed achieves state-of-the-art performance at a
+fraction of the computational cost. This is certainly true for
+pairwise queries (k=2), where all methods can be compared on a fair
+basis. For k>2, it is difficult to precisely define the cognitive
+load.  That's why we report both per-query and per-iteration results,
+where the latter show faster convergence for k>2.
 
-- The main contribution of the work is that splitting the search space
-  in the fashion proposed achieves state-of-the-art performance at a
-  fraction of the computational cost. This is certainly true for
-  pairwise queries (k=2), where all methods can be compared on a fair
-  basis. For k>2, it is difficult to precisely define the cognitive
-  load.  That's why we report both per-query and per-iteration 
-  results, where the latter show faster convergence for k>2.
-
-- The fact that Bayesian methods are computationally expensive is not
-  sufficient to rule them out, as they tend to be more accurate on
-  small scale problems. What we show is that we are able to get
-  comparable performance on these problems, while being able to scale much more.
+The fact that Bayesian methods are computationally expensive is not
+sufficient to rule them out, as they tend to be more accurate on small
+scale problems. What we show is that we are able to get comparable
+performance on these problems, while being able to scale much more.
 
 
 
-REVIEW 2
+REVIEW_2
 
 % R2
 % 
@@ -87,42 +92,48 @@ REVIEW 2
 %       sparsita' ma sul fatto che gli altri non scalano)
 %       (infatti la scalabilita' e' il nostro cavallo di battaglia)
 
-- Thanks for the reference, it will be integrated.
-- Correct, <wi,xi> encourages the quality of the xi's, diversity is given
-  by constraint 2. We will rephrase the sentence.
-- Fixing the 1-norm is not the only option. In our case, the norm is variable
-  and sparsity is encouraged through LASSO. This is a standard approach.
-- We will clarify that the linearization trick is taken from elsewhere, and
-  refer to the paper by Boutilier.
-- User resources strongly limit the overall complexity of the MILP
-  problem.  Current MILP solvers can easily deal with problems of this
-  magnitude. Concerning extension to real variables, we do not plan to
-  binarize them, but rather use appropriate solvers like MIQP
-- Gamma controls the importance of candidate item quality for ensuring
-  diversity; gamma=0 could be used. Since the correlation is not known
-  beforehand, we include gamma in the cross-validation.
-- Footnote 4 should only apply to k=1 (as constraint 2 vanishes). Will fix.
+Thanks for the reference, it will be integrated.
 
-- The intuition for the sparse utility is that when many features are
-  available, a real user will likely use only few of them. We agree
-  with the reviewer that with 3 or 4 features sparsity is not needed,
-  but these were the domain sizes our competitors could afford. Please
-  note that the scalability of our method does not depend on the
-  sparsity assumption, which is rather introduced to account for the
-  bounded rationality of users in large decision spaces.
+Correct, <wi,xi> encourages the quality of the xi's, diversity is given
+by constraint 2. We will rephrase the sentence.
+
+Fixing the 1-norm is not the only option. In our case, the norm can
+vary and sparsity is encouraged through LASSO. This is a standard
+approach.
+
+We will clarify that the linearization trick is taken from elsewhere,
+and refer to the paper by Boutilier.
+
+Our plan for extending the approach real variables is not to binarize
+them, but rather use appropriate solvers like MIQP
+
+Gamma controls the importance of candidate item quality for ensuring
+diversity; gamma=0 could be used. Since the correlation is not known
+beforehand, we include gamma in the cross-validation.  Footnote 4
+should only apply to k=1 (as constraint 2 vanishes). Will fix.
+
+The intuition for the sparse utility is that when many features are
+available, a real user will likely use only few of them. We agree with
+the reviewer that with 3 or 4 features sparsity is not needed, but
+these were the domain sizes our competitors could afford. Please note
+that the scalability of our method does not depend on the sparsity
+assumption, which is rather introduced to account for the bounded
+rationality of users in large decision spaces.
 
 
 
-REVIEW 3
+REVIEW_3
 
 % - citeremo e commenteremo, grazie
 % - margin must be non-negative, make clearer
 
-- Thanks for the references, we will make sure to include them.
-- The margin must be non-negative, as specified in the text above Eq 1; we will
-  point it out more clearly.
 
-REVIEW 4
+Thanks for the references, we will make sure to include them.
+
+The margin must be non-negative, as specified in the text above Eq 1;
+we will point it out more clearly.
+
+REVIEW_4
 
 % - BT: forse ci favorisce, ci stiamo solo confrontando con quello che fanno gli
 %   altri, preso dai competitors; al contrario, sono i modelli bayesiani che
@@ -146,18 +157,28 @@ REVIEW 4
 %  more likely to benefit from the additional constraints that the modelling
 %  provides.
 
-- We adopt Bradley Terry (BT) as a response model as it is a common assumption in preference elicitation papers. It is true that constraint 2 induce items that are "different" and will often be associated with a low prob of error according to the BT reponse model.
-But we do not think this as giving an unfair advantage to our method; actually it is the Bayesian competitors that exploit BT better, as it is used as an observation model when performing Bayesian updates.
+We adopt Bradley Terry (BT) as a response model as it is a common
+assumption in preference elicitation papers. It is true that
+constraint 2 induce items that are "different" and will often be
+associated with a low prob of error according to the BT reponse model.
+But we do not think this as giving an unfair advantage to our method;
+actually it is the Bayesian competitors that exploit BT better, as it
+is used as an observation model when performing Bayesian updates.
 
-- True, modelling the cognitive load is not easy. We have ongoing work to
-  explore this issue further, in collaboration with psychologists. In the
-  paper we just followed the common practice of pairwise queries, for
-  comparability.
-- User resources strongly limit the overall complexity of the MILP problem;
-  MILP solvers are well-equipped to solve problems of this magnitude.
-- Indeed linearly dependent variables are not very expressive. We are very much
-  interested in extending the method to hybrid Boolean/continuous domains, as
-  hinted to in the Conclusion. We are currently investigating two directions:
-  alternating between optimization of Boolean and continuous variables, and
-  leveraging non-linear solvers.
-- Thanks for the reference, we'll make sure to include it.
+Mdelling the cognitive load is indeed not easy. We have ongoing work
+to explore this issue further, in collaboration with psychologists. In
+the paper we just followed the common practice of pairwise queries,
+for comparability.
+
+User resources strongly limit the overall complexity of the MILP
+problem; MILP solvers are well-equipped to solve problems of this
+magnitude.
+
+Indeed linearly dependent variables are not very expressive. We are
+very much interested in extending the method to hybrid
+Boolean/continuous domains, as hinted to in the Conclusion. We are
+currently investigating two directions: alternating between
+optimization of Boolean and continuous variables, and leveraging
+non-linear solvers.  
+
+Thanks for the reference, we'll make sure to include it.
