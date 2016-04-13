@@ -126,7 +126,7 @@
 \newcommand{\andrea}[1]{{\bf \textcolor{blue}{{\fbox{Andrea:} #1}}}}
 \newcommand{\stefano}[1]{{\bf \textcolor{green}{{\fbox{Stefano:} #1}}}}
 \newcommand{\paolo}[1]{{\bf \textcolor{red}{{\fbox{Paolo:} #1}}}}
-\newcommand{\diff}[1]{{\bf \textcolor{violet}{#1}}}
+\newcommand{\diff}[1]{{\bf \textcolor{yellow}{#1}}}
 
 % ---------------------------------------------------------------------------
 
@@ -519,7 +519,7 @@ due to the non-negativity of $w^i_z$. Otherwise, if $x^j_z = 0$
 then the lower bound becomes $\max \{ 0, w^{i}_z - w_\text{max} \}$, where
 the second term is at most $0$. Since $p^{i,j}_z$ is being minimized, in both
 cases it will attain the lower bound, and thus satisfy $p^{i,j}_z = w^i_z
-x^j_z$.\footnote{\stefano{This is only relevant for $k=1$.} Since $\mu$ is upper-bounded by Eq.~(\ref{eq:wyconstr}), in some
+x^j_z$.\footnote{Since $\mu$ is upper-bounded by Eq.~(\ref{eq:wyconstr}), in some
 cases the $p^{i,j}_z$ variables do not attain the lower bound. As a
 consequence, the MILP reformulation of Eq.~(\ref{eq:wxconstr}) is a (tight)
 approximation of the original one. This has no impact on the quality of the
@@ -543,9 +543,9 @@ formulation, we obtain the following mixed-integer linear problem:
     % \\
         & \;\; \forall \; i, j \in [k], i \neq j, \forall \; z \in [m] \nonumber
     \\
-        & \;\; \qquad p^{i,i}_z \le \min \{ w_\text{max} x^{i}_z, \, w^{i}_z \}
+        & \;\; \qquad p^{i,i}_z \le \min \{ w_\text{max} x^{i}_z, \, w^{i}_z \} \label{eq:volatile1}
     \\
-        & \;\; \qquad p^{i,j}_z \ge \max \{ 0, \, w^{i}_z - w_\text{max}(1 - x^{j}_z) \}
+        & \;\; \qquad p^{i,j}_z \ge \max \{ 0, \, w^{i}_z - w_\text{max}(1 - x^{j}_z) \} \label{eq:volatile2}
     \\
         & \;\; \forall \; i \in [k] \quad \vw^\bot \le \vw^{i} \le \vw^\top \label{eq:wbounds2}
     \\
@@ -668,7 +668,8 @@ update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
 iterations. The hyperparameters are chosen as to minimize the ranking loss over
 the user responses collected so far. $\alpha$ is taken in $\{20, 10, 5, 1\}$,
 while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.\footnote{Note
-that $\alpha$ can not be taken to be less than $1$, as in this case, the
+that \diff{for $k=1$ Eq.~\ref{eq:volatile1} and Eq.~\ref{eq:volatile2} disappear,
+so} $\alpha$ can not be taken to be less than $1$, as in this case, the
 objective can be increased arbitrarily while keeping the right-hand side of
 Eq.~(\ref{eq:wyconstr}) constant, rendering the problem unbounded.}
 
