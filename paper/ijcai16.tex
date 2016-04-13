@@ -126,11 +126,26 @@
 \newcommand{\andrea}[1]{{\bf \textcolor{blue}{{\fbox{Andrea:} #1}}}}
 \newcommand{\stefano}[1]{{\bf \textcolor{green}{{\fbox{Stefano:} #1}}}}
 \newcommand{\paolo}[1]{{\bf \textcolor{red}{{\fbox{Paolo:} #1}}}}
+\newcommand{\diff}[1]{{\bf \textcolor{violet}{#1}}}
 
 % ---------------------------------------------------------------------------
 
-\title{Constructive Preference Elicitation by Setwise Max-margin Learning} %with?
-\author{ID 2243}
+\title{Constructive Preference Elicitation by Setwise Max-margin Learning}
+
+\author{Stefano Teso \\
+University of Trento \\
+Trento, Italy \\
+teso@disi.unitn.it
+\And
+Andrea Passerini \\
+University of Trento \\
+Trento, Italy \\
+passerini@disi.unitn.it
+\And
+Paolo Viappiani \\
+Universit\'e Pierre et Marie Curie \\
+Paris, France \\
+paolo.viappiani@lip6.fr}
 
 \begin{document}
 
@@ -153,6 +168,9 @@
 
 \section{Introduction}
 
+\paolo{or Andrea: check whether~\cite{greco2008ordinal} is related and comment
+on it, as requested by reviewer 3.}
+
 Preferences \cite{Peintner2008} play an important role in a variety of artificial
 intelligence applications and the task of eliciting or learning preferences is a crucial one; 
 typically only limited
@@ -165,7 +183,9 @@ cost (cognitive or computational) of obtaining additional preference information
 %in order to recommend a decision or a course of action.
 
 The automated assessment of preferences has received considerable attention,
-starting with pioneering works \cite{White1984,JacquetLagreze95} in the OR community.
+starting with pioneering works \cite{White1984,jaquetlsiskos1982} in the OR community.
+\paolo{or Andrea, check if it is worth mentioning the review in~\cite{jaquetlsiskos2001},
+as highlighted by the fourth reviewer.}
 %In the past decade a number of researchers have considered elicitation of preferences from an artificial intelligence perspective%; within the machine learning field the term preference learning has been catching up.
 %While preferences are often assessed using some ad-hoc rules \cite{},
 More recently, a number of AI researchers have proposed interactive methods that elicit
@@ -346,11 +366,11 @@ $\vy^h_1 \approx \vy^h_2$, are translated as $|\langle \vw^i, \vy^h_1 - \vy^h_2 
 the slack increases with the difference between the estimated utility of the
 two options.
 
-The second goal requires to jointly maximize the utility of each
+The second goal requires \stefano{reviewer 2, rephrase: to jointly maximize the utility of each
 $\vx^{i}$ according to its corresponding weight vector $\vw^i$ and its
 scoring difference with respect to the other configurations $\vx^j$ in
 the set. We achieve this by maximizing the sum of utilities
-$\sum_{i=1}^k \langle \vw^{i}, \vx^{i} \rangle$ and adding ranking
+$\sum_{i=1}^k \langle \vw^{i}, \vx^{i} \rangle$ and} adding ranking
 constraints of the form
 $\langle \vw^{i}, \vx^{i} - \vx^{j} \rangle \geq \mu$ for all
 $i,j\in[k]$, $i \ne j$.
@@ -372,7 +392,7 @@ $i,j\in[k]$, $i \ne j$.
 
 A straightforward encoding of the above desiderata leads to the
 following mixed integer {\em non-linear} optimization problem over the
-variables $\mu \in \bbR_{\ge 0}$, $\{ \vw^i \in \bbR^m \}$, $\{ \vx^i \in \{0,1\}^m \}$:
+variables $\mu \in \bbR_{\ge 0}$, $\{ \vw^i \in \bbR^m \}$, $\{ \vx^i \in \{0,1\}^m \}$ \stefano{stress non-zero margin requirement}:
 %
 {\footnotesize
 \begin{align}
@@ -456,7 +476,8 @@ as Eq.~(\ref{eq:wxconstr}) involves quadratic terms over mixed continuous intege
 Here we show how to reformulate the
 problem as a mixed integer linear program (MILP). Our goal is to
 replace Eq.~(\ref{eq:wxconstr}) with a set of linear constraints through
-a suitable variable transformation.
+a suitable variable transformation; \stefano{this technique has already been
+used in OR~[Boutilier et al., 2006]}.
 
 In order to do so, we introduce a set of fresh variables $p^{i,j}_z$ for every
 $i,j\in[k]$ and $z\in[m]$. Assuming for the time being that the new variables
@@ -498,7 +519,7 @@ due to the non-negativity of $w^i_z$. Otherwise, if $x^j_z = 0$
 then the lower bound becomes $\max \{ 0, w^{i}_z - w_\text{max} \}$, where
 the second term is at most $0$. Since $p^{i,j}_z$ is being minimized, in both
 cases it will attain the lower bound, and thus satisfy $p^{i,j}_z = w^i_z
-x^j_z$.\footnote{Since $\mu$ is upper-bounded by Eq.~(\ref{eq:wyconstr}), in some
+x^j_z$.\footnote{\stefano{This is only relevant for $k=1$.} Since $\mu$ is upper-bounded by Eq.~(\ref{eq:wyconstr}), in some
 cases the $p^{i,j}_z$ variables do not attain the lower bound. As a
 consequence, the MILP reformulation of Eq.~(\ref{eq:wxconstr}) is a (tight)
 approximation of the original one. This has no impact on the quality of the
