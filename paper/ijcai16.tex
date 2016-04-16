@@ -471,18 +471,19 @@ red line; moreover the vector $\vw^{1}$ will maximize the margin in the classic 
     \caption{\label{fig:setmargin} Optimization of setwise max-margin; the black lines corresponds to preference constraints $\calD$, the red points are utility vectors $\vw^{1}$ and $\vw^{2}$, the red line corresponds to the hyperplane $\langle \vw, \vx^{1} - \vx^{2} \rangle = 0$.}
 \end{figure}
 
-\paragraph{MILP Formulation.} This initial formulation is problematic to solve,
-as Eq.~(\ref{eq:wxconstr}) involves quadratic terms over mixed continuous integer variables. 
-Here we show how to reformulate the
-problem as a mixed integer linear program (MILP). Our goal is to
-replace Eq.~(\ref{eq:wxconstr}) with a set of linear constraints through
-a suitable variable transformation; \stefano{this technique has already been
-used in OR~[Boutilier et al., 2006]}.
+\paragraph{MILP Formulation.} This initial formulation is problematic
+to solve, as Eq.~(\ref{eq:wxconstr}) involves quadratic terms over
+mixed continuous integer variables.  \andrea{However, the problem can
+  be reformulated as a mixed integer linear program (MILP) by a
+  suitable variable transformation. This technique is rather common in
+  operational research, see e.g.~[Boutilier et al., 2006].}
 
-In order to do so, we introduce a set of fresh variables $p^{i,j}_z$ for every
-$i,j\in[k]$ and $z\in[m]$. Assuming for the time being that the new variables
-do satisfy the equation $p^{i,j}_z = w^i_z x^j_z$, we rewrite the fourth
-component of the objective function in terms of the new variables as:
+\andrea{Our goal is to replace Eq.~(\ref{eq:wxconstr}) with a set of linear
+constraints}. In order to do so, we introduce a set of fresh variables
+$p^{i,j}_z$ for every $i,j\in[k]$ and $z\in[m]$. Assuming for the time
+being that the new variables do satisfy the equation
+$p^{i,j}_z = w^i_z x^j_z$, we rewrite the fourth component of the
+objective function in terms of the new variables as:
 %
 $$ \gamma \sum_{i=1}^k \sum_{z=1}^m p^{i,i}_z$$
 %
@@ -514,16 +515,18 @@ both cases it will attain the upper bound, and thus satisfy $p^{i,j}_z = w^i_z x
 %
 $$ p^{i,j}_z \ge \max \{ 0, w^{i}_z - w_\text{max}(1 - x^{j}_z) \} $$
 %
-If $x^j_z = 1$ the lower bound simplifies to $\max \{ 0, w^{i}_z \} = w^{i}_z$,
-due to the non-negativity of $w^i_z$. Otherwise, if $x^j_z = 0$
-then the lower bound becomes $\max \{ 0, w^{i}_z - w_\text{max} \}$, where
-the second term is at most $0$. Since $p^{i,j}_z$ is being minimized, in both
-cases it will attain the lower bound, and thus satisfy $p^{i,j}_z = w^i_z
-x^j_z$.\footnote{Since $\mu$ is upper-bounded by Eq.~(\ref{eq:wyconstr}), in some
-cases the $p^{i,j}_z$ variables do not attain the lower bound. As a
-consequence, the MILP reformulation of Eq.~(\ref{eq:wxconstr}) is a (tight)
-approximation of the original one. This has no impact on the quality of the
-solutions.}
+If $x^j_z = 1$ the lower bound simplifies to
+$\max \{ 0, w^{i}_z \} = w^{i}_z$, due to the non-negativity of
+$w^i_z$. Otherwise, if $x^j_z = 0$ then the lower bound becomes
+$\max \{ 0, w^{i}_z - w_\text{max} \}$, where the second term is at
+most $0$. Since $p^{i,j}_z$ is being minimized, in both cases it will
+attain the lower bound, and thus satisfy
+$p^{i,j}_z = w^i_z x^j_z$.\footnote{Since $\mu$ is upper-bounded by
+  Eq.~(\ref{eq:wyconstr}), in some cases the $p^{i,j}_z$ variables do
+  not attain the lower bound. As a consequence, the MILP reformulation
+  of Eq.~(\ref{eq:wxconstr}) is a (tight) approximation of the
+  original one. This \andrea{can only happen in the case of $k=1$} and
+  has no impact on the quality of the solutions.}
 
 Substituting the above MILP constraints into the original non-linear
 formulation, we obtain the following mixed-integer linear problem:
