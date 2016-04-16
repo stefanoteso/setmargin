@@ -345,7 +345,7 @@ modulo inconsistencies) and so that they are maximally
 diverse.  Second, we want to construct a {\em set} of $k$
 configurations $\vx^{1}, \ldots, \vx^{k}$, so that each configuration
 $\vx^{i}$ is the ``best'' possible option when evaluated according to
-the corresponding $\vw^{i}$ and configurations are maximally diverse
+the corresponding $\vw^{i}$ {\em and} configurations are maximally diverse
 among each other. These options will be later used to formulate
 queries.
 
@@ -365,11 +365,13 @@ $\vy^h_1 \approx \vy^h_2$, are translated as $|\langle \vw^i, \vy^h_1 - \vy^h_2 
 the slack increases with the difference between the estimated utility of the
 two options.
 
-The second goal requires \stefano{reviewer 2, rephrase: to jointly maximize the utility of each
+The second goal requires \stefano{I think this is correct as-is: the second
+reviewer thinks that the second goal is to maximize diversity; above we clearly
+state that it requires to find diverse {\em and} good configurations} to jointly maximize the utility of each
 $\vx^{i}$ according to its corresponding weight vector $\vw^i$ and its
 scoring difference with respect to the other configurations $\vx^j$ in
 the set. We achieve this by maximizing the sum of utilities
-$\sum_{i=1}^k \langle \vw^{i}, \vx^{i} \rangle$ and} adding ranking
+$\sum_{i=1}^k \langle \vw^{i}, \vx^{i} \rangle$ and adding ranking
 constraints of the form
 $\langle \vw^{i}, \vx^{i} - \vx^{j} \rangle \geq \mu$ for all
 $i,j\in[k]$, $i \ne j$.
