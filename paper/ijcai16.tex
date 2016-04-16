@@ -126,7 +126,6 @@
 \newcommand{\andrea}[1]{{\bf \textcolor{blue}{{\fbox{Andrea:} #1}}}}
 \newcommand{\stefano}[1]{{\bf \textcolor{green}{{\fbox{Stefano:} #1}}}}
 \newcommand{\paolo}[1]{{\bf \textcolor{red}{{\fbox{Paolo:} #1}}}}
-\newcommand{\diff}[1]{{\bf \textcolor{yellow}{#1}}}
 
 % ---------------------------------------------------------------------------
 
@@ -392,7 +391,7 @@ $i,j\in[k]$, $i \ne j$.
 
 A straightforward encoding of the above desiderata leads to the
 following mixed integer {\em non-linear} optimization problem over the
-\diff{non-negative margin $\mu \in \bbR_{\ge 0}$ and vectors $\{ \vw^i \in \bbR^m \}$, $\{ \vx^i \in \{0,1\}^m \}$}:
+\stefano{non-negative margin $\mu \in \bbR_{\ge 0}$ and vectors $\{ \vw^i \in \bbR^m \}$, $\{ \vx^i \in \{0,1\}^m \}$}:
 %
 {\footnotesize
 \begin{align}
@@ -476,7 +475,7 @@ to solve, as Eq.~(\ref{eq:wxconstr}) involves quadratic terms over
 mixed continuous integer variables.  \andrea{However, the problem can
   be reformulated as a mixed integer linear program (MILP) by a
   suitable variable transformation. This technique is rather common in
-  operational research, see e.g.~[Boutilier et al., 2006].}
+  operational research, see e.g.~\cite{boutilier2006}.}
 
 \andrea{Our goal is to replace Eq.~(\ref{eq:wxconstr}) with a set of linear
 constraints}. In order to do so, we introduce a set of fresh variables
@@ -671,7 +670,7 @@ update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
 iterations. The hyperparameters are chosen as to minimize the ranking loss over
 the user responses collected so far. $\alpha$ is taken in $\{20, 10, 5, 1\}$,
 while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.\footnote{Note
-that \diff{for $k=1$ Eq.~\ref{eq:volatile1} and Eq.~\ref{eq:volatile2} disappear,
+that \stefano{for $k=1$ Eq.~\ref{eq:volatile1} and Eq.~\ref{eq:volatile2} disappear,
 so} $\alpha$ can not be taken to be less than $1$, as in this case, the
 objective can be increased arbitrarily while keeping the right-hand side of
 Eq.~(\ref{eq:wyconstr}) constant, rendering the problem unbounded.}
