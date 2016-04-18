@@ -8,7 +8,7 @@
 %\usepackage{latexsym}
 %\usepackage{graphicx}
 \usepackage{graphbox}
-\usepackage{hyperref}
+%\usepackage{hyperref}
 \usepackage{multirow}
 \usepackage{placeins}
 \usepackage[font=small]{caption}
@@ -127,6 +127,9 @@
 \newcommand{\stefano}[1]{{\bf \textcolor{green}{{\fbox{Stefano:} #1}}}}
 \newcommand{\paolo}[1]{{\bf \textcolor{red}{{\fbox{Paolo:} #1}}}}
 
+
+% TEMPORARY HACK: redefine href as dummy command to avoid Fatal Error!
+\newcommand{\url}[1]{#1}
 % ---------------------------------------------------------------------------
 
 \title{Constructive Preference Elicitation by Setwise Max-margin Learning}
@@ -142,7 +145,9 @@ Trento, Italy \\
 passerini@disi.unitn.it
 \And
 Paolo Viappiani \\
-Universit\'e Pierre et Marie Curie \\
+Sorbonne Universit\'es\\
+UPMC Univ Paris 06\\
+CNRS, LIP6 UMR 7606\\
 Paris, France \\
 paolo.viappiani@lip6.fr}
 
@@ -166,10 +171,6 @@ paolo.viappiani@lip6.fr}
 \end{abstract}
 
 \section{Introduction}
-
-\paolo{or Andrea: check whether~\cite{greco2008ordinal} is related and comment
-on it, as requested by reviewer 3.}
-
 Preferences \cite{Peintner2008} play an important role in a variety of artificial
 intelligence applications and the task of eliciting or learning preferences is a crucial one; 
 typically only limited
@@ -181,13 +182,12 @@ cost (cognitive or computational) of obtaining additional preference information
 %preferences %(typically represented by an utility function $u$, unknown to the system)
 %in order to recommend a decision or a course of action.
 
-The automated assessment of preferences has received considerable attention,
-starting with pioneering works \cite{White1984,jaquetlsiskos1982} in the OR community.
-\paolo{or Andrea, check if it is worth mentioning the review in~\cite{jaquetlsiskos2001},
-as highlighted by the fourth reviewer.}
+\paolo{The automated assessment of preferences has received considerable attention,
+starting with pioneering works in the OR community, such as \cite{White1984} and especially the UTA methodology \cite{jaquetlsiskos1982} giving rise to a wide variety of extensions \cite{jaquetlsiskos2001,greco2008ordinal}.}
+
 %In the past decade a number of researchers have considered elicitation of preferences from an artificial intelligence perspective%; within the machine learning field the term preference learning has been catching up.
 %While preferences are often assessed using some ad-hoc rules \cite{},
-More recently, a number of AI researchers have proposed interactive methods that elicit
+Within AI, a number researchers have proposed interactive methods that elicit
 preferences in an adaptive way
 \cite{chajewska2000,boutilier2002,Wang2003,boutilier2006,guo2010real,viappiani2010optimal},
 observing that, by asking informative questions, it is often possible to make near-optimal decisions with only partial preference information.
@@ -296,7 +296,7 @@ e.g. under the canonical mapping of $True$ to $1$ and $False$ to $0$, the
 Boolean disjunction of two binary variables $x_1 \lor x_2$ can be rewritten as
 $x_1 + x_2 \ge 1$.
 
-Consistently with previous work~\cite{guo2010real,viappiani2010optimal}, 
+Consistently with \paolo{the experimental settings} of previous work~\cite{guo2010real,viappiani2010optimal}, 
 we model users with additive utility functions \cite{keeney1976}; 
 the user's preferences are represented by a  weight
 vector $\vw\in\bbR^m$ and
@@ -356,7 +356,8 @@ $\langle \vw^i, \vy^h_+ - \vy^h_- \rangle \geq \mu$, where $\mu$ is the
 {\em margin} variable (which we aim at maximizing) and $h$ ranges over
 the responses.  Non-separable datasets, which occur in practice due to
 occasional inconsistencies in user feedback, are handled by
-introducing slack variables (whose sum we aim at minimizing). When
+introducing slack variables (whose sum we aim at minimizing)
+\paolo{in a way similar to UTA and its extensions \cite{jaquetlsiskos1982,greco2008ordinal} }. When
 augmented with the slacks, the above inequalities take the form
 $\langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h$
 where $\varepsilon^{i}_h$ is the penalty incurred by weight vector $\vw^{i}$
@@ -633,7 +634,8 @@ $$ \forall \; i \in [k] \;.\; (\vw_B^\bot + C' \vw_R^\bot) \le \vv^i \le (\vw_B^
 
 We implemented the {\sc SetMargin} algorithm using Python, leveraging Gurobi
 6.5.0 for solving the core MILP problem. Both the {\sc SetMargin} source code
-and the full experimental setup are available at \url{https://db.tt/oqY62odW}.
+and the full experimental setup are available at 
+\url{https://db.tt/oqY62odW}.
 
 We compare {\sc SetMargin} against three state-of-the-art Bayesian
 approaches: i) the Bayesian approach from \cite{guo2010real},
@@ -927,7 +929,9 @@ complex dataset ($r=5$). However, as in each iteration the user is
 asked to compare $k$ items, different values of $k$ imply a different
 cognitive effort for the user. The second and fourth columns report
 results in terms of number of queries, where we count all
-$k \choose 2$ pairs of queries when comparing $k$ items. In this case,
+$\binom{k}{2}$
+%k \choose 2$ 
+pairs of queries when comparing $k$ items. In this case,
 $k=2$ seems to be the best option. The cognitive cost for the user
 will likely lay in between these two extremes, but formalizing this
 concept in an efficient query ordering strategy needs to face the
@@ -935,12 +939,10 @@ effect of noise.  A modified sorting algorithm asking only
 $O(k\log k)$ queries to the user resulted in a performance worsening,
 likely because of a cascading effect of inconsistent feedback (but
 could be beneficial with different noise levels).
-
 % \paragraph{Cognitive effort.} Contrarily to most other preference elicitation
 % methods, which generate a single candidate option per iteration, {\sc
 % SetMargin} constructs a whole {\em set} of options. We thus can not leverage
 % standard query selection strategies \stefano{which ones?}. 
-
 % The simplest solution is to query the user about all $k \choose 2$ pairs of
 % configurations in $\{\vx^i\}$. Since $k$ is a small constant, the resulting
 % number of queries does not grow large in practice.  An appealing alternative
@@ -950,7 +952,6 @@ could be beneficial with different noise levels).
 % affect all successive comparisons, leading to a cascading effect. While more
 % robust strategies may be conceived, empirically we found that the simpler
 % quadratic scheme tends to work reasonably well.
-
 %\paolo{Maybe a plot of an experiment with increased noise in user response? (for example, $\beta=0.1$ instead of $1$.}
 
 \paragraph{Constructive dataset.} Next, we tested {\sc SetMargin} on a truly
@@ -1047,14 +1048,13 @@ Experimental comparisons against state-of-the-art Bayesian preference
 elicitation strategies confirm these advantages. Future work includes
 extending the approach to truly hybrid scenarios (where real valued
 attributes do not depend on categorical ones) and studying its
-applicability %of the setwise max-margin idea 
-to other problems.
+applicability to other problems, \paolo{(as the identification of Choquet models \cite{Pine2013}}.
 
-%\paolo{any idea about possible future works?}
-% FUTURE WORKS
-
-\section*{Acknowledgments}
+%\section*{Acknowledgments}
+\paragraph{Acknowledgments}
 ST was supported by the Caritro Foundation through project E62I15000530007.
+PV was supported by the Idex Sorbonne Universit\'{e}s under grant ANR-11-IDEX-0004-02.
+We thank Craig Boutilier for motivating discussion on the topic.
 
 \bibliographystyle{named}
 \bibliography{ijcai16}
