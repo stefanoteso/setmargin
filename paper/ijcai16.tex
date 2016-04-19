@@ -506,7 +506,7 @@ possible.
 
 (Case i) We add an explicit upper bound:
 %
-$$ p^{i,i}_z \le \min \{ w_\text{max} x^{i}_z, w^{i}_z \} $$
+$ p^{i,i}_z \le \min \{ w_\text{max} x^{i}_z, w^{i}_z \} $,
 %
 where $w_\text{max}$ is a sufficiently large constant.
 On one hand, if $x^i_z = 0$ the product $w^i_z x^i_z$ evaluates to $0$, and so does
@@ -519,7 +519,7 @@ both cases it will attain the upper bound, and thus satisfy $p^{i,j}_z = w^i_z x
 
 (Case ii) We add an explicit lower bound:
 %
-$$ p^{i,j}_z \ge \max \{ 0, w^{i}_z - w_\text{max}(1 - x^{j}_z) \} $$
+$ p^{i,j}_z \ge \max \{ 0, w^{i}_z - w_\text{max}(1 - x^{j}_z) \} $.
 %
 If $x^j_z = 1$ the lower bound simplifies to
 $\max \{ 0, w^{i}_z \} = w^{i}_z$, due to the non-negativity of
@@ -533,8 +533,9 @@ the lower bound. As a consequence, the MILP reformulation of
 Eq.~(\ref{eq:wxconstr}) is a (tight) approximation of the original one. This
 has no impact on the quality of the solutions.}
 
-Substituting the above MILP constraints into the original non-linear
-formulation, we obtain the following mixed-integer linear problem:
+% Substituting the above MILP constraints into the original non-linear
+% formulation,
+We thus obtain the following mixed-integer linear problem:
 %
 {\footnotesize
 \begin{align}
@@ -679,7 +680,7 @@ update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
 iterations. The hyperparameters are chosen as to minimize the ranking loss over
 the user responses collected so far. $\alpha$ is taken in $\{20, 10, 5, 1\}$,
 while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.\footnote{Note
-that for $k=1$ Eq.~\ref{eq:volatile1} and Eq.~\ref{eq:volatile2} disappear,
+that for $k=1$ Eq.~(\ref{eq:volatile1}) and Eq.~(\ref{eq:volatile2}) disappear,
 so $\alpha$ can not be taken to be less than $1$, as in this case, the
 objective can be increased arbitrarily while keeping the right-hand side of
 Eq.~(\ref{eq:wyconstr}) constant, rendering the problem unbounded.}
@@ -775,7 +776,8 @@ various methods. The feasible configuration space was encoded in {\sc
 methods require all datasets to be explicitly grounded.  Users were
 simulated by drawing $20$ random utility vectors from each of four
 different distributions. The first two mimic those used
-in~\cite{guo2010real}\footnote{We used the parameters implemented in their code, which are slightly different from those reported in the paper.}%
+in~\cite{guo2010real}
+%\footnote{We used the parameters implemented in their code, which are slightly different from those reported in the paper.}%
 %\footnote{The normal distribution reported
 %  in~\cite{guo2010real} differs slightly from the one implemented in
 %  the code of their experimental setting.  In our experiments we use
