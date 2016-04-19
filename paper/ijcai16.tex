@@ -298,7 +298,7 @@ e.g. under the canonical mapping of $True$ to $1$ and $False$ to $0$, the
 Boolean disjunction of two binary variables $x_1 \lor x_2$ can be rewritten as
 $x_1 + x_2 \ge 1$.
 
-Consistently with \paolo{the experimental settings} of previous work~\cite{guo2010real,viappiani2010optimal}, 
+Consistently with the experimental settings of previous work~\cite{guo2010real,viappiani2010optimal},
 we model users with additive utility functions \cite{keeney1976}; 
 the user's preferences are represented by a  weight
 vector $\vw\in\bbR^m$ and
@@ -359,7 +359,7 @@ $\langle \vw^i, \vy^h_+ - \vy^h_- \rangle \geq \mu$, where $\mu$ is the
 the responses.  Non-separable datasets, which occur in practice due to
 occasional inconsistencies in user feedback, are handled by
 introducing slack variables (whose sum we aim at minimizing)
-\paolo{in a way similar to UTA and its extensions \cite{jaquetlsiskos1982,greco2008ordinal} }. When
+in a way similar to UTA and its extensions \cite{jaquetlsiskos1982,greco2008ordinal}. When
 augmented with the slacks, the above inequalities take the form
 $\langle \vw^{i}, \vy^{h}_+ - \vy^{h}_- \rangle \ge \mu - \varepsilon^{i}_h$
 where $\varepsilon^{i}_h$ is the penalty incurred by weight vector $\vw^{i}$
@@ -368,9 +368,7 @@ $\vy^h_1 \approx \vy^h_2$, are translated as $|\langle \vw^i, \vy^h_1 - \vy^h_2 
 the slack increases with the difference between the estimated utility of the
 two options.
 
-The second goal requires \stefano{I think this is correct as-is: the second
-reviewer thinks that the second goal is to maximize diversity; above we clearly
-state that it requires to find diverse {\em and} good configurations} to jointly maximize the utility of each
+The second goal requires to jointly maximize the utility of each
 $\vx^{i}$ according to its corresponding weight vector $\vw^i$ and its
 scoring difference with respect to the other configurations $\vx^j$ in
 the set. We achieve this by maximizing the sum of utilities
@@ -396,7 +394,7 @@ $i,j\in[k]$, $i \ne j$.
 
 A straightforward encoding of the above desiderata leads to the
 following mixed integer {\em non-linear} optimization problem over the
-\stefano{non-negative margin $\mu \in \bbR_{\ge 0}$ and vectors $\{ \vw^i \in \bbR^m \}$, $\{ \vx^i \in \{0,1\}^m \}$}:
+non-negative margin $\mu \in \bbR_{\ge 0}$ and vectors $\{ \vw^i \in \bbR^m \}$, $\{ \vx^i \in \{0,1\}^m \}$:
 %
 {\footnotesize
 \begin{align}
