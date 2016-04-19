@@ -474,14 +474,14 @@ red line; moreover the vector $\vw^{1}$ will maximize the margin in the classic 
 \end{figure}
 
 \paragraph{MILP Formulation.} This initial formulation is problematic
-to solve, as Eq.~(\ref{eq:wxconstr}) involves quadratic terms over
-mixed continuous integer variables.  \andrea{However, the problem can
-  be reformulated as a mixed integer linear program (MILP) by a
-  suitable variable transformation. This technique is rather common in
-  operational research, see e.g.~\cite{boutilier2006}.}
+to solve, as Eq.~(\ref{eq:wxconstr}) involves quadratic terms over mixed
+continuous integer variables. However, the problem can be reformulated as a
+mixed integer linear program (MILP) by a suitable transformation. This
+technique is rather common in operational research, see
+e.g.~\cite{boutilier2006}.
 
-\andrea{Our goal is to replace Eq.~(\ref{eq:wxconstr}) with a set of linear
-constraints}. In order to do so, we introduce a set of fresh variables
+Our goal is to replace Eq.~(\ref{eq:wxconstr}) with a set of linear
+constraints. In order to do so, we introduce a set of fresh variables
 $p^{i,j}_z$ for every $i,j\in[k]$ and $z\in[m]$. Assuming for the time
 being that the new variables do satisfy the equation
 $p^{i,j}_z = w^i_z x^j_z$, we rewrite the fourth component of the
@@ -524,11 +524,10 @@ $\max \{ 0, w^{i}_z - w_\text{max} \}$, where the second term is at
 most $0$. Since $p^{i,j}_z$ is being minimized, in both cases it will
 attain the lower bound, and thus satisfy
 $p^{i,j}_z = w^i_z x^j_z$.\footnote{Since $\mu$ is upper-bounded by
-  Eq.~(\ref{eq:wyconstr}), in some cases the $p^{i,j}_z$ variables do
-  not attain the lower bound. As a consequence, the MILP reformulation
-  of Eq.~(\ref{eq:wxconstr}) is a (tight) approximation of the
-  original one. This \andrea{can only happen in the case of $k=1$} and
-  has no impact on the quality of the solutions.}
+Eq.~(\ref{eq:wyconstr}), in some cases the $p^{i,j}_z$ variables do not attain
+the lower bound. As a consequence, the MILP reformulation of
+Eq.~(\ref{eq:wxconstr}) is a (tight) approximation of the original one. This
+has no impact on the quality of the solutions.}
 
 Substituting the above MILP constraints into the original non-linear
 formulation, we obtain the following mixed-integer linear problem:
@@ -635,7 +634,7 @@ $$ \forall \; i \in [k] \;.\; (\vw_B^\bot + C' \vw_R^\bot) \le \vv^i \le (\vw_B^
 We implemented the {\sc SetMargin} algorithm using Python, leveraging Gurobi
 6.5.0 for solving the core MILP problem. Both the {\sc SetMargin} source code
 and the full experimental setup are available at 
-\url{https://db.tt/oqY62odW} \stefano{update the link!}.
+\url{https://github.com/stefanoteso/setmargin}.
 
 We compare {\sc SetMargin} against three state-of-the-art Bayesian
 approaches: i) the Bayesian approach from \cite{guo2010real},
@@ -674,8 +673,8 @@ update the hyperparameters $\alpha$, $\beta$, and $\gamma$ after every 5
 iterations. The hyperparameters are chosen as to minimize the ranking loss over
 the user responses collected so far. $\alpha$ is taken in $\{20, 10, 5, 1\}$,
 while $\beta$ and $\gamma$ are taken in $\{10, 1, 0.1, 0.001\}$.\footnote{Note
-that \stefano{for $k=1$ Eq.~\ref{eq:volatile1} and Eq.~\ref{eq:volatile2} disappear,
-so} $\alpha$ can not be taken to be less than $1$, as in this case, the
+that for $k=1$ Eq.~\ref{eq:volatile1} and Eq.~\ref{eq:volatile2} disappear,
+so $\alpha$ can not be taken to be less than $1$, as in this case, the
 objective can be increased arbitrarily while keeping the right-hand side of
 Eq.~(\ref{eq:wyconstr}) constant, rendering the problem unbounded.}
 
@@ -1048,7 +1047,7 @@ Experimental comparisons against state-of-the-art Bayesian preference
 elicitation strategies confirm these advantages. Future work includes
 extending the approach to truly hybrid scenarios (where real valued
 attributes do not depend on categorical ones) and studying its
-applicability to other problems, \paolo{(as the identification of Choquet models \cite{Pine2013}}.
+applicability to other problems, \paolo{as the identification of Choquet models \cite{Pine2013}}.
 
 %\section*{Acknowledgments}
 \paragraph{Acknowledgments}
