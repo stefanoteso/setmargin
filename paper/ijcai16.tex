@@ -409,9 +409,11 @@ non-negative margin $\mu \in \bbR_{\ge 0}$ and vectors $\{ \vw^i \in \bbR^m \}$,
     \\
         & \;\; \forall \; i \in [k] \quad \vw^\bot \le \vw^{i} \le \vw^\top \label{eq:wbounds}
     \\
-        & \;\; \forall \; i \in [k] \quad \vx^{i} \in \calX_{\text{feasible}} \label{eq:xbounds}
-    \\
-        & \;\; \forall \; i \in [k] \quad \veps^{i} \ge 0 \nonumber
+        & \;\; \forall \; i \in [k] \quad \vx^{i} \in \calX_{\text{feasible}} \;\;, \veps^{i} \ge 0 \label{eq:xbounds}
+%    \\
+%        & \;\; \forall \; i \in [k] \quad \vx^{i} \in \calX_{\text{feasible}} \label{eq:xbounds}
+%    \\
+%        & \;\; \forall \; i \in [k] \quad \veps^{i} \ge 0 \nonumber
 %    \\
 %        & \;\; \mu \ge 0 \nonumber
 \end{align}
@@ -438,7 +440,9 @@ enforces the correct ranking of the observed user preferences, while
 ~(\ref{eq:wxconstr}) ensures that the generated
 configurations are diverse in terms of the weight vectors they
 maximize. Constraints~(\ref{eq:wbounds}) and~(\ref{eq:xbounds}) ensure
-that the weights and configurations are feasible, while the last one
+that the weights and configurations are feasible
+%, while the last one
+and
 guarantees the non-negativity of the slacks.  Since we require
 $\vw^\bot \ge (0,\ldots,0)$, Eq.~(\ref{eq:wbounds}) also enforces the
 weights to be non-negative.
@@ -553,9 +557,11 @@ formulation, we obtain the following mixed-integer linear problem:
     \\
         & \;\; \forall \; i \in [k] \quad \vw^\bot \le \vw^{i} \le \vw^\top \label{eq:wbounds2}
     \\
-        & \;\; \forall \; i \in [k] \quad \vx^{i} \in \calX_{\text{feasible}} \nonumber
-    \\
-        & \;\; \forall \; i \in [k] \quad \veps^{i}_h \ge 0 \nonumber
+        & \;\; \forall \; i \in [k] \quad \vx^{i} \in \calX_{\text{feasible}} \;, \veps^{i} \ge 0 \nonumber
+%    \\
+%        & \;\; \forall \; i \in [k] \quad \vx^{i} \in \calX_{\text{feasible}} \nonumber
+%    \\
+%        & \;\; \forall \; i \in [k] \quad \veps^{i} \ge 0 \nonumber
 %    \\
 %        & \;\; \mu \ge 0 \nonumber
 \end{align}
