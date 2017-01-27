@@ -332,7 +332,8 @@ class Solver(object):
 
         for i in range(set_size):
             x = np.array([xs[i,z].x for z in range(num_bools)])
-            assert dataset.is_item_valid(dataset.compose_item(x))
+            x = np.sign(x - 0.5) / 2 + 0.5
+            assert dataset.is_item_valid(dataset.compose_item(x)), x
 
         output_ps = np.zeros((set_size, set_size, num_bools))
         output_scores = np.zeros((set_size, set_size))
