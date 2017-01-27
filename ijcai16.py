@@ -205,7 +205,7 @@ def run_synthetic(same_user):
     })
 
     utilities = {}
-    for num_attrs in range(3, 6+1):
+    for num_attrs in range(4, 5+1):
         domain_sizes = [num_attrs] * num_attrs
         dataset = setmargin.SyntheticDataset(domain_sizes)
 
