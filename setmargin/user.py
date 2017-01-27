@@ -1,5 +1,6 @@
 import numpy as np
 import itertools as it
+from scipy.misc import logsumexp
 from sklearn.utils import check_random_state
 
 class User(object):
@@ -110,6 +111,16 @@ class User(object):
                 old_best_item = self._rng.random_integers(0, 1, size=(num_features,))
             answers = [(xs[0], old_best_item, self.query(xs[0], old_best_item))]
             num_queries = 1
+
+        elif self.ranking_mode == 'setchoice':
+            LAMBDA = 1.0
+
+            utils = np.array([LAMBDA * self.utility(x) for x in xs])
+            sumexputils = logsumexp(utils)
+            pvals = np.exp(utils - sumexputils)
+            istar = np.argmax(self._rng.multinomial(1, pvals=pvals))
+            answers = [(xs[istar], xs[j], 1) for j in range(len(xs)) if j != istar]
+            num_queries = len(answers)
 
         elif self.ranking_mode == "all_pairs":
             # requires 1/2 * n * (n - 1) queries
