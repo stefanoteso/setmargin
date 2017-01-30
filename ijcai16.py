@@ -187,13 +187,13 @@ def solve(dataset, config, ws=None):
 def run_synthetic(same_user):
     CONFIGS = Grid({
         "num_trials": 20,
-        "max_iterations": 100,
-        "max_answers": 100,
+        "max_iterations": 50,
+        "max_answers": 10000,
         "sampling_mode": ("uniform", "normal"),
         "ranking_mode": ("setchoice",),
         "is_deterministic": False,
         "is_indifferent": False,
-        "set_size": range(2, 4+1),
+        "set_size": (2, 3, 4, 5, 6),
         "crossval": True,
         "crossval_set_size": 1,
         "crossval_interval": 5,
@@ -205,7 +205,7 @@ def run_synthetic(same_user):
     })
 
     utilities = {}
-    for num_attrs in range(4, 5+1):
+    for num_attrs in range(4, 4+1):
         domain_sizes = [num_attrs] * num_attrs
         dataset = setmargin.SyntheticDataset(domain_sizes)
 
@@ -232,12 +232,12 @@ def run_pc(has_costs):
     CONFIGS = Grid({
         "num_trials": 20,
         "max_iterations": 100,
-        "max_answers": 300,
-        "sampling_mode": ("uniform_sparse", "normal_sparse", "uniform", "normal"),
-        "ranking_mode": ("all_pairs",),
+        "max_answers": 1000,
+        "sampling_mode": ("uniform", "normal"),
+        "ranking_mode": ("setchoice",),
         "is_deterministic": False,
-        "is_indifferent": True,
-        "set_size": range(2, 4+1),
+        "is_indifferent": False,
+        "set_size": (2, 3, 4),
         "crossval": True,
         "crossval_set_size": 1,
         "crossval_interval": 5,
