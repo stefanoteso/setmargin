@@ -259,7 +259,7 @@ def run_pc(has_costs):
             """).format(pformat(config.asdict()))
 
         infos = solve(dataset, config)
-        dump_and_draw("pc_with_costs" if has_cost else "pc_no_costs", config, infos)
+        dump_and_draw("pc_with_costs" if has_costs else "pc_no_costs", config, infos)
 
 def main():
     import argparse
