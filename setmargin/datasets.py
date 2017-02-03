@@ -304,7 +304,7 @@ class PCDataset(Dataset):
                 assert value in self.domain_of[attr]
                 i = self.domain_of[attr].index(value)
                 break
-            base += len(self.domain_of[attr])
+            base += len(self.domain_of[attr_j])
         assert i is not None
         return base + i
 
